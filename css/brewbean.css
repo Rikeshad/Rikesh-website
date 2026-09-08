@@ -1,0 +1,253 @@
+/* =========================================================
+   BREWBEAN PROJECT PAGE
+   Styles used only by projects/brewbean.html
+   ========================================================= */
+
+
+/* Main page container */
+.project-page {
+  padding: 40px 4vw 100px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.project-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-bottom: 30px;
+
+  border-bottom: 1px solid #aaa;
+}
+
+.project-nav a {
+  font-size: 12px;
+
+  letter-spacing: 1.5px;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   PROJECT HERO
+   ========================================================= */
+
+.project-hero {
+  min-height: 75vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 80px 0;
+
+  border-bottom: 1px solid #aaa;
+}
+
+
+/* Small section label */
+.project-label {
+  display: block;
+
+  margin-bottom: 30px;
+
+  font-size: 11px;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+}
+
+
+/* Main BrewBean heading */
+.project-title {
+  max-width: 1200px;
+
+  font-size: clamp(4rem, 11vw, 11rem);
+
+  line-height: 0.85;
+
+  letter-spacing: -0.07em;
+}
+
+
+/* Introductory paragraph */
+.project-intro {
+  max-width: 700px;
+
+  margin-top: 50px;
+
+  font-size: 18px;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   PROJECT SECTIONS
+   ========================================================= */
+
+.project-section {
+  padding: 100px 0;
+
+  border-bottom: 1px solid #aaa;
+}
+
+
+/* Section headings */
+.project-section h2 {
+  margin-bottom: 40px;
+
+  font-size: clamp(2.5rem, 6vw, 6rem);
+
+  letter-spacing: -0.05em;
+}
+
+
+/* Main section paragraphs */
+.project-section > p {
+  max-width: 800px;
+
+  font-size: 17px;
+
+  line-height: 1.8;
+}
+
+
+/* =========================================================
+   FEATURE CARDS
+   ========================================================= */
+
+.project-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 30px;
+
+  margin-top: 50px;
+}
+
+
+/* Individual feature */
+.project-card {
+  padding: 30px;
+
+  border: 1px solid #aaa;
+
+  transition: transform 0.3s ease;
+}
+
+
+/* Moves card slightly when hovered */
+.project-card:hover {
+  transform: translateY(-5px);
+}
+
+
+.project-card h3 {
+  margin-bottom: 15px;
+
+  font-size: 24px;
+}
+
+
+.project-card p {
+  font-size: 15px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   TECHNOLOGIES
+   ========================================================= */
+
+.tech-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  margin-top: 30px;
+}
+
+
+/* Individual technology label */
+.tech-item {
+  padding: 10px 16px;
+
+  border: 1px solid #111;
+
+  font-size: 12px;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.project-footer {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  padding-top: 70px;
+}
+
+
+/* Back to Projects button */
+.back-button {
+  display: inline-block;
+
+  padding-bottom: 5px;
+
+  border-bottom: 1px solid #111;
+}
+
+
+/* =========================================================
+   MOBILE RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  .project-page {
+    padding: 25px 20px 70px;
+  }
+
+  /* One feature card per row on mobile */
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-hero {
+    min-height: 60vh;
+  }
+
+  .project-intro {
+    font-size: 16px;
+  }
+
+  .project-section {
+    padding: 70px 0;
+  }
+
+  /* Stack footer vertically */
+  .project-footer {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 25px;
+  }
+}

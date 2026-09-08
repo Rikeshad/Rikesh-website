@@ -1,46 +1,70 @@
+/* =========================================================
+   GLOBAL RESET
+   Removes default browser spacing and makes sizing predictable
+   ========================================================= */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Enables smooth scrolling when using anchor links like #about */
 html {
   scroll-behavior: smooth;
 }
 
+/* Main page appearance */
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #dbdad1;
-  color: #141313;
+  background: #f4f3ee;
+  color: #111;
   overflow-x: hidden;
 }
 
+/* Prevents scrolling while the intro animation is visible */
 body.loading {
   overflow: hidden;
 }
 
+/* Removes default underline and keeps links the same colour as text */
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* INTRO */
+
+/* =========================================================
+   INTRO SCREEN
+   Full-screen loading/intro animation shown when site opens
+   ========================================================= */
 
 .intro {
   position: fixed;
+
+  /* Makes the intro cover the entire screen */
   inset: 0;
   width: 100%;
+
+  /* 100dvh works better on modern mobile browsers */
   height: 100vh;
   height: 100dvh;
+
   background: #090909;
   color: #fff;
+
+  /* Keeps intro above everything else */
   z-index: 99999;
+
   overflow: hidden;
 }
 
+
+/* Creates the moving soft blue/white background glow */
 .intro-bg {
   position: absolute;
   inset: -20%;
+
   background:
     radial-gradient(
       circle at 30% 40%,
@@ -52,398 +76,670 @@ a {
       rgba(255, 255, 255, 0.08),
       transparent 28%
     );
-  animation: bgMove 3s ease-in-out infinite alternate;
+
+  animation: bgMove 6s ease-in-out infinite alternate;
 }
 
+
+/* Creates the animated background grid */
 .grid {
   position: absolute;
   inset: -100px;
+
   opacity: 0.25;
+
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px),
+    linear-gradient(
+      rgba(255, 255, 255, 0.09) 1px,
+      transparent 1px
+    ),
     linear-gradient(
       90deg,
       rgba(255, 255, 255, 0.09) 1px,
       transparent 1px
     );
+
   background-size: 70px 70px;
+
   animation: gridMove 10s linear infinite;
 }
 
+
+/* Top text of the intro screen */
 .intro-top {
   position: absolute;
+
   top: 28px;
   left: 35px;
   right: 35px;
+
   display: flex;
   justify-content: space-between;
+
   z-index: 2;
+
   font-size: 10px;
   letter-spacing: 3px;
   text-transform: uppercase;
+
+  /* Starts hidden and fades upward */
   opacity: 0;
   animation: fadeUp 0.8s ease 0.2s forwards;
 }
 
+
+/* Centres the large intro text */
 .intro-center {
   position: absolute;
+
   width: calc(100% - 70px);
+
   left: 50%;
   top: 50%;
+
   transform: translate(-50%, -50%);
+
   z-index: 2;
 }
 
+
+/* Hides text while it slides upward into view */
 .line {
   overflow: hidden;
 }
 
+
+/* Main large intro text */
 .line-inner {
   display: block;
+
+  /* Responsive text size */
   font-size: clamp(4rem, 11vw, 12rem);
+
   line-height: 0.82;
+
   font-weight: 800;
+
   letter-spacing: -0.075em;
+
+  /* Starts below the visible area */
   transform: translateY(120%);
-  animation: revealText 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  animation:
+    revealText 1.15s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    forwards;
 }
 
+
+/* Adds a delay and indentation to the second intro line */
 .line:nth-child(2) .line-inner {
   animation-delay: 0.14s;
   padding-left: 8vw;
 }
 
+
+/* Makes the third intro line outlined instead of filled */
 .line:nth-child(3) .line-inner {
   animation-delay: 0.28s;
+
   color: transparent;
+
   -webkit-text-stroke: 1.5px white;
 }
 
+
+/* Rotating circle/star on the intro */
 .intro-symbol {
   position: absolute;
+
   right: 4vw;
   top: 50%;
+
   width: 85px;
   height: 85px;
+
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
+
   display: grid;
   place-items: center;
+
   font-size: 26px;
+
   animation: rotate 8s linear infinite;
 }
 
+
+/* Loader area at the bottom of the intro */
 .intro-bottom {
   position: absolute;
+
   left: 35px;
   right: 35px;
   bottom: 28px;
+
   z-index: 2;
 }
 
+
+/* Displays loading label and percentage */
 .loader-info {
   display: flex;
   justify-content: space-between;
+
   margin-bottom: 12px;
+
   font-size: 10px;
   letter-spacing: 2px;
 }
 
+
+/* Background line for the loader */
 .loader-line {
   width: 100%;
   height: 1px;
+
   background: rgba(255, 255, 255, 0.23);
+
   overflow: hidden;
 }
 
+
+/* Moving loading progress line */
 .loader-progress {
   width: 0;
   height: 100%;
+
   background: white;
 }
 
+
+/* Moves the whole intro upward after loading finishes */
 .intro.exit {
-  animation: introExit 1.3s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  animation:
+    introExit 1.3s
+    cubic-bezier(0.76, 0, 0.24, 1)
+    forwards;
 }
 
-/* WEBSITE */
 
+/* =========================================================
+   MAIN WEBSITE
+   Controls the page appearing after the intro finishes
+   ========================================================= */
+
+/* Main website starts hidden */
 .website {
   opacity: 0;
+
   transform: scale(1.035);
 }
 
+
+/* Reveals the website after the intro */
 .website.show {
   animation: websiteReveal 1.2s ease forwards;
 }
 
-/* NAVIGATION */
+
+/* =========================================================
+   NAVIGATION
+   Top navigation bar
+   ========================================================= */
 
 .navbar {
   height: 100px;
+
   padding: 0 4vw;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+
+/* Website logo/name */
 .logo {
   font-size: 18px;
+
   font-weight: 800;
+
   letter-spacing: -1px;
 }
 
+
+/* Small dot next to the logo */
 .logo-dot {
   display: inline-block;
+
   width: 7px;
   height: 7px;
+
   background: #111;
+
   border-radius: 50%;
+
   margin-left: 3px;
 }
 
+
+/* Horizontal navigation links */
 .nav-links {
   display: flex;
+
   gap: 35px;
 }
 
+
+/* Individual navigation links */
 .nav-links a {
   position: relative;
+
   font-size: 11px;
+
   letter-spacing: 1.5px;
+
   text-transform: uppercase;
 }
 
+
+/* Creates the animated underline below navigation links */
 .nav-links a::after {
   content: "";
+
   position: absolute;
+
   left: 0;
   bottom: -6px;
+
   width: 100%;
   height: 1px;
+
   background: #111;
+
+  /* Starts hidden */
   transform: scaleX(0);
+
   transform-origin: right;
+
   transition: transform 0.4s ease;
 }
 
+
+/* Shows underline from left to right when hovering */
 .nav-links a:hover::after {
   transform: scaleX(1);
+
   transform-origin: left;
 }
 
-/* HERO */
+
+/* =========================================================
+   HERO SECTION
+   Main heading and introduction on the homepage
+   ========================================================= */
 
 .hero {
+  /* Fills most of the viewport below navbar */
   min-height: calc(100vh - 100px);
+
   padding: 4vh 4vw 5vh;
+
   display: flex;
+
   flex-direction: column;
+
   justify-content: space-between;
 }
 
+
+/* Small text above main heading */
 .hero-top {
   display: flex;
+
   justify-content: space-between;
+
   font-size: 10px;
+
   letter-spacing: 2px;
+
   text-transform: uppercase;
 }
 
+
+/* Main CREATE WITHOUT LIMITS heading */
 .hero-title {
   margin-top: 5vh;
+
   max-width: 1500px;
+
   font-size: clamp(5rem, 13.5vw, 14rem);
+
   line-height: 0.78;
+
   letter-spacing: -0.085em;
+
   font-weight: 800;
 }
 
+
+/* Makes each word appear on its own line */
 .hero-title span {
   display: block;
 }
 
+
+/* Makes WITHOUT thinner and moves it slightly right */
 .hero-title .thin {
   font-weight: 300;
+
   margin-left: 11vw;
 }
 
+
+/* Creates outlined text for LIMITS */
 .hero-title .outline {
   color: transparent;
+
   -webkit-text-stroke: 1.5px #111;
 }
 
+
+/* Bottom section of hero */
 .hero-bottom {
   margin-top: 50px;
+
   display: grid;
+
   grid-template-columns: 1fr 1fr auto;
+
   align-items: end;
+
   gap: 50px;
 }
 
+
+/* Hero description paragraph */
 .hero-description {
   max-width: 350px;
+
   font-size: 15px;
+
   line-height: 1.55;
 }
 
+
+/* Displays section number */
 .hero-number {
   font-size: 11px;
+
   letter-spacing: 2px;
 }
 
+
+/* Circular explore button */
 .explore-button {
   width: 130px;
   height: 130px;
+
   border: 1px solid #111;
+
   border-radius: 50%;
+
   display: flex;
+
   flex-direction: column;
+
   justify-content: center;
   align-items: center;
+
   gap: 8px;
+
   font-size: 10px;
+
   letter-spacing: 1.5px;
+
   transition: 0.4s ease;
 }
 
+
+/* Makes arrow inside explore button larger */
 .explore-button span {
   font-size: 22px;
 }
 
+
+/* Changes explore button appearance when hovering */
 .explore-button:hover {
   background: #111;
+
   color: white;
+
   transform: rotate(-8deg) scale(1.05);
 }
 
-/* ABOUT */
+
+/* =========================================================
+   ABOUT SECTION
+   Personal introduction section
+   ========================================================= */
 
 .about {
   min-height: 100vh;
+
   padding: 100px 4vw;
+
   background: #220606;
+
   color: white;
+
   display: flex;
+
   flex-direction: column;
+
   justify-content: space-between;
 }
 
+
+/* Small reusable section label */
 .section-label {
   font-size: 10px;
+
   letter-spacing: 2px;
+
   text-transform: uppercase;
 }
 
+
+/* Large About section statement */
 .about-text {
   max-width: 1250px;
+
   font-size: clamp(3rem, 8vw, 9rem);
+
   line-height: 0.9;
+
   letter-spacing: -0.06em;
 }
 
+
+/* Bottom row of About section */
 .about-bottom {
   display: flex;
+
   justify-content: space-between;
+
   align-items: end;
+
   margin-top: 80px;
 }
 
+
+/* Smaller About description */
 .about-small {
   max-width: 430px;
+
   font-size: 14px;
+
   line-height: 1.6;
+
   color: #aaa;
 }
 
-/* PROJECTS */
+
+/* =========================================================
+   PROJECTS SECTION
+   Displays project links
+   ========================================================= */
 
 .projects {
   min-height: 100vh;
+
   padding: 110px 4vw;
+
   background: #f4f3ee;
 }
 
+
+/* Projects title row */
 .section-header {
   display: flex;
+
   justify-content: space-between;
+
   align-items: end;
+
   padding-bottom: 30px;
+
   border-bottom: 1px solid #aaa;
 }
 
+
+/* Large Projects heading */
 .section-header h2 {
   font-size: clamp(4rem, 9vw, 9rem);
+
   line-height: 0.8;
+
   letter-spacing: -0.07em;
 }
 
+
+/* Individual project row */
 .project-item {
   display: grid;
+
   grid-template-columns: 70px 1fr auto;
+
   gap: 30px;
+
   align-items: center;
+
   padding: 45px 0;
+
   border-bottom: 1px solid #aaa;
+
   transition: 0.4s ease;
 }
 
+
+/* Moves project row slightly inward when hovering */
 .project-item:hover {
   padding-left: 25px;
+
   padding-right: 25px;
 }
 
+
+/* Project number */
 .project-number {
   font-size: 11px;
 }
 
+
+/* Project title */
 .project-item h3 {
   font-size: clamp(2rem, 5vw, 5rem);
+
   letter-spacing: -0.05em;
 }
 
+
+/* Project arrow */
 .project-arrow {
   font-size: 35px;
+
   transition: transform 0.4s ease;
 }
 
+
+/* Rotates arrow when hovering over project */
 .project-item:hover .project-arrow {
   transform: rotate(45deg);
 }
 
-/* CONTACT */
+
+/* =========================================================
+   CONTACT SECTION
+   Final section of the website
+   ========================================================= */
 
 .contact {
   min-height: 90vh;
+
   padding: 100px 4vw;
+
   background: #111;
+
   color: white;
+
   display: flex;
+
   flex-direction: column;
+
   justify-content: space-between;
 }
 
+
+/* Large contact message */
 .contact h2 {
   max-width: 1300px;
+
   font-size: clamp(4rem, 10vw, 11rem);
+
   line-height: 0.83;
+
   letter-spacing: -0.07em;
 }
 
+
+/* Bottom row containing copyright and email */
 .contact-bottom {
   display: flex;
+
   justify-content: space-between;
+
   border-top: 1px solid #444;
+
   padding-top: 25px;
 }
 
+
+/* Underline below email link */
 .contact a {
   border-bottom: 1px solid white;
+
   padding-bottom: 5px;
 }
 
-/* ANIMATIONS */
 
+/* =========================================================
+   ANIMATIONS
+   Keyframes used throughout the website
+   ========================================================= */
+
+/* Slides intro text upward into view */
 @keyframes revealText {
   from {
     transform: translateY(120%);
@@ -454,18 +750,24 @@ a {
   }
 }
 
+
+/* Fades content upward */
 @keyframes fadeUp {
   from {
     opacity: 0;
+
     transform: translateY(15px);
   }
 
   to {
     opacity: 1;
+
     transform: translateY(0);
   }
 }
 
+
+/* Moves the background grid */
 @keyframes gridMove {
   from {
     transform: translate(0, 0);
@@ -476,6 +778,8 @@ a {
   }
 }
 
+
+/* Slowly moves and enlarges background glow */
 @keyframes bgMove {
   from {
     transform: scale(1) translate(-2%, -2%);
@@ -486,6 +790,8 @@ a {
   }
 }
 
+
+/* Rotates intro symbol */
 @keyframes rotate {
   from {
     transform: rotate(0);
@@ -496,6 +802,8 @@ a {
   }
 }
 
+
+/* Moves intro screen off the top of the page */
 @keyframes introExit {
   0% {
     transform: translateY(0);
@@ -503,93 +811,137 @@ a {
 
   100% {
     transform: translateY(-100%);
+
     visibility: hidden;
   }
 }
 
+
+/* Fades and scales main website into view */
 @keyframes websiteReveal {
   from {
     opacity: 0;
+
     transform: scale(1.035);
   }
 
   to {
     opacity: 1;
+
     transform: scale(1);
   }
 }
 
-/* MOBILE */
+
+/* =========================================================
+   MOBILE RESPONSIVE DESIGN
+   Styles used for screens 800px wide or smaller
+   ========================================================= */
 
 @media (max-width: 800px) {
+
+  /* Reduces spacing around intro top text */
   .intro-top {
     left: 20px;
     right: 20px;
     top: 20px;
   }
 
+
+  /* Makes intro text fit mobile width */
   .intro-center {
     width: calc(100% - 40px);
   }
 
+
+  /* Reduces intro heading size */
   .line-inner {
     font-size: clamp(3.2rem, 17vw, 7rem);
+
     line-height: 0.9;
   }
 
+
+  /* Removes indentation from second intro line */
   .line:nth-child(2) .line-inner {
     padding-left: 0;
   }
 
+
+  /* Hides rotating symbol on smaller screens */
   .intro-symbol {
     display: none;
   }
 
+
+  /* Adjusts loader spacing */
   .intro-bottom {
     left: 20px;
     right: 20px;
     bottom: 20px;
   }
 
+
+  /* Makes navbar smaller */
   .navbar {
     padding: 0 20px;
+
     height: 80px;
   }
 
+
+  /* Hides desktop navigation links on mobile */
   .nav-links {
     display: none;
   }
 
+
+  /* Adjusts hero spacing */
   .hero {
     padding: 4vh 20px 30px;
   }
 
+
+  /* Makes main heading responsive on mobile */
   .hero-title {
     font-size: clamp(4rem, 19vw, 8rem);
   }
 
+
+  /* Removes desktop indentation */
   .hero-title .thin {
     margin-left: 0;
   }
 
+
+  /* Changes hero bottom layout */
   .hero-bottom {
     grid-template-columns: 1fr auto;
+
     gap: 20px;
   }
 
+
+  /* Hides hero page number on mobile */
   .hero-number {
     display: none;
   }
 
+
+  /* Makes description slightly smaller */
   .hero-description {
     font-size: 13px;
   }
 
+
+  /* Makes circular button smaller */
   .explore-button {
     width: 90px;
     height: 90px;
   }
 
+
+  /* Reduces side spacing on mobile */
   .about,
   .projects,
   .contact {
@@ -597,25 +949,39 @@ a {
     padding-right: 20px;
   }
 
+
+  /* Makes project rows fit smaller screens */
   .project-item {
     grid-template-columns: 40px 1fr auto;
+
     gap: 12px;
   }
 
+
+  /* Stacks contact information vertically */
   .contact-bottom {
     flex-direction: column;
+
     gap: 25px;
   }
 }
 
-/* REDUCED MOTION */
+
+/* =========================================================
+   ACCESSIBILITY
+   Reduces animations when user has enabled
+   "Reduce Motion" on their device
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+
     animation-delay: 0ms !important;
+
     transition-duration: 0.01ms !important;
   }
 }

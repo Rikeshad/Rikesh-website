@@ -42,3 +42,22 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     }
   });
 });
+const skipIntro = window.location.hash === "#projects";
+
+if (skipIntro) {
+  document.body.classList.remove("loading");
+
+  if (intro) {
+    intro.style.display = "none";
+  }
+
+  if (website) {
+    website.classList.add("show");
+  }
+
+  requestAnimationFrame(() => {
+    document.getElementById("projects")?.scrollIntoView({
+      behavior: "auto"
+    });
+  });
+}

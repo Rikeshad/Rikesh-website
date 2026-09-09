@@ -143,15 +143,15 @@
 /* Individual feature card */
 .project-card {
   width: 360px;
-  background: #121826;
-  border: 1px solid #1f2937;
+  background: #dfe1e4;
+  border: 1px solid #0b4ca8;
   border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   position: relative;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(224, 211, 211, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Accent top border glow on hover */
@@ -162,7 +162,7 @@
   left: 24px;
   right: 24px;
   height: 2px;
-  background: linear-gradient(90deg, #6366f1, #a855f7);
+  background: linear-gradient(90deg, #2f32b3, #601f9c);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -170,7 +170,7 @@
 /* Hover effects */
 .project-card:hover {
   transform: translateY(-4px);
-  border-color: #6366f1;
+  border-color: #1316bd;
   box-shadow: 0 12px 24px -4px rgba(99, 102, 241, 0.15);
 }
 

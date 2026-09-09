@@ -70,17 +70,17 @@
 
 /* Large Pizza Shop POS heading */
 .project-title {
-  max-width: 1200px;
-
-  font-size: clamp(4rem, 11vw, 11rem);
-
-  line-height: 0.85;
-
-  letter-spacing: -0.07em;
+  width: 360px;
+  background: #dadde6;
+  border: 1px solid #b4bac2;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
-
-
-/* Short introduction below the title */
 .project-intro {
   max-width: 700px;
 
@@ -142,33 +142,40 @@
 
 /* Individual feature card */
 .project-card {
-  padding: 30px;
-
-  border: 1px solid #aaa;
-
-  transition: 0.3s ease;
+  width: 360px;
+  background: #dadde6;
+  border: 1px solid #b4bac2;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* Accent top border glow on hover */
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 
-/* Slight movement when hovering over a feature */
+/* Hover effects */
 .project-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  border-color: #6366f1;
+  box-shadow: 0 12px 24px -4px rgba(99, 102, 241, 0.15);
 }
 
-
-/* Feature title */
-.project-card h3 {
-  margin-bottom: 15px;
-
-  font-size: 24px;
-}
-
-
-/* Feature description */
-.project-card p {
-  font-size: 15px;
-
-  line-height: 1.6;
+.project-card:hover::before {
+  opacity: 1;
 }
 
 

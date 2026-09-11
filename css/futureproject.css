@@ -1,0 +1,760 @@
+/* =========================================================
+   GLOBAL SETTINGS
+   Basic reset for the Future Project page
+   ========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+
+  background: #090909;
+  color: white;
+
+  overflow: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   LOADING SCREEN
+   Full-screen animation shown when the page first opens
+   ========================================================= */
+
+.future-loader {
+  position: fixed;
+  inset: 0;
+
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+
+  background: #090909;
+
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+
+/* Moves loading screen upward when finished */
+.future-loader.exit {
+  animation:
+    loaderExit 1.2s
+    cubic-bezier(0.76, 0, 0.24, 1)
+    forwards;
+}
+
+
+/* =========================================================
+   LOADER TOP
+   Small text at top of loading screen
+   ========================================================= */
+
+.loader-top {
+  position: absolute;
+
+  top: 30px;
+  left: 4vw;
+  right: 4vw;
+
+  display: flex;
+  justify-content: space-between;
+
+  font-size: 10px;
+
+  letter-spacing: 2.5px;
+
+  opacity: 0;
+
+  animation:
+    fadeIn 0.8s ease
+    0.2s forwards;
+}
+
+
+/* =========================================================
+   MAIN LOADING AREA
+   Circle, percentage and loading title
+   ========================================================= */
+
+.loader-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+
+/* Large animated loading circle */
+.loader-circle {
+  position: relative;
+
+  width: clamp(210px, 28vw, 420px);
+  height: clamp(210px, 28vw, 420px);
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.18);
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 45px;
+}
+
+
+/* Creates rotating ring around loading circle */
+.loader-circle::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -1px;
+
+  border-radius: 50%;
+
+  border: 2px solid transparent;
+
+  border-top-color: white;
+  border-right-color: white;
+
+  animation:
+    loaderRotate 1.5s
+    linear infinite;
+}
+
+
+/* Creates another slower decorative ring */
+.loader-circle::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 20px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
+
+  animation:
+    loaderRotateReverse 4s
+    linear infinite;
+}
+
+
+/* Large loading percentage */
+.loader-percentage {
+  position: relative;
+
+  z-index: 2;
+
+  font-size:
+    clamp(3rem, 7vw, 7rem);
+
+  font-weight: 700;
+
+  letter-spacing: -0.06em;
+}
+
+
+/* LOADING heading */
+.loading-title {
+  font-size:
+    clamp(3rem, 9vw, 9rem);
+
+  line-height: 0.8;
+
+  letter-spacing: -0.07em;
+}
+
+
+/* Small loading message */
+.loading-text {
+  margin-top: 25px;
+
+  font-size: 12px;
+
+  letter-spacing: 3px;
+
+  text-transform: uppercase;
+
+  color: #888;
+}
+
+
+/* =========================================================
+   LOADER BOTTOM
+   Information and progress bar
+   ========================================================= */
+
+.loader-bottom {
+  position: absolute;
+
+  left: 4vw;
+  right: 4vw;
+  bottom: 30px;
+}
+
+
+/* Text above progress line */
+.loader-info {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 14px;
+
+  font-size: 9px;
+
+  letter-spacing: 2px;
+
+  color: #aaa;
+}
+
+
+/* Background of progress bar */
+.progress-track {
+  width: 100%;
+  height: 2px;
+
+  background:
+    rgba(255, 255, 255, 0.15);
+
+  overflow: hidden;
+}
+
+
+/* Actual moving progress line */
+.progress-bar {
+  width: 0%;
+  height: 100%;
+
+  background: white;
+
+  transition: width 0.08s linear;
+}
+
+
+/* =========================================================
+   THANK YOU SCREEN
+   Main screen revealed after loading
+   ========================================================= */
+
+.thank-you-screen {
+  position: relative;
+
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  background: #f4f3ee;
+  color: #111;
+
+  opacity: 0;
+
+  overflow: hidden;
+}
+
+
+/* Reveals screen once JavaScript adds .show */
+.thank-you-screen.show {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   BACKGROUND GRID
+   Decorative subtle grid
+   ========================================================= */
+
+.background-grid {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.25;
+
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.08) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.08) 1px,
+      transparent 1px
+    );
+
+  background-size: 70px 70px;
+
+  animation:
+    gridMove 15s
+    linear infinite;
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.future-nav {
+  position: relative;
+
+  z-index: 2;
+
+  height: 100px;
+
+  padding: 0 4vw;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid rgba(0, 0, 0, 0.2);
+}
+
+
+.future-nav a {
+  font-size: 11px;
+
+  letter-spacing: 2px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   MAIN THANK-YOU CONTENT
+   ========================================================= */
+
+.thank-you-content {
+  position: relative;
+
+  z-index: 2;
+
+  min-height:
+    calc(100vh - 100px);
+
+  padding: 7vh 4vw 5vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+/* Small section label */
+.future-label {
+  font-size: 10px;
+
+  letter-spacing: 3px;
+
+  text-transform: uppercase;
+
+  opacity: 0;
+
+  transform: translateY(20px);
+}
+
+
+/* Reveal label after loader */
+.show .future-label {
+  animation:
+    fadeUp 0.8s ease
+    0.5s forwards;
+}
+
+
+/* Main thank-you heading */
+.thank-you-title {
+  margin: 5vh 0;
+
+  font-size:
+    clamp(5rem, 14vw, 15rem);
+
+  line-height: 0.76;
+
+  letter-spacing: -0.085em;
+
+  font-weight: 800;
+}
+
+
+/* Hides each line before it slides in */
+.message-line {
+  display: block;
+
+  overflow: hidden;
+}
+
+
+/* Text starts below the visible line */
+.message-inner {
+  display: block;
+
+  transform: translateY(120%);
+}
+
+
+/* First line animation */
+.show
+.message-line:nth-child(1)
+.message-inner {
+  animation:
+    textReveal 1.2s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    0.25s forwards;
+}
+
+
+/* Second line animation */
+.show
+.message-line:nth-child(2)
+.message-inner {
+  animation:
+    textReveal 1.2s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    0.4s forwards;
+}
+
+
+/* Third line animation */
+.show
+.message-line:nth-child(3)
+.message-inner {
+  animation:
+    textReveal 1.2s
+    cubic-bezier(0.16, 1, 0.3, 1)
+    0.55s forwards;
+}
+
+
+/* Makes YOU FOR lighter */
+.message-inner.thin {
+  font-weight: 300;
+
+  padding-left: 10vw;
+}
+
+
+/* Makes VISITING outlined */
+.message-inner.outline {
+  color: transparent;
+
+  -webkit-text-stroke:
+    2px #111;
+}
+
+
+/* =========================================================
+   BOTTOM CONTENT
+   ========================================================= */
+
+.future-bottom {
+  display: flex;
+
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 40px;
+
+  opacity: 0;
+
+  transform: translateY(25px);
+}
+
+
+/* Reveals bottom content */
+.show .future-bottom {
+  animation:
+    fadeUp 0.9s ease
+    1s forwards;
+}
+
+
+/* Description text */
+.future-description p {
+  font-size: 15px;
+
+  line-height: 1.6;
+}
+
+
+/* Coming Soon label */
+.future-description .coming-soon {
+  margin-top: 12px;
+
+  font-size: 10px;
+
+  letter-spacing: 2px;
+
+  color: #666;
+}
+
+
+/* Circular back button */
+.back-button {
+  width: 145px;
+  height: 145px;
+
+  border:
+    1px solid #111;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  text-align: center;
+
+  font-size: 10px;
+
+  letter-spacing: 1.5px;
+
+  transition:
+    transform 0.4s ease,
+    background 0.4s ease,
+    color 0.4s ease;
+}
+
+
+/* Arrow inside button */
+.back-button span {
+  font-size: 24px;
+}
+
+
+/* Button hover effect */
+.back-button:hover {
+  background: #111;
+  color: white;
+
+  transform:
+    rotate(-8deg)
+    scale(1.05);
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+/* Rotates loading ring clockwise */
+@keyframes loaderRotate {
+
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* Rotates decorative ring backwards */
+@keyframes loaderRotateReverse {
+
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+
+/* Slides loader screen upward */
+@keyframes loaderExit {
+
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+
+
+/* Reveals large message text */
+@keyframes textReveal {
+
+  from {
+    transform: translateY(120%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+
+/* Simple fade */
+@keyframes fadeIn {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* Fade and move upward */
+@keyframes fadeUp {
+
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Slowly moves background grid */
+@keyframes gridMove {
+
+  from {
+    transform:
+      translate(0, 0);
+  }
+
+  to {
+    transform:
+      translate(70px, 70px);
+  }
+}
+
+
+/* =========================================================
+   MOBILE DESIGN
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  .loader-top {
+    top: 20px;
+    left: 20px;
+    right: 20px;
+  }
+
+
+  .loader-bottom {
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+  }
+
+
+  .loader-circle {
+    width: 210px;
+    height: 210px;
+  }
+
+
+  .future-nav {
+    height: 80px;
+
+    padding: 0 20px;
+  }
+
+
+  .thank-you-content {
+    min-height:
+      calc(100dvh - 80px);
+
+    padding:
+      5vh 20px
+      30px;
+  }
+
+
+  .thank-you-title {
+    font-size:
+      clamp(
+        4rem,
+        19vw,
+        8rem
+      );
+
+    line-height: 0.82;
+  }
+
+
+  .message-inner.thin {
+    padding-left: 0;
+  }
+
+
+  .future-bottom {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+
+  .back-button {
+    width: 115px;
+    height: 115px;
+  }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   Reduces motion for users who request it
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration:
+      0.01ms !important;
+
+    animation-delay:
+      0ms !important;
+
+    transition-duration:
+      0.01ms !important;
+  }
+}

@@ -107,16 +107,29 @@
     )()
   }
 
-  // Darwin clock
-  function clock() {
-    const v=new Intl.DateTimeFormat('en-AU', {
-      timeZone:'Australia/Darwin',hour:'2-digit',minute:'2-digit',hour12:true
-    }
-    ).format(new Date());
-    $$('[data-darwin-time]').forEach(el=>el.textContent=v)
-  }
-  clock();
-  setInterval(clock,30000);
+ // Visitor's local time
+function updateLocalTime() {
+  const now = new Date();
+
+  const time = now.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  $$('[data-local-time]').forEach(el => {
+    el.textContent = time;
+  });
+
+  $$('[data-local-zone]').forEach(el => {
+    el.textContent = timeZone;
+  });
+}
+
+updateLocalTime();
+setInterval(updateLocalTime, 30000);
 
   // scroll buttons no # fragments
   $$('[data-scroll-target]').forEach(btn=>btn.addEventListener('click',()=> {

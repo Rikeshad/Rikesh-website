@@ -1,27 +1,236 @@
 (() => {
-'use strict';
-const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-// build wave letters with delays without breaking horizontal words
-$$('[data-wave]').forEach((line,lineIndex)=>{const text=line.textContent;line.textContent='';let n=0;for(const ch of text){const s=document.createElement('span');s.className='wave-letter';s.textContent=ch===' '?'\u00a0':ch;s.style.animationDelay=`${(n*0.07)+(lineIndex*.12)}s`;line.appendChild(s);n++;}});
-// calculator
-let expr='';const display=$('#calc-display'),hist=$('#calc-history');function render(){display.textContent=expr||'0'}
-window.calcInput=(v)=>{if(expr.length>42)return;expr+=v;render()};window.calcClear=()=>{expr='';hist.textContent='';render()};window.calcDelete=()=>{expr=expr.slice(0,-1);render()};
-window.calcEquals=()=>{if(!expr)return;try{let safe=expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/(\d+(?:\.\d+)?)%/g,'($1/100)');if(!/^[0-9+\-*/().\s]+$/.test(safe))throw 0;const result=Function('"use strict";return ('+safe+')')();if(!Number.isFinite(result))throw 0;hist.textContent=expr+' =';expr=String(Math.round((result+Number.EPSILON)*1e10)/1e10);render()}catch{display.textContent='Error';expr=''}};
-$$('[data-calc]').forEach(b=>b.addEventListener('click',()=>{const v=b.dataset.calc;if(v==='clear')calcClear();else if(v==='delete')calcDelete();else if(v==='equals')calcEquals();else calcInput(v)}));
-addEventListener('keydown',e=>{if(/^[0-9.+\-*/()%]$/.test(e.key)){calcInput(e.key);e.preventDefault()}else if(e.key==='Enter'){calcEquals()}else if(e.key==='Backspace'){calcDelete()}else if(e.key==='Escape'){calcClear()}});
-// persistent timer
-const KEY='rikeshFocusTimerV2';const timerDisplay=$('#timer-display'),status=$('#timer-status'),progress=$('#timer-progress'),startBtn=$('#timer-start'),warnToggle=$('#notify-toggle'),ring=$('.timer-ring');const C=2*Math.PI*42;let tickId=null;let state={durationMs:10*60000,remainingMs:10*60000,endTime:null,running:false,warningFired:false};
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&typeof s==='object')state={...state,...s}}catch{}if(state.running&&state.endTime){state.remainingMs=Math.max(0,state.endTime-Date.now());if(state.remainingMs<=0){state.running=false;state.remainingMs=0}}save();renderTimer();if(state.running)startTick()}
-function save(){localStorage.setItem(KEY,JSON.stringify(state))}function fmt(ms){const sec=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')}
-function beep(freq=740,dur=.14){try{const a=new (AudioContext||webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=freq;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.07,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);o.start();o.stop(a.currentTime+dur)}catch{}}
-async function maybeNotifyOneMinute(){if(state.warningFired||state.remainingMs>60000||state.remainingMs<=0)return;state.warningFired=true;save();ring?.classList.add('one-minute');beep(880,.18);showToast('1 minute remaining');if(warnToggle?.checked&&'Notification'in window){try{if(Notification.permission==='default')await Notification.requestPermission();if(Notification.permission==='granted')new Notification('1 minute remaining',{body:'Your timer on rikeshad.com is almost finished.'})}catch{}}}
-function renderTimer(){timerDisplay.textContent=fmt(state.remainingMs);status.textContent=state.running?'Focus in progress':state.remainingMs===0?'Time’s up':'Ready';if(progress){const ratio=state.durationMs?state.remainingMs/state.durationMs:0;progress.style.strokeDasharray=C;progress.style.strokeDashoffset=C*(1-ratio)}startBtn.textContent=state.running?'Pause':'Start';if(state.remainingMs>60000)ring?.classList.remove('one-minute')}
-function tick(){if(!state.running)return;state.remainingMs=Math.max(0,state.endTime-Date.now());maybeNotifyOneMinute();if(state.remainingMs<=0){state.running=false;state.endTime=null;state.warningFired=false;beep(560,.22);setTimeout(()=>beep(760,.26),260);showToast('Time’s up!');clearInterval(tickId);tickId=null}save();renderTimer()}
-function startTick(){if(tickId)clearInterval(tickId);tickId=setInterval(tick,500);tick()}
-window.timerPreset=(m)=>{state={durationMs:m*60000,remainingMs:m*60000,endTime:null,running:false,warningFired:false};save();renderTimer();$$('.preset').forEach(x=>x.classList.toggle('active',Number(x.dataset.min)===m))};
-$('#custom-set')?.addEventListener('click',()=>{const n=Math.max(1,Math.min(180,Number($('#custom-min').value)||0));if(n)timerPreset(n)});
-$$('.preset').forEach(b=>b.addEventListener('click',()=>timerPreset(Number(b.dataset.min))));
-startBtn?.addEventListener('click',()=>{if(state.remainingMs<=0)state.remainingMs=state.durationMs;if(state.running){state.remainingMs=Math.max(0,state.endTime-Date.now());state.running=false;state.endTime=null;if(tickId)clearInterval(tickId);tickId=null}else{state.running=true;state.endTime=Date.now()+state.remainingMs;if(state.remainingMs>60000)state.warningFired=false;startTick()}save();renderTimer()});
-$('#timer-reset')?.addEventListener('click',()=>{state.remainingMs=state.durationMs;state.endTime=null;state.running=false;state.warningFired=false;if(tickId)clearInterval(tickId);tickId=null;save();renderTimer();ring?.classList.remove('one-minute')});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.running)tick()});load();
-})();
+  'use strict';
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+
+  // build wave letters with delays without breaking horizontal words
+  $$('[data-wave]').forEach((line,lineIndex)=> {
+    const text=line.textContent;
+    line.textContent='';
+    let n=0;
+    for(const ch of text) {
+      const s=document.createElement('span');
+      s.className='wave-letter';
+      s.textContent=ch===' '?'\u00a0':ch;
+      s.style.animationDelay=`${(n*0.07)+(lineIndex*.12)}s`;
+      line.appendChild(s);
+      n++;
+    }
+  }
+  );
+
+  // calculator
+  let expr='';
+  const display=$('#calc-display'),hist=$('#calc-history');
+  function render() {
+    display.textContent=expr||'0'
+  }
+  window.calcInput=(v)=> {
+    if(expr.length>42)return;
+    expr+=v;
+    render()
+  }
+  ;
+  window.calcClear=()=> {
+    expr='';
+    hist.textContent='';
+    render()
+  }
+  ;
+  window.calcDelete=()=> {
+    expr=expr.slice(0,-1);
+    render()
+  }
+  ;
+  window.calcEquals=()=> {
+    if(!expr)return;
+    try {
+      let safe=expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/(\d+(?:\.\d+)?)%/g,'($1/100)');
+      if(!/^[0-9+\-*/().\s]+$/.test(safe))throw 0;
+      const result=Function('"use strict";return ('+safe+')')();
+      if(!Number.isFinite(result))throw 0;
+      hist.textContent=expr+' =';
+      expr=String(Math.round((result+Number.EPSILON)*1e10)/1e10);
+      render()
+    } catch {
+      display.textContent='Error';
+      expr=''
+    }
+  }
+  ;
+  $$('[data-calc]').forEach(b=>b.addEventListener('click',()=> {
+    const v=b.dataset.calc;
+    if(v==='clear')calcClear();
+    else if(v==='delete')calcDelete();
+    else if(v==='equals')calcEquals();
+    else calcInput(v)
+  }
+  ));
+  addEventListener('keydown',e=> {
+    if(/^[0-9.+\-*/()%]$/.test(e.key)) {
+      calcInput(e.key);
+      e.preventDefault()
+    } else
+    if(e.key==='Enter') {
+      calcEquals()
+    } else
+    if(e.key==='Backspace') {
+      calcDelete()
+    } else
+    if(e.key==='Escape') {
+      calcClear()
+    }
+  }
+  );
+
+  // persistent timer
+  const KEY='rikeshFocusTimerV2';
+  const timerDisplay=$('#timer-display'),status=$('#timer-status'),progress=$('#timer-progress'),startBtn=$('#timer-start'),warnToggle=$('#notify-toggle'),ring=$('.timer-ring');
+  const C=2*Math.PI*42;
+  let tickId=null;
+  let state= {
+    durationMs:10*60000,remainingMs:10*60000,endTime:null,running:false,warningFired:false
+  }
+  ;
+  function load() {
+    try {
+      const s=JSON.parse(localStorage.getItem(KEY)||'null');
+      if(s&&typeof s==='object')state= {
+        ...state,...s
+      }
+    } catch {
+    }
+    if(state.running&&state.endTime) {
+      state.remainingMs=Math.max(0,state.endTime-Date.now());
+      if(state.remainingMs<=0) {
+        state.running=false;
+        state.remainingMs=0
+      }
+    }
+    save();
+    renderTimer();
+    if(state.running)startTick()
+  }
+  function save() {
+    localStorage.setItem(KEY,JSON.stringify(state))
+  }
+  function fmt(ms) {
+    const sec=Math.max(0,Math.ceil(ms/1000));
+    return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')
+  }
+  function beep(freq=740,dur=.14) {
+    try {
+      const a=new (AudioContext||webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();
+      o.frequency.value=freq;
+      o.connect(g);
+      g.connect(a.destination);
+      g.gain.setValueAtTime(.07,a.currentTime);
+      g.gain.exponentialRampToValueAtTime(.001,a.currentTime+dur);
+      o.start();
+      o.stop(a.currentTime+dur)
+    } catch {
+    }
+  }
+  async function maybeNotifyOneMinute() {
+    if(state.warningFired||state.remainingMs>60000||state.remainingMs<=0)return;
+    state.warningFired=true;
+    save();
+    ring?.classList.add('one-minute');
+    beep(880,.18);
+    showToast('1 minute remaining');
+    if(warnToggle?.checked&&'Notification'in window) {
+      try {
+        if(Notification.permission==='default')await Notification.requestPermission();
+        if(Notification.permission==='granted')new Notification('1 minute remaining', {
+          body:'Your timer on rikeshad.com is almost finished.'
+        }
+        )
+      } catch {
+      }
+    }
+  }
+  function renderTimer() {
+    timerDisplay.textContent=fmt(state.remainingMs);
+    status.textContent=state.running?'Focus in progress':state.remainingMs===0?'Time’s up':'Ready';
+    if(progress) {
+      const ratio=state.durationMs?state.remainingMs/state.durationMs:0;
+      progress.style.strokeDasharray=C;
+      progress.style.strokeDashoffset=C*(1-ratio)
+    }
+    startBtn.textContent=state.running?'Pause':'Start';
+    if(state.remainingMs>60000)ring?.classList.remove('one-minute')
+  }
+  function tick() {
+    if(!state.running)return;
+    state.remainingMs=Math.max(0,state.endTime-Date.now());
+    maybeNotifyOneMinute();
+    if(state.remainingMs<=0) {
+      state.running=false;
+      state.endTime=null;
+      state.warningFired=false;
+      beep(560,.22);
+      setTimeout(()=>beep(760,.26),260);
+      showToast('Time’s up!');
+      clearInterval(tickId);
+      tickId=null
+    }
+    save();
+    renderTimer()
+  }
+  function startTick() {
+    if(tickId)clearInterval(tickId);
+    tickId=setInterval(tick,500);
+    tick()
+  }
+  window.timerPreset=(m)=> {
+    state= {
+      durationMs:m*60000,remainingMs:m*60000,endTime:null,running:false,warningFired:false
+    }
+    ;
+    save();
+    renderTimer();
+    $$('.preset').forEach(x=>x.classList.toggle('active',Number(x.dataset.min)===m))
+  }
+  ;
+  $('#custom-set')?.addEventListener('click',()=> {
+    const n=Math.max(1,Math.min(180,Number($('#custom-min').value)||0));
+    if(n)timerPreset(n)
+  }
+  );
+  $$('.preset').forEach(b=>b.addEventListener('click',()=>timerPreset(Number(b.dataset.min))));
+  startBtn?.addEventListener('click',()=> {
+    if(state.remainingMs<=0)state.remainingMs=state.durationMs;
+    if(state.running) {
+      state.remainingMs=Math.max(0,state.endTime-Date.now());
+      state.running=false;
+      state.endTime=null;
+      if(tickId)clearInterval(tickId);
+      tickId=null
+    } else {
+      state.running=true;
+      state.endTime=Date.now()+state.remainingMs;
+      if(state.remainingMs>60000)state.warningFired=false;
+      startTick()
+    }
+    save();
+    renderTimer()
+  }
+  );
+  $('#timer-reset')?.addEventListener('click',()=> {
+    state.remainingMs=state.durationMs;
+    state.endTime=null;
+    state.running=false;
+    state.warningFired=false;
+    if(tickId)clearInterval(tickId);
+    tickId=null;
+    save();
+    renderTimer();
+    ring?.classList.remove('one-minute')
+  }
+  );
+  document.addEventListener('visibilitychange',()=> {
+    if(!document.hidden&&state.running)tick()
+  }
+  );
+  load();
+}
+)();

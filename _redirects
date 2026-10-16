@@ -1,3 +1,6 @@
 /projects/pizza-pos.html /projects/pizza-pos/ 301
 /projects/brewbean.html /projects/brewbean/ 301
 /darwin.html /darwin/ 301
+
+/cgi-bin / 301
+/cgi-bin/* / 301

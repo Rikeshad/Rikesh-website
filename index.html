@@ -1,42 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
- 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-
-  <title>Rikesh Adhikari | Telecommunications Network Planner & Developer</title>
-
-  <meta name="description"
-        content="Official portfolio of Rikesh Adhikari, a Telecommunications Network Planner and developer based in Darwin, Australia. Explore software projects, technical skills and interactive tools.">
-
-  <link rel="canonical" href="https://rikeshad.com/">
-  <link rel="icon" href="assets/favicon.svg">
-  <link rel="stylesheet" href="styles.css">
-
-  <meta property="og:type" content="profile">
-  <meta property="og:title"
-        content="Rikesh Adhikari | Official Portfolio">
-  <meta property="og:description"
-        content="Explore the projects, skills and professional portfolio of Rikesh Adhikari.">
-  <meta property="og:url" content="https://rikeshad.com/">
-  <meta property="og:image"
-        content="https://rikeshad.com/assets/images/home/rikesh-home.jpg">
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "@id": "https://rikeshad.com/#person",
-    "name": "Rikesh Adhikari",
-    "url": "https://rikeshad.com/",
-    "jobTitle": "Telecommunications Network Planner",
-    "description": "Telecommunications Network Planner and software developer based in Darwin, Australia",
-    "image": "https://rikeshad.com/assets/images/home/rikesh-home.jpg"
-  }
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   Rikesh Adhikari — Telecommunications Network Planner &amp; Developer
+  </title>
+  <meta content="Rikesh Adhikari's portfolio, featuring telecommunications network planning, software projects, useful tools and a Darwin guide." name="description"/>
+  <script>
+   (() => {
+    try {
+     const savedTheme = localStorage.getItem('rikeshTheme');
+     document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
+    } catch {
+     document.documentElement.dataset.theme = 'dark';
+    }
+   })();
   </script>
-</head>
+  <link href="assets/favicon.svg" rel="icon"/>
+  <link href="styles.css" rel="stylesheet"/>
+ </head>
  <body>
   <div class="site-intro" id="site-intro">
    <div class="intro-main">
@@ -69,8 +52,9 @@
   </div>
   <div class="ambient">
   </div>
-  <canvas class="bg-canvas">
+  <canvas class="bg-canvas" aria-hidden="true">
   </canvas>
+  <div class="cosmic-veil" aria-hidden="true"></div>
   <div class="cursor-dot">
   </div>
   <div class="cursor-ring">
@@ -110,19 +94,23 @@
      </button>
     </nav>
     <div class="nav-right">
-    <span class="darwin-chip">
-  <i class="live-dot"></i>
-
-  <span class="local-time-info">
-    <small>YOUR LOCAL TIME</small>
-    <b data-local-time>--:--</b>
-  </span>
-</span>
+     <button class="theme-toggle theme-toggle-compact" data-theme-toggle type="button" aria-label="Switch to day mode" title="Switch colour mode">
+      <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☀</span>
+      <span class="theme-toggle-text" data-theme-label>Day</span>
+     </button>
+     <span class="darwin-chip local-time-chip">
+      <i class="live-dot">
+      </i>
+      YOUR LOCAL TIME
+      <b data-local-time="">
+       --:--
+      </b>
+     </span>
      <a class="darwin-button" href="darwin/">
       Explore Darwin ↗
      </a>
     </div>
-    <button aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" type="button">
+    <button aria-expanded="false" aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" type="button">
      ☰
     </button>
    </div>
@@ -142,6 +130,10 @@
     <button class="nav-btn" data-scroll-target="contact">
      Contact
     </button>
+    <button class="theme-toggle theme-toggle-mobile" data-theme-toggle type="button" aria-label="Switch to day mode">
+     <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☀</span>
+     <span data-theme-label>Day mode</span>
+    </button>
     <a class="darwin-button" href="darwin/">
      Explore Darwin ↗
     </a>
@@ -151,7 +143,14 @@
    <section class="hero container" id="home">
     <div class="hero-left">
      <div class="status-pill">
-       ✦ RIKESH ADHIKARI ✦ Telecommunications Network Planner · Business IT · Development
+      ✦ Telecommunications Network Planner · Business IT · Development
+     </div>
+     <div class="cosmic-status-row">
+      <div class="cosmic-role" aria-live="polite">
+       <span class="cosmic-role-label">CURRENT FOCUS</span>
+       <strong data-role-typewriter>Telecommunications Network Planner</strong>
+       <span class="type-caret" aria-hidden="true">|</span>
+      </div>
      </div>
      <h1 aria-label="Create Without Limits" class="hero-title">
       <span class="wave-line" data-wave="">
@@ -165,7 +164,7 @@
       </span>
      </h1>
      <p class="hero-sub">
-      Welcome to my digital space — an interactive portfolio for practical software, selected projects and useful tools built directly into the experience.
+      I work across telecommunications network planning, desktop software and web development. This site brings together the projects I’ve built, the systems I’m interested in and a few tools you can use while you’re here.
      </p>
      <div class="cta-row">
       <button class="btn btn-gold" data-scroll-target="projects" type="button">
@@ -174,6 +173,10 @@
       <button class="btn btn-glass" data-scroll-target="tools" type="button">
        Try the tools ↓
       </button>
+     </div>
+     <div class="scroll-cosmos-hint" aria-hidden="true">
+      <span class="scroll-cosmos-line"></span>
+      <span>Scroll to travel through the 3D galaxy</span>
      </div>
      <div class="hero-mini">
       <a class="mini-card" href="projects/pizza-pos/">
@@ -186,7 +189,7 @@
       </a>
       <a class="mini-card" href="projects/brewbean/">
        <span>
-        02 / WEB EXPERIENCE
+        02 / WEB PROJECT
        </span>
        <strong>
         BrewBean ↗
@@ -216,16 +219,40 @@
        </p>
       </div>
      </div>
+     <button class="portrait-fireworks" data-launch-fireworks type="button" aria-label="Launch fireworks in the galaxy background">
+      <span class="portrait-fireworks-icon" aria-hidden="true">✦</span>
+      <span>Launch Fireworks</span>
+     </button>
      <div class="portrait-badge">
       DARWIN / AUSTRALIA
       <br/>
       <strong>
        HOME, BY CHOICE
       </strong>
-      <br/>
-      </span>
      </div>
     </div>
+   </section>
+   <section class="cosmic-facts container" aria-label="Portfolio highlights">
+    <article class="cosmic-fact glass">
+     <span>01 / TELECOMMUNICATIONS</span>
+     <strong>Network Planning</strong>
+     <small>Infrastructure · systems thinking</small>
+    </article>
+    <article class="cosmic-fact glass">
+     <span>02 / DESKTOP SYSTEM</span>
+     <strong>Pizza Shop POS</strong>
+     <small>Electron · JavaScript · MySQL</small>
+    </article>
+    <article class="cosmic-fact glass">
+     <span>03 / WEB PROJECT</span>
+     <strong>BrewBean</strong>
+     <small>Responsive coffee website</small>
+    </article>
+    <article class="cosmic-fact glass cosmic-fact-darwin">
+     <span>04 / DARWIN, NT</span>
+     <strong>Home, by choice</strong>
+     <small>Living · working · contributing</small>
+    </article>
    </section>
    <section class="section container" id="projects">
     <div class="section-head">
@@ -234,13 +261,13 @@
        01 // SELECTED WORK
       </div>
       <h2>
-       PROJECTS
+       SELECTED
        <br/>
-       WITH PURPOSE.
+       PROJECTS.
       </h2>
      </div>
      <p>
-      The homepage stays clean. Open a project to explore the complete walkthrough, screenshots, video and feature details.
+      These are two projects I’ve built in detail. Open either one to see how it works, the interface, and the features behind it.
      </p>
     </div>
     <div class="works-grid">
@@ -253,7 +280,7 @@
         Pizza Shop POS
        </h3>
        <p>
-        An Electron-based point-of-sale system designed around ordering, customer workflows, inventory, reporting and store operations.
+        A desktop point-of-sale system for day-to-day pizza shop work, including orders, customer details, stock, reporting and staff workflows.
        </p>
        <div class="tag-row">
         <span class="tag">
@@ -277,13 +304,13 @@
      <article class="work-card glass">
       <div>
        <span class="work-num">
-        02 / WEB EXPERIENCE
+        02 / WEB PROJECT
        </span>
        <h3>
         BrewBean
        </h3>
        <p>
-        A coffee-focused web experience with product discovery, recommendations, loyalty and subscription-oriented journeys.
+        A responsive coffee website with product discovery, personalised recommendations, loyalty features and subscription options.
        </p>
        <div class="tag-row">
         <span class="tag">
@@ -316,7 +343,7 @@
       </h2>
      </div>
      <p>
-      Small interactive tools built directly into the homepage — not just design samples.
+      I added a calculator and a timer because they are useful to have close by. Both work directly on this page.
      </p>
     </div>
     <div class="tools-grid">
@@ -451,7 +478,7 @@
        </button>
       </div>
       <div class="timer-ring">
-       <svg aria-hidden="true" viewbox="0 0 100 100">
+       <svg aria-hidden="true" viewBox="0 0 100 100">
         <circle class="timer-track" cx="50" cy="50" fill="none" r="42" stroke-width="6">
         </circle>
         <circle class="timer-progress" cx="50" cy="50" fill="none" id="timer-progress" r="42" stroke-linecap="round" stroke-width="6">
@@ -488,7 +515,7 @@
        MORE TOOLS
       </div>
       <p class="muted">
-       The tools collection can grow without cluttering the homepage.
+       I plan to add more useful tools here over time.
       </p>
      </div>
      <ul>
@@ -520,10 +547,10 @@
      </div>
      <div class="about-copy">
       <p>
-       I work across telecommunications network planning, business IT and software development. My work includes desktop applications, web experiences, database-backed workflows and interactive front-end features, with a strong focus on practical systems and reliable digital infrastructure.
+       My interests are in telecommunications network planning, business IT and software development. I like building straightforward systems that solve real problems and are easy to use.
       </p>
       <p>
-       Based in Darwin, Northern Territory, this portfolio is designed to show the work while also giving visitors something useful to interact with.
+       I’m based in Darwin, Northern Territory. I use this website to share the work I’ve built, the skills I’m developing and the projects I care about.
       </p>
       <div class="darwin-commitment glass">
        <div aria-hidden="true" class="darwin-love-mark">
@@ -537,7 +564,7 @@
          I LOVE DARWIN.
         </h3>
         <p>
-         Darwin has become more than the city where I live and work. I have developed a strong personal attachment to its community, tropical character and the wider Northern Territory. I hope to keep that connection for life — living, working, contributing and calling Darwin home for the long term.
+         Darwin feels like home to me. I value the community, the tropical lifestyle and the character of the Northern Territory. I want to stay connected to Darwin for the long term by living, working and contributing here.
         </p>
         <a class="darwin-love-link" href="darwin/">
          Explore the place I call home ↗
@@ -657,7 +684,7 @@
        LET'S BUILD SOMETHING EXTRAORDINARY.
       </h2>
       <p>
-       Have a project in mind, a potential collaboration, or just want to say hello? Drop a line and let's turn your vision into reality.
+       If you’d like to discuss a project, collaboration or opportunity, send me a message. I’m happy to hear from people who have an idea, a question or a problem they want to solve.
       </p>
       <div class="identity-card glass">
        <div>

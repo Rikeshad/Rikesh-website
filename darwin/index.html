@@ -7,6 +7,16 @@
    Explore Darwin — Rikesh Adhikari
   </title>
   <meta content="A practical visual guide to visiting Darwin, Northern Territory." name="description"/>
+  <script>
+   (() => {
+    try {
+     const savedTheme = localStorage.getItem('rikeshTheme');
+     document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
+    } catch {
+     document.documentElement.dataset.theme = 'dark';
+    }
+   })();
+  </script>
   <link href="../assets/favicon.svg" rel="icon"/>
   <link href="../styles.css" rel="stylesheet"/>
  </head>
@@ -42,8 +52,9 @@
   </div>
   <div class="ambient">
   </div>
-  <canvas class="bg-canvas">
+  <canvas class="bg-canvas" aria-hidden="true">
   </canvas>
+  <div class="cosmic-veil" aria-hidden="true"></div>
   <div class="cursor-dot">
   </div>
   <div class="cursor-ring">
@@ -56,14 +67,20 @@
      <a class="back-home" href="../">
       ← Back to portfolio
      </a>
-     <span class="darwin-chip">
+     <div class="subnav-actions">
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch to day mode" title="Switch colour mode">
+       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☀</span>
+       <span data-theme-label>Day</span>
+      </button>
+      <span class="darwin-chip">
       <i class="live-dot">
       </i>
-      Darwin
+      Darwin time
       <b data-darwin-time="">
        --:--
       </b>
      </span>
+     </div>
     </div>
     <section class="darwin-hero">
      <div class="eyebrow">
@@ -75,7 +92,7 @@
       DARWIN.
      </h1>
      <p>
-      Darwin is a tropical harbour city known for its multicultural food, outdoor lifestyle, dramatic sunsets and easy access to the Top End’s national parks. This guide is designed to give a visitor the practical basics — what to see, when to go, how long to allow and what to watch out for.
+      Darwin is a tropical harbour city with great food, an easy-going outdoor lifestyle, memorable sunsets and quick access to some of the Top End’s best national parks. I’ve put together the things I’d want a visitor to know before spending time here.
      </p>
      <div class="darwin-stats">
       <div class="darwin-stat glass">
@@ -111,7 +128,7 @@
        WHY DARWIN MATTERS TO ME.
       </h2>
       <p>
-       I love Darwin. It is more than a location on my portfolio — it has become part of my story and a place I feel genuinely attached to. I value the community, the tropical lifestyle and the character of the Northern Territory, and I hope to keep living, working, contributing and staying connected to Darwin for life.
+       I love Darwin. It has become an important part of my life and a place I feel genuinely connected to. I value the community, the tropical lifestyle and the character of the Northern Territory, and I hope to keep living, working and contributing here for the long term.
       </p>
      </div>
     </section>
@@ -557,7 +574,7 @@
   <footer class="footer">
    <div class="container footer-inner">
     <span>
-     Darwin guide · curated for visitors to rikeshad.com
+     Darwin guide · rikeshad.com
     </span>
     <button class="back-top" data-back-top="" type="button">
      Back to top ↑

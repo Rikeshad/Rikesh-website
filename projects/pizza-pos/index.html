@@ -6,8 +6,19 @@
   <title>
    Pizza Shop POS — Rikesh Adhikari
   </title>
+  <script>
+   (() => {
+    try {
+     const savedTheme = localStorage.getItem('rikeshTheme');
+     document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
+    } catch {
+     document.documentElement.dataset.theme = 'dark';
+    }
+   })();
+  </script>
   <link href="../../assets/favicon.svg" rel="icon"/>
   <link href="../../styles.css" rel="stylesheet"/>
+  <link rel="preload" as="image" href="../../assets/images/pos/login.png"/>
  </head>
  <body>
   <div class="site-intro" id="site-intro">
@@ -41,8 +52,9 @@
   </div>
   <div class="ambient">
   </div>
-  <canvas class="bg-canvas">
+  <canvas class="bg-canvas" aria-hidden="true">
   </canvas>
+  <div class="cosmic-veil" aria-hidden="true"></div>
   <div class="cursor-dot">
   </div>
   <div class="cursor-ring">
@@ -55,9 +67,15 @@
      <a class="back-home" href="../../">
       ← Back to portfolio
      </a>
-     <a class="darwin-button" href="../../darwin/">
+     <div class="subnav-actions">
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch to day mode" title="Switch colour mode">
+       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☀</span>
+       <span data-theme-label>Day</span>
+      </button>
+      <a class="darwin-button" href="../../darwin/">
       Explore Darwin ↗
      </a>
+     </div>
     </div>
     <section class="project-hero">
      <video autoplay="" loop="" muted="" playsinline="" preload="metadata">
@@ -73,7 +91,7 @@
      </div>
      <div class="project-hero-copy">
       <p>
-       A desktop point-of-sale system built around fast ordering, practical store operations, inventory control, reporting and scalable management workflows.
+       A desktop point-of-sale system I built for the everyday work of a pizza shop, from taking orders and managing stock to reporting and staff administration.
       </p>
       <div class="facts">
        <span>
@@ -122,60 +140,59 @@
        </div>
        <div class="gallery-stage" data-gallery-stage="">
         <button class="gallery-card3d" data-description="Provides a dedicated sign-in screen so authorised team members can enter the POS before accessing operational functions." data-gallery-card="" data-kicker="Authentication" data-title="Secure Login" type="button">
-         <img alt="Secure Login screenshot" loading="eager" src="../../assets/images/pos/login.png"/>
+         <img alt="Secure Login screenshot" loading="eager" decoding="async" fetchpriority="high" src="../../assets/images/pos/login.png"/>
         </button>
         <button class="gallery-card3d" data-description="Acts as the central starting point for the store, bringing core ordering and operational functions into one interface." data-gallery-card="" data-kicker="Operations hub" data-title="POS Home" type="button">
-         <img alt="POS Home screenshot" loading="lazy" src="../../assets/images/pos/home.png"/>
+         <img alt="POS Home screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/home.png"/>
         </button>
         <button class="gallery-card3d" data-description="Lets staff select products, build an active order and move quickly through the ordering process during busy service." data-gallery-card="" data-kicker="Ordering workflow" data-title="Taking an Order" type="button">
-         <img alt="Taking an Order screenshot" loading="lazy" src="../../assets/images/pos/taking-order.png"/>
+         <img alt="Taking an Order screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/taking-order.png"/>
         </button>
         <button class="gallery-card3d" data-description="Supports pizza customisation so options and toppings can be adjusted before the item is added to the order." data-gallery-card="" data-kicker="Product configuration" data-title="Customising a Pizza" type="button">
-         <img alt="Customising a Pizza screenshot" loading="lazy" src="../../assets/images/pos/customising-pizza.png"/>
+         <img alt="Customising a Pizza screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/customising-pizza.png"/>
         </button>
         <button class="gallery-card3d" data-description="Provides a review step for the order, totals and completion workflow before the transaction is finalised." data-gallery-card="" data-kicker="Checkout" data-title="Finalising an Order" type="button">
-         <img alt="Finalising an Order screenshot" loading="lazy" src="../../assets/images/pos/finalising-order.png"/>
+         <img alt="Finalising an Order screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/finalising-order.png"/>
         </button>
         <button class="gallery-card3d" data-description="Separates the customer view from the staff interface so order information can be presented clearly during service." data-gallery-card="" data-kicker="Live order display" data-title="Customer-Facing Screen" type="button">
-         <img alt="Customer-Facing Screen screenshot" loading="lazy" src="../../assets/images/pos/customer-facing.png"/>
+         <img alt="Customer-Facing Screen screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/customer-facing.png"/>
         </button>
         <button class="gallery-card3d" data-description="Gives staff a focused view of items being prepared and helps move orders through the production stage." data-gallery-card="" data-kicker="Production workflow" data-title="Preparation Page" type="button">
-         <img alt="Preparation Page screenshot" loading="lazy" src="../../assets/images/pos/preparation.png"/>
+         <img alt="Preparation Page screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/preparation.png"/>
         </button>
         <button class="gallery-card3d" data-description="Allows previous orders to be reviewed so staff and management can look back at completed transactions and order details." data-gallery-card="" data-kicker="Order records" data-title="Order History" type="button">
-         <img alt="Order History screenshot" loading="lazy" src="../../assets/images/pos/order-history.png"/>
+         <img alt="Order History screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/order-history.png"/>
         </button>
         <button class="gallery-card3d" data-description="Supports maintaining the menu catalogue by adding products and keeping the items available to staff up to date." data-gallery-card="" data-kicker="Catalogue management" data-title="Adding Menu Items" type="button">
-         <img alt="Adding Menu Items screenshot" loading="lazy" src="../../assets/images/pos/adding-menu.png"/>
+         <img alt="Adding Menu Items screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/adding-menu.png"/>
         </button>
         <button class="gallery-card3d" data-description="Provides a management view for reviewing and refining the menu currently presented through the POS." data-gallery-card="" data-kicker="Menu control" data-title="Menu Optimisation" type="button">
-         <img alt="Menu Optimisation screenshot" loading="lazy" src="../../assets/images/pos/optimise-menu.png"/>
+         <img alt="Menu Optimisation screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/optimise-menu.png"/>
         </button>
         <button class="gallery-card3d" data-description="Supports managing system users and staff access so the POS can be used across different roles." data-gallery-card="" data-kicker="Access administration" data-title="User Management" type="button">
-         <img alt="User Management screenshot" loading="lazy" src="../../assets/images/pos/user-management.png"/>
+         <img alt="User Management screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/user-management.png"/>
         </button>
         <button class="gallery-card3d" data-description="Tracks ingredient quantities, stock levels, suppliers and reorder information so the store can understand what is healthy, low or out of stock." data-gallery-card="" data-kicker="Stock control" data-title="Inventory Management" type="button">
-         <img alt="Inventory Management screenshot" loading="lazy" src="../../assets/images/pos/inventory.png"/>
+         <img alt="Inventory Management screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/inventory.png"/>
         </button>
         <button class="gallery-card3d" data-description="Supports daily cash and till reconciliation by recording denominations and helping staff compare counted cash with expected takings." data-gallery-card="" data-kicker="Till reconciliation" data-title="Daily Sales Report" type="button">
-         <img alt="Daily Sales Report screenshot" loading="lazy" src="../../assets/images/pos/sales-report-daily.png"/>
+         <img alt="Daily Sales Report screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/sales-report-daily.png"/>
         </button>
         <button class="gallery-card3d" data-description="Provides weekly, fortnightly and monthly reporting views that separate sales, payment activity, discounts, refunds and other financial information." data-gallery-card="" data-kicker="Performance analysis" data-title="Sales Period Reporting" type="button">
-         <img alt="Sales Period Reporting screenshot" loading="lazy" src="../../assets/images/pos/sales-report-period.png"/>
+         <img alt="Sales Period Reporting screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/sales-report-period.png"/>
         </button>
         <button class="gallery-card3d" data-description="Shows how the application can support deployment across multiple store locations rather than being limited to a single shop." data-gallery-card="" data-kicker="Scalable operations" data-title="Multi-Store Support" type="button">
-         <img alt="Multi-Store Support screenshot" loading="lazy" src="../../assets/images/pos/multiple-stores.png"/>
+         <img alt="Multi-Store Support screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/multiple-stores.png"/>
         </button>
-       </div>
-       <div class="gallery-controls">
-        <button aria-label="Previous screenshot" class="gallery-arrow" data-gallery-prev="" type="button">
-         ←
-        </button>
-        <div class="gallery-dots" data-gallery-dots="">
+        <div class="gallery-controls" aria-label="Screenshot navigation">
+         <button aria-label="Previous screenshot" class="gallery-arrow gallery-arrow-prev" data-gallery-prev="" type="button">
+          <span aria-hidden="true">←</span>
+         </button>
+         <div class="gallery-dots" data-gallery-dots=""></div>
+         <button aria-label="Next screenshot" class="gallery-arrow gallery-arrow-next" data-gallery-next="" type="button">
+          <span aria-hidden="true">→</span>
+         </button>
         </div>
-        <button aria-label="Next screenshot" class="gallery-arrow" data-gallery-next="" type="button">
-         →
-        </button>
        </div>
        <div class="slide-detail">
         <div>
@@ -223,7 +240,7 @@
         Ordering first
        </h3>
        <p>
-        The application is structured around reducing friction during order entry while keeping key customer and product information within reach.
+        Order entry is kept simple so staff can move quickly while still seeing the customer and product information they need.
        </p>
       </div>
       <div class="story-item">
@@ -231,7 +248,7 @@
         Operational visibility
        </h3>
        <p>
-        Inventory, preparation, history and reporting views expand the POS beyond checkout into everyday store management.
+        Inventory, preparation, order history and reporting give staff a wider view of day-to-day store activity.
        </p>
       </div>
       <div class="story-item">
@@ -239,7 +256,7 @@
         Built to scale
        </h3>
        <p>
-        The interface and data model are designed so the same workflow can be extended to different staff roles and more than one store location.
+        The system can be extended for different staff roles and more than one store location without changing the main workflow.
        </p>
       </div>
      </div>

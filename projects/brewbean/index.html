@@ -6,8 +6,19 @@
   <title>
    BrewBean — Rikesh Adhikari
   </title>
+  <script>
+   (() => {
+    try {
+     const savedTheme = localStorage.getItem('rikeshTheme');
+     document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
+    } catch {
+     document.documentElement.dataset.theme = 'dark';
+    }
+   })();
+  </script>
   <link href="../../assets/favicon.svg" rel="icon"/>
   <link href="../../styles.css" rel="stylesheet"/>
+  <link rel="preload" as="image" href="../../assets/images/brewbean/homepage.png"/>
  </head>
  <body>
   <div class="site-intro" id="site-intro">
@@ -41,8 +52,9 @@
   </div>
   <div class="ambient">
   </div>
-  <canvas class="bg-canvas">
+  <canvas class="bg-canvas" aria-hidden="true">
   </canvas>
+  <div class="cosmic-veil" aria-hidden="true"></div>
   <div class="cursor-dot">
   </div>
   <div class="cursor-ring">
@@ -55,14 +67,20 @@
      <a class="back-home" href="../../">
       ← Back to portfolio
      </a>
-     <a class="darwin-button" href="../../darwin/">
+     <div class="subnav-actions">
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch to day mode" title="Switch colour mode">
+       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☀</span>
+       <span data-theme-label>Day</span>
+      </button>
+      <a class="darwin-button" href="../../darwin/">
       Explore Darwin ↗
      </a>
+     </div>
     </div>
     <section class="project-hero brew">
      <div>
       <div class="eyebrow">
-       WEB EXPERIENCE
+       WEB PROJECT
       </div>
       <h1>
        BrewBean
@@ -70,7 +88,7 @@
      </div>
      <div class="project-hero-copy">
       <p>
-       A modern coffee-focused web experience designed to make product discovery, recommendations, loyalty and subscriptions simple and engaging.
+       A responsive coffee website for browsing products, finding recommendations, using loyalty features and exploring subscription options.
       </p>
       <div class="facts">
        <span>
@@ -123,31 +141,30 @@
         Auto-rotates · drag, swipe, use arrows or select a dot · click the centre screenshot to enlarge
        </div>
        <div class="gallery-stage" data-gallery-stage="">
-        <button class="gallery-card3d" data-description="Introduces BrewBean with a coffee-first visual experience and a clear route into products and discovery." data-gallery-card="" data-kicker="First impression" data-title="BrewBean Homepage" type="button">
-         <img alt="BrewBean Homepage screenshot" loading="eager" src="../../assets/images/brewbean/homepage.png"/>
+        <button class="gallery-card3d" data-description="The homepage introduces BrewBean and gives visitors a clear starting point for browsing the coffee range." data-gallery-card="" data-kicker="First impression" data-title="BrewBean Homepage" type="button">
+         <img alt="BrewBean Homepage screenshot" loading="eager" decoding="async" fetchpriority="high" src="../../assets/images/brewbean/homepage.png"/>
         </button>
-        <button class="gallery-card3d" data-description="Organises coffee products into easy-to-understand categories so visitors can move from interest to product discovery quickly." data-gallery-card="" data-kicker="Browse experience" data-title="Product Categories" type="button">
-         <img alt="Product Categories screenshot" loading="lazy" src="../../assets/images/brewbean/categories.png"/>
+        <button class="gallery-card3d" data-description="Coffee products are grouped into clear categories so visitors can find the type of coffee they are looking for quickly." data-gallery-card="" data-kicker="Browse" data-title="Product Categories" type="button">
+         <img alt="Product Categories screenshot" loading="lazy" decoding="async" src="../../assets/images/brewbean/categories.png"/>
         </button>
-        <button class="gallery-card3d" data-description="Surfaces recommendations to make browsing more personal and help visitors discover products they may not have found through categories alone." data-gallery-card="" data-kicker="Discovery" data-title="Recommendations" type="button">
-         <img alt="Recommendations screenshot" loading="lazy" src="../../assets/images/brewbean/recommendation.png"/>
+        <button class="gallery-card3d" data-description="Recommendations help visitors find coffees that suit their interests without relying only on the category pages." data-gallery-card="" data-kicker="Discovery" data-title="Recommendations" type="button">
+         <img alt="Recommendations screenshot" loading="lazy" decoding="async" src="../../assets/images/brewbean/recommendation.png"/>
         </button>
-        <button class="gallery-card3d" data-description="Presents loyalty-focused functionality that gives returning customers a reason to keep engaging with the brand." data-gallery-card="" data-kicker="Retention" data-title="Loyalty Experience" type="button">
-         <img alt="Loyalty Experience screenshot" loading="lazy" src="../../assets/images/brewbean/loyalty.png"/>
+        <button class="gallery-card3d" data-description="The loyalty section gives returning customers a simple way to see the benefits available to them." data-gallery-card="" data-kicker="Retention" data-title="Loyalty Features" type="button">
+         <img alt="Loyalty Features screenshot" loading="lazy" decoding="async" src="../../assets/images/brewbean/loyalty.png"/>
         </button>
-        <button class="gallery-card3d" data-description="Supports a subscription-oriented experience for customers who want a simpler way to receive coffee on a recurring basis." data-gallery-card="" data-kicker="Recurring coffee" data-title="Subscription Journey" type="button">
-         <img alt="Subscription Journey screenshot" loading="lazy" src="../../assets/images/brewbean/subscription.png"/>
+        <button class="gallery-card3d" data-description="The subscription section is for customers who want coffee delivered on a recurring schedule." data-gallery-card="" data-kicker="Recurring coffee" data-title="Subscriptions" type="button">
+         <img alt="Subscriptions screenshot" loading="lazy" decoding="async" src="../../assets/images/brewbean/subscription.png"/>
         </button>
-       </div>
-       <div class="gallery-controls">
-        <button aria-label="Previous screenshot" class="gallery-arrow" data-gallery-prev="" type="button">
-         ←
-        </button>
-        <div class="gallery-dots" data-gallery-dots="">
+        <div class="gallery-controls" aria-label="Screenshot navigation">
+         <button aria-label="Previous screenshot" class="gallery-arrow gallery-arrow-prev" data-gallery-prev="" type="button">
+          <span aria-hidden="true">←</span>
+         </button>
+         <div class="gallery-dots" data-gallery-dots=""></div>
+         <button aria-label="Next screenshot" class="gallery-arrow gallery-arrow-next" data-gallery-next="" type="button">
+          <span aria-hidden="true">→</span>
+         </button>
         </div>
-        <button aria-label="Next screenshot" class="gallery-arrow" data-gallery-next="" type="button">
-         →
-        </button>
        </div>
        <div class="slide-detail">
         <div>
@@ -195,7 +212,7 @@
         Clear discovery
        </h3>
        <p>
-        The site prioritises navigation, categories and product discovery rather than overwhelming visitors with too much information at once.
+        The layout keeps navigation and product discovery clear so visitors can find what they need without too much information competing for attention.
        </p>
       </div>
       <div class="story-item">
@@ -203,15 +220,15 @@
         Repeat engagement
        </h3>
        <p>
-        Recommendations, loyalty and subscription journeys encourage visitors to return and build a longer relationship with the coffee brand.
+        Recommendations, loyalty features and subscriptions give returning customers useful reasons to come back.
        </p>
       </div>
       <div class="story-item">
        <h3>
-        Live web experience
+        Live website
        </h3>
        <p>
-        The portfolio page documents the design, while the live BrewBean site can be opened separately for direct exploration.
+        This page shows the main screens and design choices, while the live BrewBean website can be opened separately.
        </p>
       </div>
      </div>

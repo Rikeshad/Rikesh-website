@@ -17,6 +17,10 @@
     }
    })();
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
   <link href="assets/favicon.svg" rel="icon"/>
   <link href="styles.css" rel="stylesheet"/>
  </head>
@@ -140,7 +144,38 @@
    </div>
   </header>
   <main>
-   <section class="hero container" id="home">
+   <section class="wave-story" id="home" data-wave-story aria-label="Scroll through Rikesh Adhikari's work">
+    <div class="wave-story-sticky">
+     <div class="wave-story-topline">
+      <span class="wave-story-index" data-story-counter>001</span>
+      <span class="wave-story-name">RIKESH ADHIKARI</span>
+     </div>
+     <div class="wave-story-copy" aria-live="polite">
+      <article class="wave-story-frame is-current" data-story-frame>
+       <p class="wave-story-kicker">TELECOMMUNICATIONS</p>
+       <h2 data-story-words>I plan networks and think about how systems fit together.</h2>
+      </article>
+      <article class="wave-story-frame" data-story-frame>
+       <p class="wave-story-kicker">DESKTOP SYSTEMS</p>
+       <h2 data-story-words>I build software for real day-to-day work.</h2>
+      </article>
+      <article class="wave-story-frame" data-story-frame>
+       <p class="wave-story-kicker">WEB DEVELOPMENT</p>
+       <h2 data-story-words>I develop web experiences that stay clear and useful.</h2>
+      </article>
+      <article class="wave-story-frame" data-story-frame>
+       <p class="wave-story-kicker">PORTFOLIO</p>
+       <h2 data-story-words>This is the work I want to share.</h2>
+      </article>
+     </div>
+     <div class="wave-story-bottom">
+      <span class="wave-story-scroll">SCROLL DOWN</span>
+      <div class="wave-story-track" aria-hidden="true"><i data-story-progress></i></div>
+      <span class="wave-story-total">004</span>
+     </div>
+    </div>
+   </section>
+   <section class="hero container hero-after-story" id="hero-main">
     <div class="hero-left">
      <div class="status-pill">
       ✦ Telecommunications Network Planner · Business IT · Development

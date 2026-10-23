@@ -5,6 +5,83 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
   /* --------------------------------------------------------------------------
+     Scroll-led spherical-wave story
+     Four full-screen chapters stay pinned while the WebGL sphere responds to
+     scroll progress. The words reveal in short 3D lifts instead of appearing
+     all at once, echoing the supplied Spherical Waves motion language.
+  -------------------------------------------------------------------------- */
+  const waveStory = $('[data-wave-story]');
+
+  if (waveStory) {
+    const storyFrames = $$('[data-story-frame]', waveStory);
+    const storyCounter = $('[data-story-counter]', waveStory);
+    const storyProgressBar = $('[data-story-progress]', waveStory);
+    let currentStoryFrame = -1;
+    let storyRaf = null;
+
+    $$('[data-story-words]', waveStory).forEach(heading => {
+      const words = heading.textContent.trim().split(/\s+/);
+      heading.textContent = '';
+
+      words.forEach((word, index) => {
+        const clip = document.createElement('span');
+        clip.className = 'story-word-clip';
+        const inner = document.createElement('span');
+        inner.className = 'story-word';
+        inner.textContent = word;
+        inner.style.setProperty('--word-delay', `${index * 46}ms`);
+        clip.appendChild(inner);
+        heading.appendChild(clip);
+        if (index < words.length - 1) heading.append(' ');
+      });
+    });
+
+    const clamp01 = value => Math.max(0, Math.min(1, value));
+
+    function updateWaveStory() {
+      storyRaf = null;
+      const rect = waveStory.getBoundingClientRect();
+      const travel = Math.max(1, waveStory.offsetHeight - innerHeight);
+      const progress = clamp01(-rect.top / travel);
+      const stage = progress * Math.max(1, storyFrames.length - 1);
+      const activeIndex = Math.min(storyFrames.length - 1, Math.max(0, Math.round(stage)));
+      const active = rect.top <= 2 && rect.bottom >= innerHeight * 0.72;
+
+      window.__rikeshWaveStoryProgress = progress;
+      window.__rikeshWaveStoryActive = active;
+      document.documentElement.style.setProperty('--wave-story-progress', progress.toFixed(4));
+      document.body.classList.toggle('wave-story-active', active);
+
+      if (storyProgressBar) storyProgressBar.style.transform = `scaleX(${Math.max(0.02, progress)})`;
+      if (storyCounter) storyCounter.textContent = String(activeIndex + 1).padStart(3, '0');
+
+      storyFrames.forEach((frame, index) => {
+        const distance = index - stage;
+        const opacity = clamp01(1 - Math.abs(distance) * 1.55);
+        const translate = distance * 58;
+        const scale = 0.965 + opacity * 0.035;
+        frame.style.opacity = opacity.toFixed(3);
+        frame.style.transform = `translate3d(0, ${translate.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+        frame.style.filter = `blur(${((1 - opacity) * 10).toFixed(2)}px)`;
+      });
+
+      if (activeIndex !== currentStoryFrame) {
+        currentStoryFrame = activeIndex;
+        storyFrames.forEach((frame, index) => frame.classList.toggle('is-current', index === activeIndex));
+      }
+    }
+
+    function requestWaveStoryUpdate() {
+      if (storyRaf !== null) return;
+      storyRaf = requestAnimationFrame(updateWaveStory);
+    }
+
+    addEventListener('scroll', requestWaveStoryUpdate, { passive: true });
+    addEventListener('resize', requestWaveStoryUpdate, { passive: true });
+    updateWaveStory();
+  }
+
+  /* --------------------------------------------------------------------------
      Hero wave lettering
   -------------------------------------------------------------------------- */
   $$('[data-wave]').forEach((line, lineIndex) => {

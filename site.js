@@ -5,6 +5,28 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
   /* --------------------------------------------------------------------------
+     Font readiness
+     The welcome screen waits briefly for the display face so the large words
+     never flash in a wider/bolder fallback and then jump after load.
+  -------------------------------------------------------------------------- */
+  const fontReadyPromise = (() => {
+    if (!document.fonts?.load) {
+      document.documentElement.classList.add('fonts-ready');
+      return Promise.resolve();
+    }
+
+    const timeout = new Promise(resolve => setTimeout(resolve, 1200));
+    const load = Promise.all([
+      document.fonts.load('700 1em "Space Grotesk"'),
+      document.fonts.load('800 1em "Plus Jakarta Sans"')
+    ]).catch(() => undefined);
+
+    return Promise.race([load, timeout]).then(() => {
+      document.documentElement.classList.add('fonts-ready');
+    });
+  })();
+
+  /* --------------------------------------------------------------------------
      Manual day / night theme
   -------------------------------------------------------------------------- */
   const THEME_KEY = 'rikeshTheme';
@@ -75,17 +97,19 @@
       const percentage = $('[data-intro-pct]', intro);
       let progress = 0;
 
-      const introTimer = setInterval(() => {
-        progress = Math.min(100, progress + Math.ceil(Math.random() * 8) + 3);
-        if (bar) bar.style.width = `${progress}%`;
-        if (percentage) percentage.textContent = `${progress}%`;
+      fontReadyPromise.then(() => {
+        const introTimer = setInterval(() => {
+          progress = Math.min(100, progress + Math.ceil(Math.random() * 8) + 3);
+          if (bar) bar.style.width = `${progress}%`;
+          if (percentage) percentage.textContent = `${progress}%`;
 
-        if (progress >= 100) {
-          clearInterval(introTimer);
-          sessionStorage.setItem('rikeshIntroSeen', '1');
-          setTimeout(finishIntro, 350);
-        }
-      }, 95);
+          if (progress >= 100) {
+            clearInterval(introTimer);
+            sessionStorage.setItem('rikeshIntroSeen', '1');
+            setTimeout(finishIntro, 350);
+          }
+        }, 95);
+      });
     }
   }
 
@@ -328,6 +352,104 @@
         })
       );
       scene.add(backgroundStars);
+
+      /* ----------------------------------------------------------------------
+         Spherical-wave spiral energy
+
+         Inspired by the supplied Spherical Waves references: a faint morphing
+         wire shell and several coherent luminous spiral traces sit inside the
+         galaxy. They move as one visual system rather than random particles.
+      ---------------------------------------------------------------------- */
+      const waveEnergy = new THREE.Group();
+      galaxy.add(waveEnergy);
+
+      const waveShellGeometry = new THREE.IcosahedronGeometry(compact ? 2.85 : 3.75, compact ? 3 : 4);
+      const waveShellPositions = waveShellGeometry.attributes.position;
+      const waveShellBase = new Float32Array(waveShellPositions.array.length);
+      waveShellBase.set(waveShellPositions.array);
+
+      const waveShellMaterial = new THREE.MeshBasicMaterial({
+        color: 0xf6d365,
+        wireframe: true,
+        transparent: true,
+        opacity: compact ? 0.08 : 0.12,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+      const waveShell = new THREE.Mesh(waveShellGeometry, waveShellMaterial);
+      waveShell.rotation.x = 0.18;
+      waveShell.rotation.z = -0.12;
+      waveEnergy.add(waveShell);
+
+      const wavePointMaterial = new THREE.PointsMaterial({
+        size: compact ? 0.035 : 0.026,
+        color: 0xffdf86,
+        transparent: true,
+        opacity: compact ? 0.12 : 0.18,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        sizeAttenuation: true
+      });
+      const wavePoints = new THREE.Points(waveShellGeometry, wavePointMaterial);
+      waveEnergy.add(wavePoints);
+
+      let storyVisual = 0;
+
+      const spiralMaterials = [];
+      const spiralTraces = [];
+      const spiralPalette = [0xf6d365, 0xff7a3d, 0x7dd3fc];
+
+      function createSpiralTrace(traceIndex) {
+        const sampleCount = compact ? 1450 : 2600;
+        const positions = new Float32Array(sampleCount * 3);
+        const phase = traceIndex * (Math.PI * 2 / 3);
+        const sphereRadius = compact ? 3.05 : 3.98;
+
+        for (let i = 0; i < sampleCount; i += 1) {
+          const t = i / (sampleCount - 1);
+          const theta = phase + t * Math.PI * 2 * (5.3 + traceIndex * 0.35);
+          const phi = 0.18 * Math.PI + t * 0.64 * Math.PI;
+          const ripple = Math.sin(t * Math.PI * 18 + phase) * (compact ? 0.045 : 0.075);
+          const radius = sphereRadius + ripple;
+          const i3 = i * 3;
+          positions[i3] = Math.sin(phi) * Math.cos(theta) * radius;
+          positions[i3 + 1] = Math.cos(phi) * radius;
+          positions[i3 + 2] = Math.sin(phi) * Math.sin(theta) * radius;
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+          size: compact ? 0.045 : 0.034,
+          color: spiralPalette[traceIndex % spiralPalette.length],
+          map: particleTexture,
+          transparent: true,
+          opacity: traceIndex === 2 ? 0.18 : 0.28,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          sizeAttenuation: true
+        });
+        const trace = new THREE.Points(geometry, material);
+        trace.rotation.y = phase * 0.12;
+        waveEnergy.add(trace);
+        spiralMaterials.push(material);
+        spiralTraces.push(trace);
+      }
+
+      for (let i = 0; i < 3; i += 1) createSpiralTrace(i);
+
+      const waveHaloGeometry = new THREE.RingGeometry(compact ? 3.1 : 3.8, compact ? 3.13 : 3.84, 180);
+      const waveHaloMaterial = new THREE.MeshBasicMaterial({
+        color: 0xf6d365,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.10,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      });
+      const waveHalo = new THREE.Mesh(waveHaloGeometry, waveHaloMaterial);
+      waveHalo.rotation.x = Math.PI / 2;
+      waveEnergy.add(waveHalo);
 
       /* ----------------------------------------------------------------------
          Full-screen celebration fireworks under the portrait
@@ -753,25 +875,94 @@
 
         smoothedScroll += (targetScroll - smoothedScroll) * (reduceMotion ? 1 : 0.065);
         const scroll = scrollFraction();
+        const storyProgress = Math.max(0, Math.min(1, Number(window.__rikeshWaveStoryProgress || 0)));
+        const storyTarget = window.__rikeshWaveStoryActive ? 1 : 0;
+        storyVisual += (storyTarget - storyVisual) * (reduceMotion ? 1 : 0.07);
+        const lightTheme = document.documentElement.dataset.theme === 'light';
 
-        /* Rotate one coherent galaxy object, matching the supplied generator. */
+        /* The galaxy remains one object, but retreats while the scroll story
+           brings the spherical wave forward. */
         galaxy.rotation.y = reduceMotion
           ? 0.10
-          : elapsed * (parameters.rotationSpeed * 0.20) + scroll * 0.20;
+          : elapsed * (parameters.rotationSpeed * 0.20) + scroll * 0.20 - storyVisual * 0.16;
+        galaxyPoints.material.opacity = lightTheme
+          ? 0.18 + (1 - storyVisual) * 0.08
+          : 0.92 - storyVisual * 0.50;
+        coreGlow.material.opacity = lightTheme
+          ? 0.08 + storyVisual * 0.04
+          : 0.16 + storyVisual * 0.08;
+        backgroundStars.material.opacity = lightTheme ? 0.16 : 0.28;
 
-        /*
-           Immersive reference framing. The camera deliberately sits *inside* the
-           14-unit galaxy radius, like the supplied generator/reference image.
-           That makes the spiral arms extend beyond the viewport instead of
-           appearing as a small object in the middle of the page.
-        */
-        const baseOrbit = 0.56;
-        const orbit = baseOrbit + scroll * 0.10 + (finePointer && !reduceMotion ? pointerX * 0.026 : 0);
-        const cameraRadius = compact ? 9.6 : 8.1;
+        /* True spherical-wave deformation. The mesh itself changes shape every
+           frame, rather than only scaling a rigid sphere. Scroll adds another
+           time dimension so each story chapter visibly reshapes the surface. */
+        const waveArray = waveShellPositions.array;
+        const storyWave = 0.11 + storyVisual * (compact ? 0.16 : 0.25);
+        const storyPhase = storyProgress * Math.PI * 7.5;
 
-        camera.position.x = Math.sin(orbit) * cameraRadius;
-        camera.position.z = Math.cos(orbit) * cameraRadius;
-        camera.position.y = (compact ? 5.8 : 4.35) - scroll * 0.35 + (finePointer && !reduceMotion ? pointerY * 0.22 : 0);
+        if (!reduceMotion) {
+          for (let i = 0; i < waveArray.length; i += 3) {
+            const bx = waveShellBase[i];
+            const by = waveShellBase[i + 1];
+            const bz = waveShellBase[i + 2];
+            const length = Math.max(0.0001, Math.hypot(bx, by, bz));
+            const nx = bx / length;
+            const ny = by / length;
+            const nz = bz / length;
+            const fluid = Math.sin(nx * 5.1 + elapsed * 1.55 + storyPhase)
+              * Math.cos(ny * 4.7 - elapsed * 1.12 + storyPhase * 0.42);
+            const crossWave = Math.sin((nx + nz) * 8.6 - elapsed * 0.82 + storyPhase * 0.78);
+            const displacement = fluid * storyWave + crossWave * storyWave * 0.30;
+            const nextLength = length + displacement;
+            waveArray[i] = nx * nextLength;
+            waveArray[i + 1] = ny * nextLength;
+            waveArray[i + 2] = nz * nextLength;
+          }
+          waveShellPositions.needsUpdate = true;
+        }
+
+        const wavePulse = reduceMotion ? 1 : 1 + Math.sin(elapsed * 0.66 + storyPhase * 0.08) * (0.035 + storyVisual * 0.035);
+        const waveScale = wavePulse * (0.90 + storyVisual * 0.24);
+        waveShell.scale.setScalar(waveScale);
+        wavePoints.scale.setScalar(waveScale);
+        waveShell.rotation.y = reduceMotion ? 0.16 : elapsed * 0.095 + storyProgress * 1.8 + scroll * 0.18;
+        waveShell.rotation.x = reduceMotion ? 0.18 : 0.18 + Math.sin(elapsed * 0.24 + storyProgress * Math.PI) * 0.16;
+        waveShell.rotation.z = reduceMotion ? -0.12 : -0.12 + Math.sin(elapsed * 0.34) * 0.075;
+        wavePoints.rotation.copy(waveShell.rotation);
+        waveShellMaterial.opacity = (lightTheme ? 0.075 : 0.10) + storyVisual * (lightTheme ? 0.10 : 0.17);
+        wavePointMaterial.opacity = (lightTheme ? 0.08 : 0.13) + storyVisual * (lightTheme ? 0.11 : 0.18);
+
+        waveHalo.scale.setScalar((reduceMotion ? 1 : 1 + Math.sin(elapsed * 0.92 + storyPhase * 0.08) * 0.08) * (0.94 + storyVisual * 0.18));
+        waveHalo.material.opacity = (lightTheme ? 0.035 : 0.055) + storyVisual * (lightTheme ? 0.05 : 0.08);
+        spiralTraces.forEach((trace, traceIndex) => {
+          const spiralScale = 0.92 + storyVisual * 0.22;
+          trace.scale.setScalar(spiralScale);
+          if (!reduceMotion) {
+            trace.rotation.y = elapsed * (0.06 + traceIndex * 0.008) + storyProgress * (0.9 + traceIndex * 0.16);
+            trace.rotation.x = Math.sin(elapsed * 0.20 + traceIndex * 0.9 + storyPhase * 0.04) * 0.10;
+            trace.rotation.z = Math.sin(elapsed * 0.17 + traceIndex) * 0.055;
+          }
+          spiralMaterials[traceIndex].opacity = (lightTheme ? 0.07 : (traceIndex === 2 ? 0.12 : 0.17))
+            + storyVisual * (lightTheme ? 0.10 : 0.18);
+        });
+
+        /* Camera choreography follows the story while it is pinned, then blends
+           back into the wider full-screen galaxy for the portfolio itself. */
+        const baseOrbit = 0.56 + scroll * 0.10 + (finePointer && !reduceMotion ? pointerX * 0.026 : 0);
+        const normalRadius = compact ? 9.6 : 8.1;
+        const normalY = (compact ? 5.8 : 4.35) - scroll * 0.35 + (finePointer && !reduceMotion ? pointerY * 0.22 : 0);
+        const storyOrbit = -0.48 + storyProgress * 1.42 + (finePointer && !reduceMotion ? pointerX * 0.05 : 0);
+        const storyRadius = compact ? 7.8 : 6.75;
+        const storyY = (compact ? 1.15 : 0.62) + Math.sin(storyProgress * Math.PI * 2) * (compact ? 0.28 : 0.52);
+
+        const normalX = Math.sin(baseOrbit) * normalRadius;
+        const normalZ = Math.cos(baseOrbit) * normalRadius;
+        const storyX = Math.sin(storyOrbit) * storyRadius;
+        const storyZ = Math.cos(storyOrbit) * storyRadius;
+
+        camera.position.x = normalX + (storyX - normalX) * storyVisual;
+        camera.position.z = normalZ + (storyZ - normalZ) * storyVisual;
+        camera.position.y = normalY + (storyY - normalY) * storyVisual;
         camera.lookAt(lookTarget);
 
         backgroundStars.rotation.y = reduceMotion ? 0 : -elapsed * 0.003;
@@ -920,6 +1111,49 @@
   updateDarwinTime();
   setInterval(updateLocalTime, 30000);
   setInterval(updateDarwinTime, 30000);
+
+  /* --------------------------------------------------------------------------
+     Scroll entrance reveals
+     Shared across the homepage, project pages and Darwin page. The pinned wave
+     story has its own continuous scroll choreography and is excluded here.
+  -------------------------------------------------------------------------- */
+  const revealTargets = $$([
+    '.section-head',
+    '.work-card',
+    '.tool-card',
+    '.more-tools',
+    '.about-copy',
+    '.identity-card',
+    '.skill-card',
+    '.contact-copy',
+    '.contact-form',
+    '.cosmic-fact',
+    '.project-hero-copy',
+    '.showcase-shell',
+    '.project-copy',
+    '.darwin-hero > *',
+    '.darwin-card',
+    '.story > *'
+  ].join(','));
+
+  if (revealTargets.length) {
+    const reduceRevealMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    revealTargets.forEach(element => element.classList.add('scroll-reveal'));
+
+    if (reduceRevealMotion || !('IntersectionObserver' in window)) {
+      revealTargets.forEach(element => element.classList.add('in-view'));
+    } else {
+      const revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('in-view');
+          revealObserver.unobserve(entry.target);
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.10 });
+
+      revealTargets.forEach(element => revealObserver.observe(element));
+    }
+  }
 
   /* --------------------------------------------------------------------------
      Navigation and smooth scrolling

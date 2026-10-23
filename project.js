@@ -21,7 +21,6 @@
   const modalDescription = $('[data-modal-description]', modal || document);
   const modalClose = $('[data-modal-close]', modal || document);
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   let index = 0;
   let autoId = null;
@@ -30,6 +29,36 @@
   let pointerDelta = 0;
 
   const wrapIndex = value => (value + cards.length) % cards.length;
+
+
+  function syncCardMediaSize(card) {
+    const image = $('img', card);
+    if (!image) return;
+
+    const apply = () => {
+      if (!image.naturalWidth || !image.naturalHeight) return;
+      const ratio = image.naturalWidth / image.naturalHeight;
+      card.style.setProperty('--media-ratio', `${image.naturalWidth} / ${image.naturalHeight}`);
+
+      const maxWidth = Math.min(window.innerWidth * (window.innerWidth < 760 ? 0.92 : 0.88), 1680);
+      const maxHeight = Math.min(window.innerHeight * (window.innerWidth < 760 ? 0.56 : 0.68), 760);
+      let width = maxWidth;
+      let height = width / ratio;
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height * ratio;
+      }
+
+      card.style.width = `${Math.round(width)}px`;
+      card.style.height = `${Math.round(height)}px`;
+    };
+
+    if (image.complete) apply();
+    else image.addEventListener('load', apply, { once: true });
+  }
+
+  cards.forEach(syncCardMediaSize);
+  addEventListener('resize', () => cards.forEach(syncCardMediaSize), { passive: true });
 
   function shortestOffset(cardIndex, activeIndex) {
     let distance = cardIndex - activeIndex;
@@ -109,14 +138,15 @@
         z = 72;
       }
 
-      card.style.transform = [
-        'translate(-50%, -50%)',
-        `translateX(${x}%)`,
-        `translateZ(${z}px)`,
-        `rotateX(var(--tilt-x, 0deg))`,
-        `rotateY(calc(${rotateY}deg + var(--tilt-y, 0deg)))`,
-        `scale(${scale})`
-      ].join(' ');
+      card.style.transform = active
+        ? 'translate(-50%, -50%)'
+        : [
+            'translate(-50%, -50%)',
+            `translateX(${x}%)`,
+            `translateZ(${z}px)`,
+            `rotateY(${rotateY}deg)`,
+            `scale(${scale})`
+          ].join(' ');
       card.style.opacity = String(opacity);
       card.style.filter = 'none';
     });
@@ -208,19 +238,6 @@
 
       stopAuto();
     });
-
-    if (finePointer) {
-      card.addEventListener('pointermove', event => {
-        if (cardIndex !== index) return;
-        const rect = card.getBoundingClientRect();
-        const x = (event.clientX - rect.left) / Math.max(1, rect.width) - 0.5;
-        const y = (event.clientY - rect.top) / Math.max(1, rect.height) - 0.5;
-        card.style.setProperty('--tilt-x', `${(-y * 4.2).toFixed(2)}deg`);
-        card.style.setProperty('--tilt-y', `${(x * 5.0).toFixed(2)}deg`);
-      });
-
-      card.addEventListener('pointerleave', () => resetTilt(card));
-    }
   });
 
   function closeModal() {

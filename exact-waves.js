@@ -10,26 +10,6 @@
   if (!canvas || !story || !copies.length || !window.THREE) return;
 
 
-  copies.forEach(copy => {
-    const heading = copy.querySelector('h1, h2');
-    if (!heading) return;
-    const words = heading.textContent.trim().split(/\s+/);
-    const fragment = document.createDocumentFragment();
-
-    words.forEach((word, index) => {
-      const wrapper = document.createElement('span');
-      const inner = document.createElement('span');
-      wrapper.className = 'word';
-      inner.textContent = word;
-      inner.style.transitionDelay = `${index * 45}ms`;
-      wrapper.append(inner);
-      fragment.append(wrapper);
-      if (index < words.length - 1) fragment.append(document.createTextNode(' '));
-    });
-
-    heading.replaceChildren(fragment);
-  });
-
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(43, innerWidth / innerHeight, 0.1, 100);
@@ -218,12 +198,14 @@
 
     const handoff = smoothstep(seg(p, .82, 1));
     const exactSceneOpacity = 1 - handoff * .94;
-    const galaxySceneOpacity = dark
-      ? mix(.035, .96, handoff)
-      : mix(.08, .84, handoff);
+    const galaxyBuild = smoothstep(seg(p, .08, .72));
+    const galaxyBaseOpacity = dark
+      ? mix(.16, .28, galaxyBuild)
+      : mix(.20, .34, galaxyBuild);
+    const galaxySceneOpacity = mix(galaxyBaseOpacity, dark ? .96 : .86, handoff);
     document.body.style.setProperty('--exact-wave-opacity', exactSceneOpacity.toFixed(3));
     document.body.style.setProperty('--story-bg-opacity', galaxySceneOpacity.toFixed(3));
-    document.body.style.setProperty('--story-veil-opacity', (dark ? mix(.10, .68, handoff) : mix(.035, .16, handoff)).toFixed(3));
+    document.body.style.setProperty('--story-veil-opacity', (dark ? mix(.08, .46, handoff) : mix(.02, .10, handoff)).toFixed(3));
 
     const camIntro = smoothstep(seg(p, 0, .52));
     const camFinal = easeOutCubic(seg(p, .55, 1));
@@ -247,18 +229,20 @@
     setGroupOpacity(groupA, mix(1, .96, t01) * exactSceneOpacity);
 
 
-    const t12 = smoothstep(seg(p, .25, .56));
-    groupA.rotation.x = mix(.23, 1.39, t12) + state.pointerSmoothY * .02;
-    groupA.rotation.y = mix(.10, .28, t12) + state.pointerSmoothX * .02;
-    groupA.rotation.z = mix(.04, -.10, t12);
-    groupA.scale.x = mix(mobile ? .60 : .72, mobile ? 1.10 : 1.34, t12);
-    groupA.scale.y = mix(mobile ? .60 : .72, mobile ? .74 : .84, t12);
-    groupA.scale.z = mix(mobile ? .60 : .72, mobile ? .80 : .94, t12);
-    groupA.position.y = mix(mobile ? -2.48 : -1.62, mobile ? -2.20 : -1.05, t12);
-    groupA.position.z = mix(-.45, .45, t12);
+    const t12 = smoothstep(seg(p, .25, .62));
+    groupA.rotation.x = mix(.23, 1.04, t12) + state.pointerSmoothY * .02;
+    groupA.rotation.y = mix(.10, .22, t12) + state.pointerSmoothX * .02;
+    groupA.rotation.z = mix(.04, -.04, t12);
+    groupA.scale.x = mix(mobile ? .60 : .72, mobile ? .92 : 1.08, t12);
+    groupA.scale.y = mix(mobile ? .60 : .72, mobile ? .78 : .88, t12);
+    groupA.scale.z = mix(mobile ? .60 : .72, mobile ? .82 : .90, t12);
+    groupA.position.y = mix(mobile ? -2.48 : -1.62, mobile ? -2.22 : -1.62, t12);
+    groupA.position.x = mix(mobile ? 0 : 2.18, mobile ? .48 : 2.42, t12);
+    groupA.position.z = mix(-.45, .05, t12);
+    setGroupOpacity(groupA, mix(.96, .58, t12) * exactSceneOpacity);
 
 
-    const t23 = smoothstep(seg(p, .56, .84));
+    const t23 = smoothstep(seg(p, .62, .86));
     setGroupOpacity(groupA, mix(.96, .08, t23) * exactSceneOpacity);
 
     groupB.position.set(

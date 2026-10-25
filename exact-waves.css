@@ -492,112 +492,317 @@ html[data-theme="light"] body.exact-wave-story-active .cosmic-veil {
   }
 }
 
+.wave-story .story-sticky,
+.wave-story .wave-story-sticky {
+  z-index: 7000 !important;
+}
 
-/* ================================================================
-   PORTFOLIO HOME STORY — FINAL LAYOUT CORRECTION (25 OCT 2026)
-   The live homepage uses .wave-story / .story-copy, NOT .wave-story-frame.
-   This block supersedes the older full-screen-centre + 15ch heading rules.
-   Goal: whole sentence comfortably within the left visual area, below nav,
-   with enough space for the animated concentric circles to its right.
-   ================================================================ */
-
-/* Neutralise old centering/padding rules from earlier theme revisions. */
 .wave-story .story-copy-wrap {
+  z-index: 30 !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow: visible !important;
+}
+
+.wave-story .story-copy {
+  z-index: 31 !important;
+  width: min(88vw, 1080px) !important;
+  max-width: min(88vw, 1080px) !important;
+  margin-inline: auto !important;
+  overflow: visible !important;
+}
+
+.wave-story .story-copy h1,
+.wave-story .story-copy h2 {
+  width: min(100%, 14.5ch) !important;
+  max-width: min(100%, 14.5ch) !important;
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.wave-story .word,
+.wave-story .word > span {
+  overflow: visible !important;
+}
+
+.wave-story .chapter-number,
+.wave-story .chapter-total,
+.wave-story .scroll-label,
+.wave-story .story-progress,
+.wave-story .story-theme-dock {
+  z-index: 35 !important;
+}
+
+#fireworks-foreground {
+  z-index: 6500 !important;
+}
+
+.site-header {
+  z-index: 9000 !important;
+}
+
+.mobile-menu-backdrop {
+  z-index: 9400 !important;
+}
+
+.mobile-menu.open,
+.mobile-menu.is-open {
+  z-index: 9500 !important;
+}
+
+@media (max-width: 760px) {
+  .wave-story .story-copy-wrap {
+    padding: 100px 20px 132px !important;
+  }
+
+  .wave-story .story-copy {
+    width: calc(100vw - 40px) !important;
+    max-width: calc(100vw - 40px) !important;
+  }
+
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    width: min(100%, 11.2ch) !important;
+    max-width: min(100%, 11.2ch) !important;
+    font-size: clamp(36px, 10vw, 52px) !important;
+    line-height: 1.03 !important;
+    letter-spacing: -.04em !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .wave-story .story-copy-wrap {
+    padding-inline: 16px !important;
+  }
+
+  .wave-story .story-copy {
+    width: calc(100vw - 32px) !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    font-size: clamp(34px, 9.7vw, 46px) !important;
+    max-width: 10.8ch !important;
+  }
+}
+
+
+.wave-story .story-copy-wrap {
+  display: grid !important;
+  place-items: center !important;
+  overflow: visible !important;
+}
+
+.wave-story .story-copy {
   position: absolute !important;
   inset: 0 !important;
-  display: block !important;
-  padding: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
+  width: min(88vw, 1120px) !important;
+  max-width: min(88vw, 1120px) !important;
+  margin: auto !important;
+  padding: clamp(104px, 13vh, 144px) 0 clamp(116px, 15vh, 160px) !important;
+  display: grid !important;
+  place-content: center !important;
+  text-align: center !important;
+  overflow: visible !important;
   transform: none !important;
-  pointer-events: none !important;
 }
 
-.wave-story .story-copy-wrap .story-copy {
-  position: absolute !important;
-  inset: auto !important;
-  top: clamp(215px, 26vh, 240px) !important;
-  left: clamp(95px, 7.3vw, 128px) !important;
-  width: min(37vw, 610px) !important;
-  max-width: none !important;
-  height: auto !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  display: block !important;
-  transform: none !important;
-  text-align: left !important;
-  place-content: initial !important;
-  align-items: initial !important;
+.wave-story .story-copy h1,
+.wave-story .story-copy h2 {
+  width: auto !important;
+  max-width: 15ch !important;
+  margin: 0 auto !important;
+  overflow: visible !important;
+  text-align: center !important;
+  text-wrap: balance !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
 }
 
-.wave-story .story-copy-wrap .story-copy .eyebrow {
-  text-align: left !important;
-  margin: 0 0 15px !important;
-  font-size: 10px !important;
-}
-
-.wave-story .story-copy-wrap .story-copy h1,
-.wave-story .story-copy-wrap .story-copy h2 {
-  box-sizing: border-box !important;
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  font-size: clamp(36px, 3.3vw, 55px) !important;
-  line-height: 1.09 !important;
-  letter-spacing: -.038em !important;
-  text-align: left !important;
-  text-wrap: balance;
-  overflow-wrap: normal;
-  word-break: normal;
-}
-
-/* Older CSS wraps each heading word in its own inline-block to animate it.
-   Preserve those spans and transitions without forcing a word per line. */
-.wave-story .story-copy-wrap .story-copy .word {
+.wave-story .word {
   display: inline-block !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  padding-inline: .045em !important;
   margin-right: .10em !important;
 }
 
-@media (min-width: 761px) and (max-width: 1100px) {
-  .wave-story .story-copy-wrap .story-copy {
-    top: clamp(175px, 22vh, 212px) !important;
-    left: clamp(42px, 6vw, 75px) !important;
-    width: min(53vw, 565px) !important;
+.wave-story .word > span {
+  display: inline-block !important;
+  overflow: visible !important;
+  clip-path: none !important;
+  opacity: 0 !important;
+  transform: translateY(.55em) !important;
+  transition: transform .78s cubic-bezier(.16,1,.3,1), opacity .52s ease !important;
+  will-change: transform, opacity !important;
+}
+
+.wave-story .story-copy.is-active .word > span {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  clip-path: none !important;
+}
+
+@media (max-width: 760px) {
+  .wave-story .story-copy {
+    width: calc(100vw - 36px) !important;
+    max-width: calc(100vw - 36px) !important;
+    padding: 104px 0 132px !important;
   }
-  .wave-story .story-copy-wrap .story-copy h1,
-  .wave-story .story-copy-wrap .story-copy h2 {
-    font-size: clamp(34px, 4vw, 46px) !important;
+
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    max-width: 12ch !important;
+    font-size: clamp(34px, 9.2vw, 46px) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -.035em !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .wave-story .story-copy {
+    width: calc(100vw - 28px) !important;
+    max-width: calc(100vw - 28px) !important;
+  }
+
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    max-width: 11.5ch !important;
+    font-size: clamp(32px, 9vw, 42px) !important;
+  }
+}
+
+
+.wave-story .story-copy-wrap {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 32 !important;
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: clamp(110px, 14vh, 150px) clamp(42px, 7vw, 110px) clamp(118px, 15vh, 160px) !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+}
+
+.wave-story .story-copy {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 33 !important;
+  display: grid !important;
+  place-content: center !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: inherit !important;
+  overflow: visible !important;
+  text-align: center !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(24px) scale(.992) !important;
+  transition: opacity .46s ease, transform .72s cubic-bezier(.16,1,.3,1), visibility 0s linear .72s !important;
+}
+
+.wave-story .story-copy.is-active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) scale(1) !important;
+  transition-delay: 0s !important;
+}
+
+.wave-story .story-copy h1,
+.wave-story .story-copy h2 {
+  display: block !important;
+  inline-size: min(15ch, calc(100vw - 180px)) !important;
+  max-inline-size: min(15ch, calc(100vw - 180px)) !important;
+  min-inline-size: 0 !important;
+  margin: 0 auto !important;
+  padding: 0 .04em .10em !important;
+  overflow: visible !important;
+  clip-path: none !important;
+  mask: none !important;
+  -webkit-mask: none !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
+  text-wrap: balance !important;
+  text-align: center !important;
+  font-size: clamp(46px, 5.35vw, 88px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.042em !important;
+}
+
+.wave-story .story-copy .eyebrow {
+  opacity: .86 !important;
+  transform: translateY(10px) !important;
+  transition: opacity .42s ease, transform .62s cubic-bezier(.16,1,.3,1) !important;
+}
+
+.wave-story .story-copy.is-active .eyebrow {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.wave-story .word,
+.wave-story .word > span {
+  display: inline !important;
+  overflow: visible !important;
+  clip-path: none !important;
+  mask: none !important;
+  -webkit-mask: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  transition: none !important;
+  white-space: normal !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 1100px) {
+  .wave-story .story-copy-wrap {
+    padding-inline: 34px !important;
+  }
+
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    inline-size: min(13.4ch, calc(100vw - 68px)) !important;
+    max-inline-size: min(13.4ch, calc(100vw - 68px)) !important;
+    font-size: clamp(40px, 6.7vw, 68px) !important;
   }
 }
 
 @media (max-width: 760px) {
-  .wave-story .story-copy-wrap .story-copy {
-    top: clamp(150px, 21vh, 195px) !important;
-    left: 22px !important;
-    width: calc(100vw - 44px) !important;
-    max-width: none !important;
-    padding: 0 !important;
+  .wave-story .story-copy-wrap {
+    padding: 106px 20px 132px !important;
   }
-  .wave-story .story-copy-wrap .story-copy .eyebrow {
-    font-size: 9px !important;
-    margin-bottom: 14px !important;
+
+  .wave-story .story-copy {
+    padding: inherit !important;
   }
-  .wave-story .story-copy-wrap .story-copy h1,
-  .wave-story .story-copy-wrap .story-copy h2 {
-    font-size: clamp(30px, 7.6vw, 43px) !important;
-    line-height: 1.12 !important;
-    letter-spacing: -.028em !important;
+
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    inline-size: min(12.1ch, calc(100vw - 40px)) !important;
+    max-inline-size: min(12.1ch, calc(100vw - 40px)) !important;
+    font-size: clamp(33px, 9.1vw, 46px) !important;
+    line-height: 1.045 !important;
+    letter-spacing: -.032em !important;
   }
 }
 
-@media (max-height: 680px) and (min-width: 761px) {
-  .wave-story .story-copy-wrap .story-copy {
-    top: 165px !important;
+@media (max-width: 390px) {
+  .wave-story .story-copy-wrap {
+    padding-inline: 16px !important;
   }
-  .wave-story .story-copy-wrap .story-copy h1,
-  .wave-story .story-copy-wrap .story-copy h2 {
-    font-size: clamp(29px, 2.8vw, 44px) !important;
+
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    inline-size: min(11.8ch, calc(100vw - 32px)) !important;
+    max-inline-size: min(11.8ch, calc(100vw - 32px)) !important;
+    font-size: clamp(31px, 8.9vw, 40px) !important;
   }
 }

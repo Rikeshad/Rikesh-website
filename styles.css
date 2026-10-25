@@ -1566,8 +1566,8 @@ img,video {
 
 .story h2 {
   font-family:'Plus Jakarta Sans',Arial,sans-serif;
-  font-size:clamp(34px,3vw,68px);
-  line-height:.5;
+  font-size:clamp(44px,5vw,78px);
+  line-height:.9;
   margin:0
 }
 
@@ -4856,103 +4856,168 @@ html[data-theme="light"] .nav-contact:focus-visible {
   position: relative !important;
 }
 
-/* =====================================================================
-   WAVE STORY — RESPONSIVE HEADING FIX
-   Add AFTER all existing styles in styles.css.
-   Purpose: correct overly narrow/wrapped chapter headings, move story
-   indicator beneath navigation, and retain the word reveal animation.
-   ===================================================================== */
-
-/* Keep the chapter indicator below the fixed site navigation. */
-.wave-story-topline {
-  top: 174px !important;
-}
-
-/* Undo the narrow, over-padded frame from the last theme overrides.
-   Keep it vertically centred without changing .story-word animations. */
-.wave-story-frame {
-  left: clamp(24px, 6vw, 94px) !important;
-  right: auto !important;
-  top: 50% !important;
-  bottom: auto !important;
-  width: min(49vw, 740px) !important;
-  height: auto !important;
-  min-height: 0 !important;
-  padding: 0 !important;
-  transform: translateY(-50%) !important;
-  align-items: flex-start !important;
-  justify-content: center !important;
-  gap: 16px !important;
-}
-
-.wave-story-frame h2 {
-  width: 100% !important;
-  max-width: 100% !important;
-  font-size: clamp(36px, 3.3vw, 56px) !important;
-  line-height: 1.09 !important;
-  letter-spacing: -0.035em !important;
-  text-align: left !important;
-  text-wrap: balance;
-  overflow-wrap: normal;
-  margin: 0 !important;
-}
-
-.wave-story-kicker {
-  margin: 0 !important;
-  font-size: 10px !important;
-}
-
-/* Tablet */
-@media (min-width: 761px) and (max-width: 1100px) {
-  .wave-story-topline { top: 146px !important; }
-  .wave-story-frame {
-    width: min(62vw, 680px) !important;
-  }
-  .wave-story-frame h2 {
-    font-size: clamp(35px, 4.5vw, 51px) !important;
-  }
-}
-
-/* Phones */
-@media (max-width: 760px) {
-  .wave-story-topline {
-    top: 110px !important;
-    left: 20px !important;
-    right: 20px !important;
+@media (max-width:1100px) {
+  .site-header {
+    padding: max(10px, env(safe-area-inset-top)) 12px 0 !important;
+    z-index: 1200 !important;
   }
 
-  .wave-story-frame {
-    left: 20px !important;
-    right: 20px !important;
-    top: 50% !important;
-    bottom: auto !important;
-    width: calc(100% - 40px) !important;
-    height: auto !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    transform: translateY(-50%) !important;
-    gap: 12px !important;
-  }
-
-  .wave-story-frame h2 {
+  .nav-shell {
     width: 100% !important;
-    max-width: 100% !important;
-    font-size: clamp(30px, 7.8vw, 42px) !important;
-    line-height: 1.12 !important;
-    letter-spacing: -0.03em !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 64px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 9px 8px 10px !important;
+    gap: 10px !important;
+    overflow: visible !important;
   }
 
-  .wave-story-kicker {
+  .brand {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 58px) !important;
+    overflow: hidden !important;
+  }
+
+  .brand-copy {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .brand-copy strong {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .site-nav,
+  .nav-actions,
+  .nav-right {
+    display: none !important;
+  }
+
+  .menu-toggle {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex: 0 0 48px !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    margin: 0 0 0 auto !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    z-index: 1303 !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 13px !important;
+    background: color-mix(in srgb, var(--panel-solid) 84%, transparent) !important;
+    color: var(--text) !important;
+    font-family: Arial, sans-serif !important;
+    font-size: 28px !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .menu-toggle:focus-visible {
+    outline: 2px solid var(--gold) !important;
+    outline-offset: 2px !important;
+  }
+
+  .mobile-menu {
+    display: grid !important;
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: calc(max(10px, env(safe-area-inset-top)) + 72px) !important;
+    max-height: calc(100dvh - max(10px, env(safe-area-inset-top)) - 88px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 12px !important;
+    gap: 4px !important;
+    z-index: 1302 !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(-10px) scale(.985) !important;
+    transform-origin: top center !important;
+    transition: opacity .22s ease, transform .28s var(--ease), visibility 0s linear .28s !important;
+  }
+
+  .mobile-menu.open {
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) scale(1) !important;
+    transition: opacity .22s ease, transform .28s var(--ease), visibility 0s linear 0s !important;
+  }
+
+  .mobile-menu-backdrop {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1299 !important;
+    border: 0 !important;
     margin: 0 !important;
-    font-size: 9px !important;
+    padding: 0 !important;
+    background: rgba(0,0,0,.28) !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: opacity .22s ease, visibility 0s linear .22s !important;
+  }
+
+  body.menu-open .mobile-menu-backdrop {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transition: opacity .22s ease, visibility 0s linear 0s !important;
+  }
+
+  html[data-theme="light"] .menu-toggle {
+    background: rgba(255,255,255,.9) !important;
+    color: #18171b !important;
+    border-color: rgba(28,24,20,.14) !important;
   }
 }
 
-/* Very short screens: keep chapter text between navbar and footer. */
-@media (max-height: 650px) and (min-width: 761px) {
-  .wave-story-topline { top: 132px !important; }
-  .wave-story-frame h2 {
-    font-size: clamp(32px, 3vw, 46px) !important;
-    line-height: 1.05 !important;
+@media (max-width:600px) {
+  .brand-copy {
+    display: none !important;
+  }
+
+  .brand {
+    max-width: calc(100% - 58px) !important;
+  }
+
+  .brand-mark {
+    width: 48px !important;
+    height: 48px !important;
+    flex: 0 0 48px !important;
+  }
+
+  .mobile-menu {
+    left: 10px !important;
+    right: 10px !important;
+  }
+}
+
+@media (max-width:360px) {
+  .site-header {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .nav-shell {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
   }
 }

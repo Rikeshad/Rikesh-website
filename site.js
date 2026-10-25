@@ -1064,7 +1064,9 @@
         const storyProgressTarget = Math.max(0, Math.min(1, Number(window.__rikeshWaveStoryProgress || 0)));
         smoothedStoryProgress += (storyProgressTarget - smoothedStoryProgress) * (reduceMotion ? 1 : (compact ? 0.11 : 0.085));
         const storyProgress = smoothedStoryProgress;
-        const storyTarget = window.__rikeshWaveStoryActive ? 1 : 0;
+        const exactStoryLayerActive = Boolean(window.__rikeshWaveStoryActive);
+        const storySphereReveal = exactStoryLayerActive ? smoothStep(0.72, 1, storyProgress) : 1;
+        const storyTarget = exactStoryLayerActive ? 1 : 0;
         storyVisual += (storyTarget - storyVisual) * (reduceMotion ? 1 : 0.07);
         const lightTheme = document.documentElement.dataset.theme === 'light';
 
@@ -1134,11 +1136,11 @@
         waveShell.rotation.x = reduceMotion ? 0.18 : 0.18 + Math.sin(elapsed * 0.24 + storyProgress * Math.PI) * 0.16;
         waveShell.rotation.z = reduceMotion ? -0.12 : -0.12 + Math.sin(elapsed * 0.34) * 0.075;
         wavePoints.rotation.copy(waveShell.rotation);
-        waveShellMaterial.opacity = (lightTheme ? 0.075 : 0.10) + storyVisual * (lightTheme ? 0.10 : 0.17);
-        wavePointMaterial.opacity = (lightTheme ? 0.08 : 0.13) + storyVisual * (lightTheme ? 0.11 : 0.18);
+        waveShellMaterial.opacity = ((lightTheme ? 0.075 : 0.10) + storyVisual * (lightTheme ? 0.10 : 0.17)) * storySphereReveal;
+        wavePointMaterial.opacity = ((lightTheme ? 0.08 : 0.13) + storyVisual * (lightTheme ? 0.11 : 0.18)) * storySphereReveal;
 
         waveHalo.scale.setScalar((reduceMotion ? 1 : 1 + Math.sin(elapsed * 0.92 + storyPhase * 0.08) * 0.08) * (0.94 + storyVisual * 0.18));
-        waveHalo.material.opacity = (lightTheme ? 0.035 : 0.055) + storyVisual * (lightTheme ? 0.05 : 0.08);
+        waveHalo.material.opacity = ((lightTheme ? 0.035 : 0.055) + storyVisual * (lightTheme ? 0.05 : 0.08)) * storySphereReveal;
         spiralTraces.forEach((trace, traceIndex) => {
           const spiralScale = 0.92 + storyVisual * 0.12;
           trace.scale.setScalar(spiralScale);
@@ -1147,13 +1149,12 @@
             trace.rotation.x = Math.sin(elapsed * 0.16 + traceIndex * 0.9) * 0.065;
             trace.rotation.z = Math.sin(elapsed * 0.14 + traceIndex) * 0.04;
           }
-          spiralMaterials[traceIndex].opacity = (lightTheme ? 0.018 : 0.045) + (1 - storyVisual) * (lightTheme ? 0.035 : 0.07);
+          spiralMaterials[traceIndex].opacity = ((lightTheme ? 0.018 : 0.045) + (1 - storyVisual) * (lightTheme ? 0.035 : 0.07)) * storySphereReveal;
         });
 
 
         const rippleColour = lightTheme ? 0x6eae9c : 0xf2c45d;
         const pose = sampleRipplePose(storyProgress);
-        const exactStoryLayerActive = Boolean(window.__rikeshWaveStoryActive);
         const rippleBaseOpacity = exactStoryLayerActive
           ? 0
           : storyVisual * (lightTheme ? 0.82 : 0.76) + (1 - storyVisual) * (lightTheme ? 0.12 : 0.16);
@@ -1181,15 +1182,15 @@
         });
 
 
-        waveShellMaterial.opacity = lightTheme
+        waveShellMaterial.opacity = (lightTheme
           ? 0.13 + storyVisual * 0.13
-          : 0.085 + storyVisual * 0.17;
-        wavePointMaterial.opacity = lightTheme
+          : 0.085 + storyVisual * 0.17) * storySphereReveal;
+        wavePointMaterial.opacity = (lightTheme
           ? 0.11 + storyVisual * 0.12
-          : 0.10 + storyVisual * 0.16;
-        waveHalo.material.opacity = lightTheme
+          : 0.10 + storyVisual * 0.16) * storySphereReveal;
+        waveHalo.material.opacity = (lightTheme
           ? 0.055 + storyVisual * 0.045
-          : 0.035 + storyVisual * 0.055;
+          : 0.035 + storyVisual * 0.055) * storySphereReveal;
 
 
         const baseOrbit = 0.56 + scroll * 0.10 + (finePointer && !reduceMotion ? pointerX * 0.026 : 0);

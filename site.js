@@ -4,11 +4,7 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-  /* --------------------------------------------------------------------------
-     Font readiness
-     The welcome screen waits briefly for the display face so the large words
-     never flash in a wider/bolder fallback and then jump after load.
-  -------------------------------------------------------------------------- */
+
   const fontReadyPromise = (() => {
     if (!document.fonts?.load) {
       document.documentElement.classList.add('fonts-ready');
@@ -17,8 +13,8 @@
 
     const timeout = new Promise(resolve => setTimeout(resolve, 1200));
     const load = Promise.all([
-      document.fonts.load('700 1em "Space Grotesk"'),
-      document.fonts.load('800 1em "Plus Jakarta Sans"')
+      document.fonts.load('600 1em "Inter"'),
+      document.fonts.load('500 1em "Playfair Display"')
     ]).catch(() => undefined);
 
     return Promise.race([load, timeout]).then(() => {
@@ -26,9 +22,7 @@
     });
   })();
 
-  /* --------------------------------------------------------------------------
-     Manual day / night theme
-  -------------------------------------------------------------------------- */
+
   const THEME_KEY = 'rikeshTheme';
 
   function currentTheme() {
@@ -60,7 +54,7 @@
     try {
       localStorage.setItem(THEME_KEY, nextTheme);
     } catch {
-      /* localStorage can be unavailable in strict privacy modes. */
+
     }
 
     syncThemeControls();
@@ -74,9 +68,7 @@
 
   syncThemeControls();
 
-  /* --------------------------------------------------------------------------
-     One-time cinematic intro
-  -------------------------------------------------------------------------- */
+
   const intro = $('#site-intro');
   const introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1';
 
@@ -113,9 +105,7 @@
     }
   }
 
-  /* --------------------------------------------------------------------------
-     Custom cursor
-  -------------------------------------------------------------------------- */
+
   const cursorDot = $('.cursor-dot');
   const cursorRing = $('.cursor-ring');
 
@@ -132,15 +122,36 @@
       cursorDot.style.top = `${mouseY}px`;
     }, { passive: true });
 
+    let cursorRaf = 0;
+
     function animateCursor() {
+      if (document.hidden) {
+        cursorRaf = 0;
+        return;
+      }
       ringX += (mouseX - ringX) * 0.16;
       ringY += (mouseY - ringY) * 0.16;
       cursorRing.style.left = `${ringX}px`;
       cursorRing.style.top = `${ringY}px`;
-      requestAnimationFrame(animateCursor);
+      cursorRaf = requestAnimationFrame(animateCursor);
     }
 
-    animateCursor();
+    function startCursor() {
+      if (!cursorRaf && !document.hidden) cursorRaf = requestAnimationFrame(animateCursor);
+    }
+
+    function stopCursor() {
+      if (!cursorRaf) return;
+      cancelAnimationFrame(cursorRaf);
+      cursorRaf = 0;
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopCursor();
+      else startCursor();
+    });
+    addEventListener('pagehide', stopCursor, { once: true });
+    startCursor();
 
     $$('a, button, input, textarea, select').forEach(element => {
       element.addEventListener('mouseenter', () => {
@@ -157,41 +168,30 @@
     });
   }
 
-  /* --------------------------------------------------------------------------
-     Reference-matched 3D spiral galaxy
 
-     The galaxy uses the same visual recipe as the supplied reference:
-     7 branches, radius 14, spin 2.823, high randomness power, a hot orange
-     centre and deep red outer stars. It is a single coherent 3D object.
-     The camera moves gently with scroll and pointer input, while the WebGL
-     canvas remains fixed behind the website and never receives input.
-  -------------------------------------------------------------------------- */
   const galaxyCanvas = $('.bg-canvas');
 
   if (galaxyCanvas) {
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const finePointer = matchMedia('(pointer: fine)').matches;
     const hardwareThreads = navigator.hardwareConcurrency || 4;
+    const deviceMemory = navigator.deviceMemory || 8;
 
     let targetScroll = scrollY;
     let smoothedScroll = scrollY;
     let pointerX = 0;
     let pointerY = 0;
 
-    async function initGalaxy() {
-      let THREE;
-
-      try {
-        THREE = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js');
-      } catch (error) {
-        console.warn('3D galaxy could not load; the static background will remain.', error);
+    function initGalaxy() {
+      const THREE = window.THREE;
+      if (!THREE) {
         galaxyCanvas.style.display = 'none';
         return;
       }
 
       const compact = innerWidth < 760;
       const medium = innerWidth < 1180;
-      const lowPower = hardwareThreads <= 4;
+      const lowPower = hardwareThreads <= 4 || deviceMemory <= 4;
 
       const renderer = new THREE.WebGLRenderer({
         canvas: galaxyCanvas,
@@ -200,10 +200,10 @@
         powerPreference: 'high-performance'
       });
 
-      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, compact ? 1.15 : 1.6));
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, compact ? (lowPower ? 1 : 1.15) : (lowPower ? 1.35 : 1.6)));
       renderer.setSize(innerWidth, innerHeight, false);
       renderer.setClearColor(0x000000, 0);
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      if ('outputEncoding' in renderer && THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
 
       const scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x000000, compact ? 0.010 : 0.0065);
@@ -223,7 +223,7 @@
       const clock = new THREE.Clock();
 
       const parameters = {
-        count: compact ? 72000 : (medium || lowPower ? 128000 : 181000),
+        count: compact ? (lowPower ? 42000 : 72000) : (medium || lowPower ? 108000 : 181000),
         size: compact ? 0.040 : 0.031,
         radius: 14,
         branches: 7,
@@ -250,7 +250,7 @@
         context.fillRect(0, 0, 64, 64);
 
         const texture = new THREE.CanvasTexture(canvas);
-        texture.colorSpace = THREE.SRGBColorSpace;
+        if ('encoding' in texture && THREE.sRGBEncoding) texture.encoding = THREE.sRGBEncoding;
         return texture;
       }
 
@@ -309,7 +309,7 @@
 
       const galaxyPoints = buildGalaxy();
 
-      /* A restrained warm core keeps the centre bright without hiding the arms. */
+
       const coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({
         map: particleTexture,
         color: 0xff7c3f,
@@ -321,7 +321,7 @@
       coreGlow.scale.set(compact ? 3.2 : 4.0, compact ? 3.2 : 4.0, 1);
       galaxy.add(coreGlow);
 
-      /* Sparse distant stars keep the black sky alive without competing with the galaxy. */
+
       const backgroundStarCount = compact ? 260 : 520;
       const backgroundPositions = new Float32Array(backgroundStarCount * 3);
 
@@ -353,13 +353,7 @@
       );
       scene.add(backgroundStars);
 
-      /* ----------------------------------------------------------------------
-         Spherical-wave spiral energy
 
-         Inspired by the supplied Spherical Waves references: a faint morphing
-         wire shell and several coherent luminous spiral traces sit inside the
-         galaxy. They move as one visual system rather than random particles.
-      ---------------------------------------------------------------------- */
       const waveEnergy = new THREE.Group();
       galaxy.add(waveEnergy);
 
@@ -394,6 +388,8 @@
       waveEnergy.add(wavePoints);
 
       let storyVisual = 0;
+      let smoothedStoryProgress = 0;
+      let lastSceneLightTheme = null;
 
       const spiralMaterials = [];
       const spiralTraces = [];
@@ -451,11 +447,202 @@
       waveHalo.rotation.x = Math.PI / 2;
       waveEnergy.add(waveHalo);
 
-      /* ----------------------------------------------------------------------
-         Full-screen celebration fireworks under the portrait
-         A launch creates a multi-wave show across the viewport. No text is
-         rendered in the sky; the effect is purely visual.
-      ---------------------------------------------------------------------- */
+
+      const waveHemisphere = new THREE.HemisphereLight(0xffffff, 0x56605b, compact ? 0.82 : 1.0);
+      scene.add(waveHemisphere);
+      const waveKey = new THREE.DirectionalLight(0xffffff, compact ? 1.05 : 1.35);
+      waveKey.position.set(4.5, 6.0, 7.5);
+      scene.add(waveKey);
+      const waveRim = new THREE.PointLight(0xb9ead8, compact ? 0.9 : 1.25, 22);
+      waveRim.position.set(-4.5, -1.5, 5.0);
+      scene.add(waveRim);
+
+      const rippleTempColour = new THREE.Color();
+
+      function createRippleSystem(options = {}) {
+        const group = new THREE.Group();
+        const rings = [];
+        const materials = [];
+        const glowMaterials = [];
+        const ringCount = options.ringCount ?? (compact ? 12 : 16);
+        const radialSegments = compact ? 6 : 8;
+        const tubularSegments = compact ? 84 : 144;
+        const maxRadius = options.maxRadius ?? (compact ? 3.12 : 3.82);
+        const minRadius = options.minRadius ?? 0.34;
+        const depthStep = options.depthStep ?? (compact ? 0.030 : 0.036);
+        const tubeBase = options.tube ?? (compact ? 0.0105 : 0.0125);
+
+        for (let ringIndex = 0; ringIndex < ringCount; ringIndex += 1) {
+          const t = ringIndex / Math.max(1, ringCount - 1);
+          const radius = minRadius + (maxRadius - minRadius) * t;
+          const tube = tubeBase * (0.84 + t * 0.42);
+          const geometry = new THREE.TorusGeometry(radius, tube, radialSegments, tubularSegments);
+          const material = new THREE.MeshStandardMaterial({
+            color: 0x86e7d1,
+            emissive: 0x86e7d1,
+            emissiveIntensity: 0.045,
+            roughness: 0.36,
+            metalness: 0.08,
+            transparent: true,
+            opacity: 0,
+            depthWrite: false,
+            side: THREE.DoubleSide
+          });
+          const ring = new THREE.Mesh(geometry, material);
+          const baseZ = (ringIndex - (ringCount - 1) / 2) * depthStep;
+          ring.position.z = baseZ;
+          ring.userData = {
+            baseZ,
+            ringIndex,
+            t,
+            phase: ringIndex * 0.43
+          };
+
+
+          const glowMaterial = new THREE.MeshBasicMaterial({
+            color: 0x86e7d1,
+            transparent: true,
+            opacity: 0,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            side: THREE.DoubleSide
+          });
+          const glow = new THREE.Mesh(geometry, glowMaterial);
+          glow.scale.setScalar(1.018);
+          ring.add(glow);
+          ring.userData.glow = glow;
+
+          group.add(ring);
+          rings.push(ring);
+          materials.push(material);
+          glowMaterials.push(glowMaterial);
+        }
+
+
+        const beadCount = compact ? 120 : 220;
+        const beadPositions = new Float32Array(beadCount * 3);
+        for (let i = 0; i < beadCount; i += 1) {
+          const ringT = Math.random();
+          const radius = minRadius + (maxRadius - minRadius) * ringT;
+          const angle = Math.random() * Math.PI * 2;
+          beadPositions[i * 3] = Math.cos(angle) * radius;
+          beadPositions[i * 3 + 1] = Math.sin(angle) * radius;
+          beadPositions[i * 3 + 2] = (Math.random() - 0.5) * depthStep * ringCount;
+        }
+        const beadGeometry = new THREE.BufferGeometry();
+        beadGeometry.setAttribute('position', new THREE.BufferAttribute(beadPositions, 3));
+        const beadMaterial = new THREE.PointsMaterial({
+          size: compact ? 0.020 : 0.017,
+          color: 0xb9ead8,
+          transparent: true,
+          opacity: 0,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          sizeAttenuation: true
+        });
+        const beads = new THREE.Points(beadGeometry, beadMaterial);
+        group.add(beads);
+
+        scene.add(group);
+        return { group, rings, materials, glowMaterials, beads, beadMaterial };
+      }
+
+      const rippleMain = createRippleSystem({ depthStep: compact ? 0.032 : 0.038 });
+      const rippleEchoA = createRippleSystem({ maxRadius: compact ? 2.78 : 3.38, ringCount: compact ? 10 : 13, depthStep: compact ? 0.034 : 0.042 });
+      const rippleEchoB = createRippleSystem({ maxRadius: compact ? 2.50 : 3.18, ringCount: compact ? 9 : 12, depthStep: compact ? 0.038 : 0.046 });
+
+      function smoothStep(edge0, edge1, value) {
+        const x = Math.max(0, Math.min(1, (value - edge0) / Math.max(0.0001, edge1 - edge0)));
+        return x * x * (3 - 2 * x);
+      }
+
+      function sampleRipplePose(progress) {
+        const keys = compact ? [
+          { p:0.00, x:0.05, y:-2.50, z:0.35, s:0.88, rx:0.08, ry:0.00, rz:0.00 },
+          { p:0.24, x:0.05, y:-2.55, z:0.18, s:0.38, rx:0.18, ry:0.02, rz:0.00 },
+          { p:0.50, x:0.05, y:-2.18, z:0.15, s:1.00, rx:1.30, ry:0.10, rz:-0.04 },
+          { p:0.72, x:-1.08, y:-0.94, z:0.34, s:1.48, rx:0.78, ry:0.46, rz:-0.32 },
+          { p:1.00, x:0.92, y:0.30, z:0.52, s:2.02, rx:0.46, ry:-0.58, rz:0.27 }
+        ] : [
+          { p:0.00, x:2.28, y:-1.30, z:0.45, s:1.10, rx:0.09, ry:0.02, rz:0.00 },
+          { p:0.24, x:1.82, y:-1.58, z:0.20, s:0.49, rx:0.19, ry:0.03, rz:0.00 },
+          { p:0.50, x:1.26, y:-1.28, z:0.18, s:1.20, rx:1.28, ry:0.12, rz:-0.04 },
+          { p:0.72, x:-1.64, y:-0.30, z:0.36, s:1.70, rx:0.74, ry:0.48, rz:-0.30 },
+          { p:1.00, x:2.18, y:0.48, z:0.58, s:2.34, rx:0.44, ry:-0.56, rz:0.27 }
+        ];
+
+        let a = keys[0];
+        let b = keys[keys.length - 1];
+        for (let i = 0; i < keys.length - 1; i += 1) {
+          if (progress >= keys[i].p && progress <= keys[i + 1].p) {
+            a = keys[i]; b = keys[i + 1]; break;
+          }
+        }
+        const raw = Math.max(0, Math.min(1, (progress - a.p) / Math.max(0.0001, b.p - a.p)));
+        const t = raw * raw * (3 - 2 * raw);
+        const lerp = (x, y) => x + (y - x) * t;
+        return {
+          x:lerp(a.x,b.x), y:lerp(a.y,b.y), z:lerp(a.z,b.z), s:lerp(a.s,b.s),
+          rx:lerp(a.rx,b.rx), ry:lerp(a.ry,b.ry), rz:lerp(a.rz,b.rz)
+        };
+      }
+
+      function applyRipplePose(system, pose, opacity, colourHex, extra = {}) {
+        const { group, materials, glowMaterials, beadMaterial } = system;
+        group.position.set(
+          pose.x + (extra.x || 0),
+          pose.y + (extra.y || 0),
+          pose.z + (extra.z || 0)
+        );
+        const scale = pose.s * (extra.scale || 1);
+        group.scale.setScalar(scale);
+        group.rotation.set(
+          pose.rx + (extra.rx || 0),
+          pose.ry + (extra.ry || 0),
+          pose.rz + (extra.rz || 0)
+        );
+
+        materials.forEach((material, index) => {
+          const ringT = index / Math.max(1, materials.length - 1);
+          rippleTempColour.setHex(colourHex);
+
+
+          rippleTempColour.offsetHSL(ringT * 0.010, 0, ringT * 0.055);
+          material.color.copy(rippleTempColour);
+          material.emissive.copy(rippleTempColour);
+          material.emissiveIntensity = document.documentElement.dataset.theme === 'light' ? 0.035 : 0.11;
+          const edge = 0.60 + ringT * 0.40;
+          material.opacity = opacity * edge;
+
+          const glow = glowMaterials[index];
+          glow.color.copy(rippleTempColour);
+          glow.opacity = opacity * edge * (document.documentElement.dataset.theme === 'light' ? 0.12 : 0.25);
+        });
+
+        rippleTempColour.setHex(colourHex);
+        beadMaterial.color.copy(rippleTempColour);
+        beadMaterial.opacity = opacity * (document.documentElement.dataset.theme === 'light' ? 0.18 : 0.30);
+      }
+
+      function deformRippleSystem(system, elapsed, progress, intensity = 1) {
+        const waveAmount = (0.018 + smoothStep(0.42, 1.0, progress) * 0.065) * intensity;
+        system.rings.forEach((ring, ringIndex) => {
+          const phase = ring.userData.phase;
+          const ringT = ring.userData.t;
+          const travelingWave = Math.sin(elapsed * 0.82 + phase + progress * Math.PI * 5.2);
+          const secondary = Math.cos(elapsed * 0.46 - phase * 0.72 + progress * Math.PI * 3.0);
+          ring.position.z = ring.userData.baseZ + travelingWave * waveAmount * (0.75 + ringT * 1.2);
+          ring.rotation.x = secondary * waveAmount * 0.22;
+          ring.rotation.y = travelingWave * waveAmount * 0.18;
+          ring.rotation.z = Math.sin(elapsed * 0.30 + phase) * waveAmount * 0.32;
+          const pulse = 1 + travelingWave * waveAmount * 0.18;
+          ring.scale.set(pulse, 1 + secondary * waveAmount * 0.12, 1);
+        });
+        system.beads.rotation.z = elapsed * 0.035 * intensity + progress * 0.34;
+        system.beads.rotation.x = Math.sin(elapsed * 0.21) * 0.035;
+      }
+
+
       const fireworks = [];
       const fireworkShells = [];
       const fireworkFlashes = [];
@@ -463,14 +650,14 @@
       let fireworksShowTimers = [];
 
       const fireworkColours = [
-        0xffd166, // gold
-        0xff6f61, // coral
-        0xffa94d, // warm orange
-        0xfff4c2, // warm white
-        0x7dd3fc, // sky blue
-        0xc4b5fd, // lavender
-        0xf472b6, // pink
-        0x86efac  // mint green
+        0xffd166,
+        0xff6f61,
+        0xffa94d,
+        0xfff4c2,
+        0x7dd3fc,
+        0xc4b5fd,
+        0xf472b6,
+        0x86efac
       ];
 
       function randomFireworkColour() {
@@ -576,8 +763,7 @@
 
         createFireworkFlash(origin, colour, style === 'ring' ? 0.8 : 1.15);
 
-        // A small inner sparkle makes each explosion feel fuller without
-        // blurring the main burst.
+
         if (!compact && particleCount >= 220) {
           const innerCount = Math.floor(particleCount * 0.24);
           const innerPositions = new Float32Array(innerCount * 3);
@@ -627,7 +813,7 @@
       }
 
       function spawnFireworkShell(target, colour, style, sizeBoost = 1) {
-        // Start low in the scene so a visible rising shell precedes the burst.
+
         const start = new THREE.Vector3(
           target.x + (Math.random() - 0.5) * 0.8,
           -2.6 - Math.random() * 0.8,
@@ -666,8 +852,8 @@
       }
 
       function celebrationTarget(index, total) {
-        // Fan explosions across the entire viewport instead of concentrating
-        // everything in the centre. The slight Z variation adds real 3D depth.
+
+
         const column = index % 6;
         const row = Math.floor(index / 6);
         const xBands = [-6.2, -3.8, -1.4, 1.4, 3.8, 6.2];
@@ -675,7 +861,7 @@
         const baseY = 1.2 + (row % 3) * 2.15 + Math.random() * 1.35;
         const z = -2.4 + Math.random() * 4.0;
 
-        // The final bursts are placed higher/larger for a strong finale.
+
         if (index >= total - (compact ? 2 : 4)) {
           return new THREE.Vector3(baseX * 0.72, 4.4 + Math.random() * 2.8, z - 0.7);
         }
@@ -718,7 +904,7 @@
           fireworksShowTimers.push(timer);
         }
 
-        // Finale: several simultaneous large bursts fill the upper sky.
+
         const finaleTimer = setTimeout(() => {
           const finaleOrigins = compact
             ? [new THREE.Vector3(-2.8, 5.2, -1.8), new THREE.Vector3(2.8, 5.6, -1.6)]
@@ -781,7 +967,7 @@
           position.needsUpdate = true;
           shell.material.opacity = Math.max(0.2, 1 - progress * 0.25);
 
-          // Small sparks behind the rising shell create the launch trail.
+
           if (shell.trailClock > (compact ? 0.085 : 0.055) && progress < 0.92) {
             shell.trailClock = 0;
             spawnFireworkBurst(new THREE.Vector3(array[0], array[1] - 0.08, array[2]), 0xffd9a0, {
@@ -875,27 +1061,46 @@
 
         smoothedScroll += (targetScroll - smoothedScroll) * (reduceMotion ? 1 : 0.065);
         const scroll = scrollFraction();
-        const storyProgress = Math.max(0, Math.min(1, Number(window.__rikeshWaveStoryProgress || 0)));
+        const storyProgressTarget = Math.max(0, Math.min(1, Number(window.__rikeshWaveStoryProgress || 0)));
+        smoothedStoryProgress += (storyProgressTarget - smoothedStoryProgress) * (reduceMotion ? 1 : (compact ? 0.11 : 0.085));
+        const storyProgress = smoothedStoryProgress;
         const storyTarget = window.__rikeshWaveStoryActive ? 1 : 0;
         storyVisual += (storyTarget - storyVisual) * (reduceMotion ? 1 : 0.07);
         const lightTheme = document.documentElement.dataset.theme === 'light';
 
-        /* The galaxy remains one object, but retreats while the scroll story
-           brings the spherical wave forward. */
+
         galaxy.rotation.y = reduceMotion
           ? 0.10
           : elapsed * (parameters.rotationSpeed * 0.20) + scroll * 0.20 - storyVisual * 0.16;
-        galaxyPoints.material.opacity = lightTheme
-          ? 0.18 + (1 - storyVisual) * 0.08
-          : 0.92 - storyVisual * 0.50;
-        coreGlow.material.opacity = lightTheme
-          ? 0.08 + storyVisual * 0.04
-          : 0.16 + storyVisual * 0.08;
-        backgroundStars.material.opacity = lightTheme ? 0.16 : 0.28;
+        if (lastSceneLightTheme !== lightTheme) {
+          lastSceneLightTheme = lightTheme;
+          const blend = lightTheme ? THREE.NormalBlending : THREE.AdditiveBlending;
+          galaxyPoints.material.blending = blend;
+          backgroundStars.material.blending = blend;
+          waveShellMaterial.blending = blend;
+          wavePointMaterial.blending = blend;
+          waveHaloMaterial.blending = blend;
+          spiralMaterials.forEach(material => { material.blending = blend; material.needsUpdate = true; });
+          [galaxyPoints.material, backgroundStars.material, waveShellMaterial, wavePointMaterial, waveHaloMaterial]
+            .forEach(material => { material.needsUpdate = true; });
 
-        /* True spherical-wave deformation. The mesh itself changes shape every
-           frame, rather than only scaling a rigid sphere. Scroll adds another
-           time dimension so each story chapter visibly reshapes the surface. */
+          waveShellMaterial.color.setHex(lightTheme ? 0x8f6a17 : 0xf6d365);
+          wavePointMaterial.color.setHex(lightTheme ? 0x9c741b : 0xffdf86);
+          waveHaloMaterial.color.setHex(lightTheme ? 0x8f6a17 : 0xf6d365);
+          coreGlow.material.color.setHex(lightTheme ? 0xb55d2c : 0xff7c3f);
+          backgroundStars.material.color.setHex(lightTheme ? 0x75665d : 0xf6dfd2);
+        }
+
+
+        galaxyPoints.material.opacity = lightTheme
+          ? 0.20 - storyVisual * 0.045
+          : 0.20 - storyVisual * 0.07;
+        coreGlow.material.opacity = lightTheme
+          ? 0.055 - storyVisual * 0.015
+          : 0.045 - storyVisual * 0.010;
+        backgroundStars.material.opacity = lightTheme ? 0.10 : 0.12;
+
+
         const waveArray = waveShellPositions.array;
         const storyWave = 0.11 + storyVisual * (compact ? 0.16 : 0.25);
         const storyPhase = storyProgress * Math.PI * 7.5;
@@ -935,30 +1140,68 @@
         waveHalo.scale.setScalar((reduceMotion ? 1 : 1 + Math.sin(elapsed * 0.92 + storyPhase * 0.08) * 0.08) * (0.94 + storyVisual * 0.18));
         waveHalo.material.opacity = (lightTheme ? 0.035 : 0.055) + storyVisual * (lightTheme ? 0.05 : 0.08);
         spiralTraces.forEach((trace, traceIndex) => {
-          const spiralScale = 0.92 + storyVisual * 0.22;
+          const spiralScale = 0.92 + storyVisual * 0.12;
           trace.scale.setScalar(spiralScale);
           if (!reduceMotion) {
-            trace.rotation.y = elapsed * (0.06 + traceIndex * 0.008) + storyProgress * (0.9 + traceIndex * 0.16);
-            trace.rotation.x = Math.sin(elapsed * 0.20 + traceIndex * 0.9 + storyPhase * 0.04) * 0.10;
-            trace.rotation.z = Math.sin(elapsed * 0.17 + traceIndex) * 0.055;
+            trace.rotation.y = elapsed * (0.045 + traceIndex * 0.006) + storyProgress * (0.45 + traceIndex * 0.08);
+            trace.rotation.x = Math.sin(elapsed * 0.16 + traceIndex * 0.9) * 0.065;
+            trace.rotation.z = Math.sin(elapsed * 0.14 + traceIndex) * 0.04;
           }
-          spiralMaterials[traceIndex].opacity = (lightTheme ? 0.07 : (traceIndex === 2 ? 0.12 : 0.17))
-            + storyVisual * (lightTheme ? 0.10 : 0.18);
+          spiralMaterials[traceIndex].opacity = (lightTheme ? 0.018 : 0.045) + (1 - storyVisual) * (lightTheme ? 0.035 : 0.07);
         });
 
-        /* Camera choreography follows the story while it is pinned, then blends
-           back into the wider full-screen galaxy for the portfolio itself. */
+
+        const rippleColour = lightTheme ? 0x6eae9c : 0xf2c45d;
+        const pose = sampleRipplePose(storyProgress);
+        const exactStoryLayerActive = Boolean(window.__rikeshWaveStoryActive);
+        const rippleBaseOpacity = exactStoryLayerActive
+          ? 0
+          : storyVisual * (lightTheme ? 0.82 : 0.76) + (1 - storyVisual) * (lightTheme ? 0.12 : 0.16);
+        deformRippleSystem(rippleMain, elapsed, storyProgress, 1);
+        applyRipplePose(rippleMain, pose, rippleBaseOpacity, rippleColour);
+
+        const echoIn = exactStoryLayerActive ? 0 : smoothStep(0.56, 0.80, storyProgress) * storyVisual;
+        deformRippleSystem(rippleEchoA, elapsed + 0.8, storyProgress, 0.65);
+        deformRippleSystem(rippleEchoB, elapsed + 1.6, storyProgress, 0.52);
+        applyRipplePose(rippleEchoA, pose, echoIn * (lightTheme ? 0.54 : 0.46), rippleColour, {
+          x: compact ? -2.85 : -4.0,
+          y: compact ? 0.85 : 0.55,
+          scale: compact ? 0.92 : 1.02,
+          rx:0.20,
+          ry:0.55,
+          rz:-0.18
+        });
+        applyRipplePose(rippleEchoB, pose, echoIn * (lightTheme ? 0.48 : 0.40), rippleColour, {
+          x: compact ? 2.75 : 4.2,
+          y: compact ? 1.35 : 0.95,
+          scale:compact ? 0.78 : 0.92,
+          rx:-0.18,
+          ry:-0.60,
+          rz:0.22
+        });
+
+
+        waveShellMaterial.opacity = lightTheme
+          ? 0.13 + storyVisual * 0.13
+          : 0.085 + storyVisual * 0.17;
+        wavePointMaterial.opacity = lightTheme
+          ? 0.11 + storyVisual * 0.12
+          : 0.10 + storyVisual * 0.16;
+        waveHalo.material.opacity = lightTheme
+          ? 0.055 + storyVisual * 0.045
+          : 0.035 + storyVisual * 0.055;
+
+
         const baseOrbit = 0.56 + scroll * 0.10 + (finePointer && !reduceMotion ? pointerX * 0.026 : 0);
         const normalRadius = compact ? 9.6 : 8.1;
         const normalY = (compact ? 5.8 : 4.35) - scroll * 0.35 + (finePointer && !reduceMotion ? pointerY * 0.22 : 0);
-        const storyOrbit = -0.48 + storyProgress * 1.42 + (finePointer && !reduceMotion ? pointerX * 0.05 : 0);
-        const storyRadius = compact ? 7.8 : 6.75;
-        const storyY = (compact ? 1.15 : 0.62) + Math.sin(storyProgress * Math.PI * 2) * (compact ? 0.28 : 0.52);
+        const storyRadius = compact ? 9.15 : 7.35;
+        const storyX = compact ? 0 : -0.45 + storyProgress * 0.28;
+        const storyZ = storyRadius;
+        const storyY = compact ? 0.05 : 0.10;
 
         const normalX = Math.sin(baseOrbit) * normalRadius;
         const normalZ = Math.cos(baseOrbit) * normalRadius;
-        const storyX = Math.sin(storyOrbit) * storyRadius;
-        const storyZ = Math.cos(storyOrbit) * storyRadius;
 
         camera.position.x = normalX + (storyX - normalX) * storyVisual;
         camera.position.z = normalZ + (storyZ - normalZ) * storyVisual;
@@ -1006,7 +1249,7 @@
         camera.aspect = innerWidth / innerHeight;
         camera.fov = innerWidth < 760 ? 72 : 70;
         camera.updateProjectionMatrix();
-        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1.15 : 1.6));
+        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 760 ? (lowPower ? 1 : 1.15) : (lowPower ? 1.35 : 1.6)));
         renderer.setSize(innerWidth, innerHeight, false);
         if (reduceMotion) renderScene();
       });
@@ -1015,20 +1258,19 @@
         if (document.hidden) stopAnimation();
         else if (!reduceMotion) startAnimation();
       });
+      addEventListener('pagehide', stopAnimation, { once: true });
 
       renderScene();
       if (!reduceMotion) startAnimation();
 
-      /* Keep references alive for the lifetime of the page. */
+
       void galaxyPoints;
     }
 
     initGalaxy();
   }
 
-  /* --------------------------------------------------------------------------
-     Hero role typewriter
-  -------------------------------------------------------------------------- */
+
   const typewriter = $('[data-role-typewriter]');
 
   if (typewriter) {
@@ -1079,9 +1321,7 @@
     }
   }
 
-  /* --------------------------------------------------------------------------
-     Local and Darwin clocks
-  -------------------------------------------------------------------------- */
+
   function updateLocalTime() {
     const localTime = new Intl.DateTimeFormat(undefined, {
       hour: '2-digit',
@@ -1112,11 +1352,7 @@
   setInterval(updateLocalTime, 30000);
   setInterval(updateDarwinTime, 30000);
 
-  /* --------------------------------------------------------------------------
-     Scroll entrance reveals
-     Shared across the homepage, project pages and Darwin page. The pinned wave
-     story has its own continuous scroll choreography and is excluded here.
-  -------------------------------------------------------------------------- */
+
   const revealTargets = $$([
     '.section-head',
     '.work-card',
@@ -1155,28 +1391,112 @@
     }
   }
 
-  /* --------------------------------------------------------------------------
-     Navigation and smooth scrolling
-  -------------------------------------------------------------------------- */
+
+  $$('img[data-hide-on-error]').forEach(image => {
+    const hide = () => { image.hidden = true; };
+    image.addEventListener('error', hide, { once: true });
+    if (image.complete && image.naturalWidth === 0) hide();
+  });
+
+
   const menuToggle = $('[data-menu-toggle]');
   const mobileMenu = $('.mobile-menu');
+  const mobileMenuBackdrop = $('[data-menu-backdrop]');
+  let menuScrollY = 0;
+  let menuTouchStartY = null;
+
+  function lockPageForMenu() {
+    if (document.body.classList.contains('menu-open')) return;
+    menuScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.classList.add('menu-open');
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${menuScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    document.documentElement.style.overflow = 'hidden';
+  }
+
+  function unlockPageForMenu() {
+    if (!document.body.classList.contains('menu-open')) return;
+    document.body.classList.remove('menu-open');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    document.documentElement.style.overflow = '';
+    window.scrollTo(0, menuScrollY);
+  }
 
   function closeMobileMenu() {
     mobileMenu?.classList.remove('open');
+    menuToggle?.classList.remove('is-open');
+    if (menuToggle) menuToggle.textContent = '☰';
     menuToggle?.setAttribute('aria-expanded', 'false');
+    menuToggle?.setAttribute('aria-label', 'Open navigation');
+    unlockPageForMenu();
   }
 
   $$('[data-scroll-target]').forEach(button => {
     button.addEventListener('click', () => {
       const target = document.getElementById(button.dataset.scrollTarget);
-      target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      closeMobileMenu();
+      const menuWasOpen = mobileMenu?.classList.contains('open');
+      if (menuWasOpen) closeMobileMenu();
+      requestAnimationFrame(() => {
+        target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     });
   });
 
-  menuToggle?.addEventListener('click', () => {
+  menuToggle?.addEventListener('click', event => {
+    event.stopPropagation();
     const isOpen = mobileMenu?.classList.toggle('open') ?? false;
+    menuToggle.classList.toggle('is-open', isOpen);
+    menuToggle.textContent = isOpen ? '×' : '☰';
     menuToggle.setAttribute('aria-expanded', String(isOpen));
+    menuToggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+    if (isOpen) {
+      lockPageForMenu();
+      mobileMenu?.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      unlockPageForMenu();
+    }
+  });
+
+
+  mobileMenu?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+  });
+
+  mobileMenuBackdrop?.addEventListener('click', closeMobileMenu);
+
+
+  mobileMenuBackdrop?.addEventListener('touchstart', event => {
+    menuTouchStartY = event.touches[0]?.clientY ?? null;
+  }, { passive: true });
+  mobileMenuBackdrop?.addEventListener('touchend', event => {
+    if (menuTouchStartY == null) return;
+    const endY = event.changedTouches[0]?.clientY ?? menuTouchStartY;
+    if (endY - menuTouchStartY < -55) closeMobileMenu();
+    menuTouchStartY = null;
+  }, { passive: true });
+
+
+  mobileMenu?.addEventListener('wheel', event => {
+    if (mobileMenu.scrollTop <= 1 && event.deltaY < -30) closeMobileMenu();
+  }, { passive: true });
+
+
+  document.addEventListener('pointerdown', event => {
+    if (!mobileMenu?.classList.contains('open')) return;
+    if (mobileMenu.contains(event.target) || menuToggle?.contains(event.target)) return;
+    if (mobileMenuBackdrop?.contains(event.target)) return;
+    closeMobileMenu();
+  }, { passive: true });
+
+  addEventListener('keydown', event => {
+    if (event.key === 'Escape' && mobileMenu?.classList.contains('open')) closeMobileMenu();
   });
 
   addEventListener('resize', () => {
@@ -1203,9 +1523,7 @@
     sections.forEach(section => observer.observe(section));
   }
 
-  /* --------------------------------------------------------------------------
-     Toast
-  -------------------------------------------------------------------------- */
+
   window.showToast = message => {
     const toast = $('#toast');
     if (!toast) return;
@@ -1215,9 +1533,7 @@
     window.__toast = setTimeout(() => toast.classList.remove('show'), 3100);
   };
 
-  /* --------------------------------------------------------------------------
-     Copy email
-  -------------------------------------------------------------------------- */
+
   $$('[data-copy-email]').forEach(button => {
     button.addEventListener('click', async () => {
       const email = 'arikesh873@gmail.com';
@@ -1237,11 +1553,7 @@
     });
   });
 
-  /* --------------------------------------------------------------------------
-     Contact form
-     - Desktop/laptop: open a pre-filled Gmail compose window in a new tab.
-     - Mobile/tablet: keep the native mailto flow so the visitor's mail app opens.
-  -------------------------------------------------------------------------- */
+
   const contactForm = $('#contact-form');
 
   function isMobileMailDevice() {
@@ -1289,8 +1601,6 @@
     }
   });
 
-  /* --------------------------------------------------------------------------
-     Footer year
-  -------------------------------------------------------------------------- */
+
   $('#year')?.replaceChildren(document.createTextNode(new Date().getFullYear()));
 })();

@@ -296,6 +296,43 @@
     }
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopAuto();
+    else startAuto();
+  });
+  addEventListener('pagehide', stopAuto, { once: true });
+
   update();
   startAuto();
+})();
+
+
+(() => {
+  const lazyVideos = [...document.querySelectorAll('video[data-lazy-video]')];
+  if (!lazyVideos.length) return;
+
+  const loadVideo = video => {
+    if (video.dataset.loaded === 'true') return;
+    video.querySelectorAll('source[data-src]').forEach(source => {
+      source.src = source.dataset.src;
+      source.removeAttribute('data-src');
+    });
+    video.dataset.loaded = 'true';
+    video.load();
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const video = entry.target;
+      if (entry.isIntersecting) {
+        loadVideo(video);
+        video.play().catch(() => undefined);
+      } else if (!video.paused) {
+        video.pause();
+      }
+    });
+  }, { rootMargin: '240px 0px', threshold: 0.01 });
+
+  lazyVideos.forEach(video => observer.observe(video));
+  addEventListener('pagehide', () => observer.disconnect(), { once: true });
 })();

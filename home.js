@@ -4,12 +4,7 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
-  /* --------------------------------------------------------------------------
-     Scroll-led spherical-wave story
-     Four full-screen chapters stay pinned while the WebGL sphere responds to
-     scroll progress. The words reveal in short 3D lifts instead of appearing
-     all at once, echoing the supplied Spherical Waves motion language.
-  -------------------------------------------------------------------------- */
+
   const waveStory = $('[data-wave-story]');
 
   if (waveStory) {
@@ -52,7 +47,8 @@
       document.documentElement.style.setProperty('--wave-story-progress', progress.toFixed(4));
       document.body.classList.toggle('wave-story-active', active);
 
-      if (storyProgressBar) storyProgressBar.style.transform = `scaleX(${Math.max(0.02, progress)})`;
+      if (storyProgressBar) storyProgressBar.style.transform = `scaleY(${Math.max(0.02, progress)})`;
+      waveStory.dataset.stage = String(activeIndex + 1);
       if (storyCounter) storyCounter.textContent = String(activeIndex + 1).padStart(3, '0');
 
       storyFrames.forEach((frame, index) => {
@@ -81,9 +77,7 @@
     updateWaveStory();
   }
 
-  /* --------------------------------------------------------------------------
-     Hero wave lettering
-  -------------------------------------------------------------------------- */
+
   $$('[data-wave]').forEach((line, lineIndex) => {
     const text = line.textContent;
     line.textContent = '';
@@ -97,9 +91,7 @@
     });
   });
 
-  /* --------------------------------------------------------------------------
-     Calculator
-  -------------------------------------------------------------------------- */
+
   let expression = '';
   const display = $('#calc-display');
   const history = $('#calc-history');
@@ -270,9 +262,7 @@
     }
   });
 
-  /* --------------------------------------------------------------------------
-     Persistent timer
-  -------------------------------------------------------------------------- */
+
   const STORAGE_KEY = 'rikeshFocusTimerV2';
   const timerDisplay = $('#timer-display');
   const timerStatus = $('#timer-status');
@@ -314,7 +304,7 @@
       oscillator.start();
       oscillator.stop(audio.currentTime + duration);
     } catch {
-      /* Audio is optional. */
+
     }
   }
 
@@ -356,7 +346,7 @@
           });
         }
       } catch {
-        /* Browser notifications are optional. */
+
       }
     }
   }
@@ -477,7 +467,7 @@
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
       if (saved && typeof saved === 'object') state = { ...state, ...saved };
     } catch {
-      /* Ignore corrupt saved state. */
+
     }
 
     if (state.running && state.endTime) {

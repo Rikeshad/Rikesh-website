@@ -1,285 +1,303 @@
 <!DOCTYPE html>
+
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <title>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>
    Pizza Shop POS — Rikesh Adhikari
   </title>
-  <script>
-   (() => {
-    try {
-     const savedTheme = localStorage.getItem('rikeshTheme');
-     document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
-    } catch {
-     document.documentElement.dataset.theme = 'dark';
-    }
-   })();
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-  <link href="../../assets/favicon.svg" rel="icon"/>
-  <link href="../../styles.css" rel="stylesheet"/>
-  <link rel="preload" as="image" href="../../assets/images/pos/login.png"/>
- </head>
- <body>
-  <div class="site-intro" id="site-intro">
-   <div class="intro-main">
-    <div class="intro-copy">
-     <span>
+<script src="../../theme-bootstrap.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="../../assets/favicon.svg" rel="icon"/>
+<link href="../../styles.css" rel="stylesheet"/>
+<link as="image" href="../../assets/images/pos/login.png" rel="preload"/>
+</head>
+<body>
+<div class="site-intro" id="site-intro">
+<div class="intro-main">
+<div class="intro-copy">
+<span>
       WELCOME
      </span>
-     <span class="indent">
+<span class="indent">
       TO MY
      </span>
-     <span class="outline">
+<span class="outline">
       WEBSITE
      </span>
-    </div>
-    <div aria-hidden="true" class="intro-star">
-    </div>
-   </div>
-   <div class="intro-bottom">
-    <span>
+</div>
+<div aria-hidden="true" class="intro-star">
+</div>
+</div>
+<div class="intro-bottom">
+<span>
      ENTERING EXPERIENCE
     </span>
-    <span class="intro-pct" data-intro-pct="">
+<span class="intro-pct" data-intro-pct="">
      0%
     </span>
-    <div class="intro-progress">
-     <i data-intro-bar="">
-     </i>
-    </div>
-   </div>
-  </div>
-  <div class="ambient">
-  </div>
-  <canvas class="bg-canvas" aria-hidden="true">
-  </canvas>
-  <div class="cosmic-veil" aria-hidden="true"></div>
-  <div class="cursor-dot">
-  </div>
-  <div class="cursor-ring">
-  </div>
-  <div class="toast" id="toast">
-  </div>
-  <main class="subpage">
-   <div class="container">
-    <div class="subnav">
-     <a class="back-home" href="../../">
+<div class="intro-progress">
+<i data-intro-bar="">
+</i>
+</div>
+</div>
+</div>
+<div class="ambient">
+</div>
+<canvas aria-hidden="true" class="bg-canvas">
+</canvas>
+<div aria-hidden="true" class="cosmic-veil"></div>
+<div class="cursor-dot">
+</div>
+<div class="cursor-ring">
+</div>
+<div class="toast" id="toast">
+</div><header class="site-header">
+<div class="nav-shell glass">
+<a class="brand" href="../../">
+<span class="brand-mark">RA</span>
+<span class="brand-copy"><strong>RIKESH ADHIKARI</strong><small>Telecommunications Network Planner</small></span>
+</a>
+<nav aria-label="Primary" class="site-nav">
+<a class="nav-btn nav-link" href="../../">Home</a>
+<a class="nav-btn nav-link active" href="../../#projects">Projects</a>
+<a class="nav-btn nav-link" href="../../#tools">Tools</a>
+<a class="nav-btn nav-link" href="../../#about">About</a>
+<a class="nav-btn nav-link" href="../../darwin/">Darwin</a>
+</nav>
+<div class="nav-right nav-actions">
+<button aria-label="Switch colour mode" class="theme-toggle nav-theme-toggle" data-theme-toggle="" title="Switch colour mode" type="button">
+<span aria-hidden="true" class="theme-toggle-icon" data-theme-icon="">☾</span><span data-theme-label="">Night</span>
+</button>
+<a class="nav-contact" href="../../#contact">Contact</a>
+</div>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" type="button">☰</button>
+</div>
+<div aria-label="Mobile navigation" class="mobile-menu glass">
+<a class="nav-btn nav-link" href="../../">Home</a>
+<a class="nav-btn nav-link active" href="../../#projects">Projects</a>
+<a class="nav-btn nav-link" href="../../#tools">Tools</a>
+<a class="nav-btn nav-link" href="../../#about">About</a>
+<a class="nav-btn nav-link" href="../../darwin/">Darwin</a>
+<button aria-label="Switch colour mode" class="theme-toggle theme-toggle-mobile" data-theme-toggle="" title="Switch colour mode" type="button">
+<span aria-hidden="true" class="theme-toggle-icon" data-theme-icon="">☾</span><span data-theme-label="">Night mode</span>
+</button>
+<a class="nav-contact mobile-contact" href="../../#contact">Contact</a>
+</div>
+<button aria-label="Close navigation" class="mobile-menu-backdrop" data-menu-backdrop="" tabindex="-1" type="button"></button>
+</header>
+<main class="subpage">
+<div class="container">
+<div class="subnav">
+<a class="back-home" href="../../">
       ← Back to portfolio
      </a>
-     <div class="subnav-actions">
-      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch to day mode" title="Switch colour mode">
-       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☀</span>
-       <span data-theme-label>Day</span>
-      </button>
-      <a class="darwin-button" href="../../darwin/">
+<div class="subnav-actions">
+<a class="darwin-button" href="../../darwin/">
       Explore Darwin ↗
      </a>
-     </div>
-    </div>
-    <section class="project-hero">
-     <video autoplay="" loop="" muted="" playsinline="" preload="metadata">
-      <source src="../../assets/video/taking-order.mp4" type="video/mp4"/>
-     </video>
-     <div>
-      <div class="eyebrow">
+</div>
+</div>
+<section class="project-hero">
+<video autoplay="" loop="" muted="" playsinline="" poster="../../assets/images/pos/taking-order.png" preload="metadata">
+<source src="../../assets/video/taking-order.mp4" type="video/mp4"/>
+</video>
+<div>
+<div class="eyebrow">
        DESKTOP SYSTEM
       </div>
-      <h1>
+<h1>
        Pizza Shop POS
       </h1>
-     </div>
-     <div class="project-hero-copy">
-      <p>
+</div>
+<div class="project-hero-copy">
+<p>
        A desktop point-of-sale system I built for the everyday work of a pizza shop, from taking orders and managing stock to reporting and staff administration.
       </p>
-      <div class="facts">
-       <span>
+<div class="facts">
+<span>
         Electron
        </span>
-       <span>
+<span>
         JavaScript
        </span>
-       <span>
+<span>
         MySQL
        </span>
-       <span>
+<span>
         Desktop UI
        </span>
-       <span>
+<span>
         POS Workflow
        </span>
-      </div>
-     </div>
-    </section>
-    <section class="gallery-section" id="gallery">
-     <div class="gallery-header">
-      <div>
-       <div class="eyebrow">
+</div>
+</div>
+</section>
+<section class="gallery-section" id="gallery">
+<div class="gallery-header">
+<div>
+<div class="eyebrow">
         VISUAL WALKTHROUGH
        </div>
-       <h2>
+<h2>
         EXPLORE
         <br/>
         THE DETAILS.
        </h2>
-      </div>
-      <p>
+</div>
+<p>
        Auto-rotates · drag, swipe, use arrows or select a dot · click the centre screenshot to enlarge
       </p>
-     </div>
-     <div class="showcase" data-gallery="">
-      <video autoplay="" class="showcase-video" loop="" muted="" playsinline="" preload="metadata">
-       <source src="../../assets/video/taking-order.mp4" type="video/mp4"/>
-      </video>
-      <div class="showcase-overlay">
-      </div>
-      <div class="gallery3d">
-       <div class="gallery-help">
+</div>
+<div class="showcase" data-gallery="">
+<video class="showcase-video" data-lazy-video="" loop="" muted="" playsinline="" poster="../../assets/images/pos/taking-order.png" preload="none">
+<source data-src="../../assets/video/taking-order.mp4" type="video/mp4"/>
+</video>
+<div class="showcase-overlay">
+</div>
+<div class="gallery3d">
+<div class="gallery-help">
         Auto-rotates · drag, swipe, use arrows or select a dot · click the centre screenshot to enlarge
        </div>
-       <div class="gallery-stage" data-gallery-stage="">
-        <button class="gallery-card3d" data-description="Provides a dedicated sign-in screen so authorised team members can enter the POS before accessing operational functions." data-gallery-card="" data-kicker="Authentication" data-title="Secure Login" type="button">
-         <img alt="Secure Login screenshot" loading="eager" decoding="async" fetchpriority="high" src="../../assets/images/pos/login.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Acts as the central starting point for the store, bringing core ordering and operational functions into one interface." data-gallery-card="" data-kicker="Operations hub" data-title="POS Home" type="button">
-         <img alt="POS Home screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/home.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Lets staff select products, build an active order and move quickly through the ordering process during busy service." data-gallery-card="" data-kicker="Ordering workflow" data-title="Taking an Order" type="button">
-         <img alt="Taking an Order screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/taking-order.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Supports pizza customisation so options and toppings can be adjusted before the item is added to the order." data-gallery-card="" data-kicker="Product configuration" data-title="Customising a Pizza" type="button">
-         <img alt="Customising a Pizza screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/customising-pizza.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Provides a review step for the order, totals and completion workflow before the transaction is finalised." data-gallery-card="" data-kicker="Checkout" data-title="Finalising an Order" type="button">
-         <img alt="Finalising an Order screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/finalising-order.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Separates the customer view from the staff interface so order information can be presented clearly during service." data-gallery-card="" data-kicker="Live order display" data-title="Customer-Facing Screen" type="button">
-         <img alt="Customer-Facing Screen screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/customer-facing.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Gives staff a focused view of items being prepared and helps move orders through the production stage." data-gallery-card="" data-kicker="Production workflow" data-title="Preparation Page" type="button">
-         <img alt="Preparation Page screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/preparation.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Allows previous orders to be reviewed so staff and management can look back at completed transactions and order details." data-gallery-card="" data-kicker="Order records" data-title="Order History" type="button">
-         <img alt="Order History screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/order-history.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Supports maintaining the menu catalogue by adding products and keeping the items available to staff up to date." data-gallery-card="" data-kicker="Catalogue management" data-title="Adding Menu Items" type="button">
-         <img alt="Adding Menu Items screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/adding-menu.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Provides a management view for reviewing and refining the menu currently presented through the POS." data-gallery-card="" data-kicker="Menu control" data-title="Menu Optimisation" type="button">
-         <img alt="Menu Optimisation screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/optimise-menu.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Supports managing system users and staff access so the POS can be used across different roles." data-gallery-card="" data-kicker="Access administration" data-title="User Management" type="button">
-         <img alt="User Management screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/user-management.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Tracks ingredient quantities, stock levels, suppliers and reorder information so the store can understand what is healthy, low or out of stock." data-gallery-card="" data-kicker="Stock control" data-title="Inventory Management" type="button">
-         <img alt="Inventory Management screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/inventory.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Supports daily cash and till reconciliation by recording denominations and helping staff compare counted cash with expected takings." data-gallery-card="" data-kicker="Till reconciliation" data-title="Daily Sales Report" type="button">
-         <img alt="Daily Sales Report screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/sales-report-daily.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Provides weekly, fortnightly and monthly reporting views that separate sales, payment activity, discounts, refunds and other financial information." data-gallery-card="" data-kicker="Performance analysis" data-title="Sales Period Reporting" type="button">
-         <img alt="Sales Period Reporting screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/sales-report-period.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Shows how the application can support deployment across multiple store locations rather than being limited to a single shop." data-gallery-card="" data-kicker="Scalable operations" data-title="Multi-Store Support" type="button">
-         <img alt="Multi-Store Support screenshot" loading="lazy" decoding="async" src="../../assets/images/pos/multiple-stores.png"/>
-        </button>
-        <div class="gallery-controls" aria-label="Screenshot navigation">
-         <button aria-label="Previous screenshot" class="gallery-arrow gallery-arrow-prev" data-gallery-prev="" type="button">
-          <span aria-hidden="true">←</span>
-         </button>
-         <div class="gallery-dots" data-gallery-dots=""></div>
-         <button aria-label="Next screenshot" class="gallery-arrow gallery-arrow-next" data-gallery-next="" type="button">
-          <span aria-hidden="true">→</span>
-         </button>
-        </div>
-       </div>
-       <div class="slide-detail">
-        <div>
-         <div class="eyebrow" data-gallery-kicker="">
-         </div>
-         <h3 data-gallery-title="">
-         </h3>
-         <p data-gallery-description="">
-         </p>
-        </div>
-        <div class="slide-count" data-gallery-count="">
-        </div>
-       </div>
-      </div>
-     </div>
-     <dialog class="gallery-modal" data-gallery-modal="">
-      <button aria-label="Close" class="modal-close" data-modal-close="">
+<div class="gallery-stage" data-gallery-stage="">
+<button class="gallery-card3d" data-description="Provides a dedicated sign-in screen so authorised team members can enter the POS before accessing operational functions." data-gallery-card="" data-kicker="Authentication" data-title="Secure Login" type="button">
+<img alt="Secure Login screenshot" decoding="async" fetchpriority="high" loading="eager" src="../../assets/images/pos/login.png"/>
+</button>
+<button class="gallery-card3d" data-description="Acts as the central starting point for the store, bringing core ordering and operational functions into one interface." data-gallery-card="" data-kicker="Operations hub" data-title="POS Home" type="button">
+<img alt="POS Home screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/home.png"/>
+</button>
+<button class="gallery-card3d" data-description="Lets staff select products, build an active order and move quickly through the ordering process during busy service." data-gallery-card="" data-kicker="Ordering workflow" data-title="Taking an Order" type="button">
+<img alt="Taking an Order screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/taking-order.png"/>
+</button>
+<button class="gallery-card3d" data-description="Supports pizza customisation so options and toppings can be adjusted before the item is added to the order." data-gallery-card="" data-kicker="Product configuration" data-title="Customising a Pizza" type="button">
+<img alt="Customising a Pizza screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/customising-pizza.png"/>
+</button>
+<button class="gallery-card3d" data-description="Provides a review step for the order, totals and completion workflow before the transaction is finalised." data-gallery-card="" data-kicker="Checkout" data-title="Finalising an Order" type="button">
+<img alt="Finalising an Order screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/finalising-order.png"/>
+</button>
+<button class="gallery-card3d" data-description="Separates the customer view from the staff interface so order information can be presented clearly during service." data-gallery-card="" data-kicker="Live order display" data-title="Customer-Facing Screen" type="button">
+<img alt="Customer-Facing Screen screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/customer-facing.png"/>
+</button>
+<button class="gallery-card3d" data-description="Gives staff a focused view of items being prepared and helps move orders through the production stage." data-gallery-card="" data-kicker="Production workflow" data-title="Preparation Page" type="button">
+<img alt="Preparation Page screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/preparation.png"/>
+</button>
+<button class="gallery-card3d" data-description="Allows previous orders to be reviewed so staff and management can look back at completed transactions and order details." data-gallery-card="" data-kicker="Order records" data-title="Order History" type="button">
+<img alt="Order History screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/order-history.png"/>
+</button>
+<button class="gallery-card3d" data-description="Supports maintaining the menu catalogue by adding products and keeping the items available to staff up to date." data-gallery-card="" data-kicker="Catalogue management" data-title="Adding Menu Items" type="button">
+<img alt="Adding Menu Items screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/adding-menu.png"/>
+</button>
+<button class="gallery-card3d" data-description="Provides a management view for reviewing and refining the menu currently presented through the POS." data-gallery-card="" data-kicker="Menu control" data-title="Menu Optimisation" type="button">
+<img alt="Menu Optimisation screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/optimise-menu.png"/>
+</button>
+<button class="gallery-card3d" data-description="Supports managing system users and staff access so the POS can be used across different roles." data-gallery-card="" data-kicker="Access administration" data-title="User Management" type="button">
+<img alt="User Management screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/user-management.png"/>
+</button>
+<button class="gallery-card3d" data-description="Tracks ingredient quantities, stock levels, suppliers and reorder information so the store can understand what is healthy, low or out of stock." data-gallery-card="" data-kicker="Stock control" data-title="Inventory Management" type="button">
+<img alt="Inventory Management screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/inventory.png"/>
+</button>
+<button class="gallery-card3d" data-description="Supports daily cash and till reconciliation by recording denominations and helping staff compare counted cash with expected takings." data-gallery-card="" data-kicker="Till reconciliation" data-title="Daily Sales Report" type="button">
+<img alt="Daily Sales Report screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/sales-report-daily.png"/>
+</button>
+<button class="gallery-card3d" data-description="Provides weekly, fortnightly and monthly reporting views that separate sales, payment activity, discounts, refunds and other financial information." data-gallery-card="" data-kicker="Performance analysis" data-title="Sales Period Reporting" type="button">
+<img alt="Sales Period Reporting screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/sales-report-period.png"/>
+</button>
+<button class="gallery-card3d" data-description="Shows how the application can support deployment across multiple store locations rather than being limited to a single shop." data-gallery-card="" data-kicker="Scalable operations" data-title="Multi-Store Support" type="button">
+<img alt="Multi-Store Support screenshot" decoding="async" loading="lazy" src="../../assets/images/pos/multiple-stores.png"/>
+</button>
+<div aria-label="Screenshot navigation" class="gallery-controls">
+<button aria-label="Previous screenshot" class="gallery-arrow gallery-arrow-prev" data-gallery-prev="" type="button">
+<span aria-hidden="true">←</span>
+</button>
+<div class="gallery-dots" data-gallery-dots=""></div>
+<button aria-label="Next screenshot" class="gallery-arrow gallery-arrow-next" data-gallery-next="" type="button">
+<span aria-hidden="true">→</span>
+</button>
+</div>
+</div>
+<div class="slide-detail">
+<div>
+<div class="eyebrow" data-gallery-kicker="">
+</div>
+<h3 data-gallery-title="">
+</h3>
+<p data-gallery-description="">
+</p>
+</div>
+<div class="slide-count" data-gallery-count="">
+</div>
+</div>
+</div>
+</div>
+<dialog class="gallery-modal" data-gallery-modal="">
+<button aria-label="Close" class="modal-close" data-modal-close="">
        ×
       </button>
-      <div class="modal-media">
-       <img alt="" data-modal-image=""/>
-      </div>
-      <div class="modal-copy">
-       <h3 data-modal-title="">
-       </h3>
-       <p data-modal-description="">
-       </p>
-      </div>
-     </dialog>
-    </section>
-    <section class="story">
-     <div>
-      <div class="eyebrow">
+<div class="modal-media">
+<img alt="" data-modal-image=""/>
+</div>
+<div class="modal-copy">
+<h3 data-modal-title="">
+</h3>
+<p data-modal-description="">
+</p>
+</div>
+</dialog>
+</section>
+<section class="story">
+<div>
+<div class="eyebrow">
        PROJECT STORY
       </div>
-      <h2>
+<h2>
        WHY IT
        <br/>
        MATTERS.
       </h2>
-     </div>
-     <div class="story-list">
-      <div class="story-item">
-       <h3>
+</div>
+<div class="story-list">
+<div class="story-item">
+<h3>
         Ordering first
        </h3>
-       <p>
+<p>
         Order entry is kept simple so staff can move quickly while still seeing the customer and product information they need.
        </p>
-      </div>
-      <div class="story-item">
-       <h3>
+</div>
+<div class="story-item">
+<h3>
         Operational visibility
        </h3>
-       <p>
+<p>
         Inventory, preparation, order history and reporting give staff a wider view of day-to-day store activity.
        </p>
-      </div>
-      <div class="story-item">
-       <h3>
+</div>
+<div class="story-item">
+<h3>
         Built to scale
        </h3>
-       <p>
+<p>
         The system can be extended for different staff roles and more than one store location without changing the main workflow.
        </p>
-      </div>
-     </div>
-    </section>
-   </div>
-  </main>
-  <footer class="footer">
-   <div class="container footer-inner">
-    <a href="mailto:arikesh873@gmail.com">
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="footer">
+<div class="container footer-inner">
+<a href="mailto:arikesh873@gmail.com">
      Rikesh Adhikari · arikesh873@gmail.com
     </a>
-    <button class="back-top" data-back-top="" type="button">
+<button class="back-top" data-back-top="" type="button">
      Back to top ↑
     </button>
-   </div>
-  </footer>
-  <script src="../../site.js">
-  </script>
-  <script src="../../project.js">
-  </script>
- </body>
+</div>
+</footer>
+<script defer="" src="../../site.js"></script>
+<script defer="" src="../../project.js"></script>
+</body>
 </html>

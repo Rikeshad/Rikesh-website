@@ -1,257 +1,275 @@
 <!DOCTYPE html>
+
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <title>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>
    BrewBean — Rikesh Adhikari
   </title>
-  <script>
-   (() => {
-    try {
-     const savedTheme = localStorage.getItem('rikeshTheme');
-     document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
-    } catch {
-     document.documentElement.dataset.theme = 'dark';
-    }
-   })();
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-  <link href="../../assets/favicon.svg" rel="icon"/>
-  <link href="../../styles.css" rel="stylesheet"/>
-  <link rel="preload" as="image" href="../../assets/images/brewbean/homepage.png"/>
- </head>
- <body>
-  <div class="site-intro" id="site-intro">
-   <div class="intro-main">
-    <div class="intro-copy">
-     <span>
+<script src="../../theme-bootstrap.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="../../assets/favicon.svg" rel="icon"/>
+<link href="../../styles.css" rel="stylesheet"/>
+<link as="image" href="../../assets/images/brewbean/homepage.png" rel="preload"/>
+</head>
+<body>
+<div class="site-intro" id="site-intro">
+<div class="intro-main">
+<div class="intro-copy">
+<span>
       WELCOME
      </span>
-     <span class="indent">
+<span class="indent">
       TO MY
      </span>
-     <span class="outline">
+<span class="outline">
       WEBSITE
      </span>
-    </div>
-    <div aria-hidden="true" class="intro-star">
-    </div>
-   </div>
-   <div class="intro-bottom">
-    <span>
+</div>
+<div aria-hidden="true" class="intro-star">
+</div>
+</div>
+<div class="intro-bottom">
+<span>
      ENTERING EXPERIENCE
     </span>
-    <span class="intro-pct" data-intro-pct="">
+<span class="intro-pct" data-intro-pct="">
      0%
     </span>
-    <div class="intro-progress">
-     <i data-intro-bar="">
-     </i>
-    </div>
-   </div>
-  </div>
-  <div class="ambient">
-  </div>
-  <canvas class="bg-canvas" aria-hidden="true">
-  </canvas>
-  <div class="cosmic-veil" aria-hidden="true"></div>
-  <div class="cursor-dot">
-  </div>
-  <div class="cursor-ring">
-  </div>
-  <div class="toast" id="toast">
-  </div>
-  <main class="subpage">
-   <div class="container">
-    <div class="subnav">
-     <a class="back-home" href="../../">
+<div class="intro-progress">
+<i data-intro-bar="">
+</i>
+</div>
+</div>
+</div>
+<div class="ambient">
+</div>
+<canvas aria-hidden="true" class="bg-canvas">
+</canvas>
+<div aria-hidden="true" class="cosmic-veil"></div>
+<div class="cursor-dot">
+</div>
+<div class="cursor-ring">
+</div>
+<div class="toast" id="toast">
+</div><header class="site-header">
+<div class="nav-shell glass">
+<a class="brand" href="../../">
+<span class="brand-mark">RA</span>
+<span class="brand-copy"><strong>RIKESH ADHIKARI</strong><small>Telecommunications Network Planner</small></span>
+</a>
+<nav aria-label="Primary" class="site-nav">
+<a class="nav-btn nav-link" href="../../">Home</a>
+<a class="nav-btn nav-link active" href="../../#projects">Projects</a>
+<a class="nav-btn nav-link" href="../../#tools">Tools</a>
+<a class="nav-btn nav-link" href="../../#about">About</a>
+<a class="nav-btn nav-link" href="../../darwin/">Darwin</a>
+</nav>
+<div class="nav-right nav-actions">
+<button aria-label="Switch colour mode" class="theme-toggle nav-theme-toggle" data-theme-toggle="" title="Switch colour mode" type="button">
+<span aria-hidden="true" class="theme-toggle-icon" data-theme-icon="">☾</span><span data-theme-label="">Night</span>
+</button>
+<a class="nav-contact" href="../../#contact">Contact</a>
+</div>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" type="button">☰</button>
+</div>
+<div aria-label="Mobile navigation" class="mobile-menu glass">
+<a class="nav-btn nav-link" href="../../">Home</a>
+<a class="nav-btn nav-link active" href="../../#projects">Projects</a>
+<a class="nav-btn nav-link" href="../../#tools">Tools</a>
+<a class="nav-btn nav-link" href="../../#about">About</a>
+<a class="nav-btn nav-link" href="../../darwin/">Darwin</a>
+<button aria-label="Switch colour mode" class="theme-toggle theme-toggle-mobile" data-theme-toggle="" title="Switch colour mode" type="button">
+<span aria-hidden="true" class="theme-toggle-icon" data-theme-icon="">☾</span><span data-theme-label="">Night mode</span>
+</button>
+<a class="nav-contact mobile-contact" href="../../#contact">Contact</a>
+</div>
+<button aria-label="Close navigation" class="mobile-menu-backdrop" data-menu-backdrop="" tabindex="-1" type="button"></button>
+</header>
+<main class="subpage">
+<div class="container">
+<div class="subnav">
+<a class="back-home" href="../../">
       ← Back to portfolio
      </a>
-     <div class="subnav-actions">
-      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch to day mode" title="Switch colour mode">
-       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☀</span>
-       <span data-theme-label>Day</span>
-      </button>
-      <a class="darwin-button" href="../../darwin/">
+<div class="subnav-actions">
+<a class="darwin-button" href="../../darwin/">
       Explore Darwin ↗
      </a>
-     </div>
-    </div>
-    <section class="project-hero brew">
-     <div>
-      <div class="eyebrow">
+</div>
+</div>
+<section class="project-hero brew">
+<div>
+<div class="eyebrow">
        WEB PROJECT
       </div>
-      <h1>
+<h1>
        BrewBean
       </h1>
-     </div>
-     <div class="project-hero-copy">
-      <p>
+</div>
+<div class="project-hero-copy">
+<p>
        A responsive coffee website for browsing products, finding recommendations, using loyalty features and exploring subscription options.
       </p>
-      <div class="facts">
-       <span>
+<div class="facts">
+<span>
         Responsive Web
        </span>
-       <span>
+<span>
         Coffee E-commerce
        </span>
-       <span>
+<span>
         Recommendations
        </span>
-       <span>
+<span>
         Loyalty
        </span>
-       <span>
+<span>
         Subscriptions
        </span>
-      </div>
-      <div class="project-actions">
-       <a class="btn btn-gold" href="https://brewbean.rikeshad.com/" rel="noopener" target="_blank">
+</div>
+<div class="project-actions">
+<a class="btn btn-gold" href="https://brewbean.rikeshad.com/" rel="noopener" target="_blank">
         Visit Live Website ↗
        </a>
-       <button class="btn btn-glass" data-scroll-target="gallery" type="button">
+<button class="btn btn-glass" data-scroll-target="gallery" type="button">
         View Gallery ↓
        </button>
-      </div>
-     </div>
-    </section>
-    <section class="gallery-section" id="gallery">
-     <div class="gallery-header">
-      <div>
-       <div class="eyebrow">
+</div>
+</div>
+</section>
+<section class="gallery-section" id="gallery">
+<div class="gallery-header">
+<div>
+<div class="eyebrow">
         WEBSITE GALLERY
        </div>
-       <h2>
+<h2>
         EXPLORE
         <br/>
         THE DETAILS.
        </h2>
-      </div>
-      <p>
+</div>
+<p>
        Auto-rotates · drag, swipe, use arrows or select a dot · click the centre screenshot to enlarge
       </p>
-     </div>
-     <div class="showcase" data-gallery="">
-      <div class="showcase-overlay">
-      </div>
-      <div class="gallery3d">
-       <div class="gallery-help">
+</div>
+<div class="showcase" data-gallery="">
+<div class="showcase-overlay">
+</div>
+<div class="gallery3d">
+<div class="gallery-help">
         Auto-rotates · drag, swipe, use arrows or select a dot · click the centre screenshot to enlarge
        </div>
-       <div class="gallery-stage" data-gallery-stage="">
-        <button class="gallery-card3d" data-description="The homepage introduces BrewBean and gives visitors a clear starting point for browsing the coffee range." data-gallery-card="" data-kicker="First impression" data-title="BrewBean Homepage" type="button">
-         <img alt="BrewBean Homepage screenshot" loading="eager" decoding="async" fetchpriority="high" src="../../assets/images/brewbean/homepage.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Coffee products are grouped into clear categories so visitors can find the type of coffee they are looking for quickly." data-gallery-card="" data-kicker="Browse" data-title="Product Categories" type="button">
-         <img alt="Product Categories screenshot" loading="lazy" decoding="async" src="../../assets/images/brewbean/categories.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="Recommendations help visitors find coffees that suit their interests without relying only on the category pages." data-gallery-card="" data-kicker="Discovery" data-title="Recommendations" type="button">
-         <img alt="Recommendations screenshot" loading="lazy" decoding="async" src="../../assets/images/brewbean/recommendation.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="The loyalty section gives returning customers a simple way to see the benefits available to them." data-gallery-card="" data-kicker="Retention" data-title="Loyalty Features" type="button">
-         <img alt="Loyalty Features screenshot" loading="lazy" decoding="async" src="../../assets/images/brewbean/loyalty.png"/>
-        </button>
-        <button class="gallery-card3d" data-description="The subscription section is for customers who want coffee delivered on a recurring schedule." data-gallery-card="" data-kicker="Recurring coffee" data-title="Subscriptions" type="button">
-         <img alt="Subscriptions screenshot" loading="lazy" decoding="async" src="../../assets/images/brewbean/subscription.png"/>
-        </button>
-        <div class="gallery-controls" aria-label="Screenshot navigation">
-         <button aria-label="Previous screenshot" class="gallery-arrow gallery-arrow-prev" data-gallery-prev="" type="button">
-          <span aria-hidden="true">←</span>
-         </button>
-         <div class="gallery-dots" data-gallery-dots=""></div>
-         <button aria-label="Next screenshot" class="gallery-arrow gallery-arrow-next" data-gallery-next="" type="button">
-          <span aria-hidden="true">→</span>
-         </button>
-        </div>
-       </div>
-       <div class="slide-detail">
-        <div>
-         <div class="eyebrow" data-gallery-kicker="">
-         </div>
-         <h3 data-gallery-title="">
-         </h3>
-         <p data-gallery-description="">
-         </p>
-        </div>
-        <div class="slide-count" data-gallery-count="">
-        </div>
-       </div>
-      </div>
-     </div>
-     <dialog class="gallery-modal" data-gallery-modal="">
-      <button aria-label="Close" class="modal-close" data-modal-close="">
+<div class="gallery-stage" data-gallery-stage="">
+<button class="gallery-card3d" data-description="The homepage introduces BrewBean and gives visitors a clear starting point for browsing the coffee range." data-gallery-card="" data-kicker="First impression" data-title="BrewBean Homepage" type="button">
+<img alt="BrewBean Homepage screenshot" decoding="async" fetchpriority="high" loading="eager" src="../../assets/images/brewbean/homepage.png"/>
+</button>
+<button class="gallery-card3d" data-description="Coffee products are grouped into clear categories so visitors can find the type of coffee they are looking for quickly." data-gallery-card="" data-kicker="Browse" data-title="Product Categories" type="button">
+<img alt="Product Categories screenshot" decoding="async" loading="lazy" src="../../assets/images/brewbean/categories.png"/>
+</button>
+<button class="gallery-card3d" data-description="Recommendations help visitors find coffees that suit their interests without relying only on the category pages." data-gallery-card="" data-kicker="Discovery" data-title="Recommendations" type="button">
+<img alt="Recommendations screenshot" decoding="async" loading="lazy" src="../../assets/images/brewbean/recommendation.png"/>
+</button>
+<button class="gallery-card3d" data-description="The loyalty section gives returning customers a simple way to see the benefits available to them." data-gallery-card="" data-kicker="Retention" data-title="Loyalty Features" type="button">
+<img alt="Loyalty Features screenshot" decoding="async" loading="lazy" src="../../assets/images/brewbean/loyalty.png"/>
+</button>
+<button class="gallery-card3d" data-description="The subscription section is for customers who want coffee delivered on a recurring schedule." data-gallery-card="" data-kicker="Recurring coffee" data-title="Subscriptions" type="button">
+<img alt="Subscriptions screenshot" decoding="async" loading="lazy" src="../../assets/images/brewbean/subscription.png"/>
+</button>
+<div aria-label="Screenshot navigation" class="gallery-controls">
+<button aria-label="Previous screenshot" class="gallery-arrow gallery-arrow-prev" data-gallery-prev="" type="button">
+<span aria-hidden="true">←</span>
+</button>
+<div class="gallery-dots" data-gallery-dots=""></div>
+<button aria-label="Next screenshot" class="gallery-arrow gallery-arrow-next" data-gallery-next="" type="button">
+<span aria-hidden="true">→</span>
+</button>
+</div>
+</div>
+<div class="slide-detail">
+<div>
+<div class="eyebrow" data-gallery-kicker="">
+</div>
+<h3 data-gallery-title="">
+</h3>
+<p data-gallery-description="">
+</p>
+</div>
+<div class="slide-count" data-gallery-count="">
+</div>
+</div>
+</div>
+</div>
+<dialog class="gallery-modal" data-gallery-modal="">
+<button aria-label="Close" class="modal-close" data-modal-close="">
        ×
       </button>
-      <div class="modal-media">
-       <img alt="" data-modal-image=""/>
-      </div>
-      <div class="modal-copy">
-       <h3 data-modal-title="">
-       </h3>
-       <p data-modal-description="">
-       </p>
-      </div>
-     </dialog>
-    </section>
-    <section class="story">
-     <div>
-      <div class="eyebrow">
+<div class="modal-media">
+<img alt="" data-modal-image=""/>
+</div>
+<div class="modal-copy">
+<h3 data-modal-title="">
+</h3>
+<p data-modal-description="">
+</p>
+</div>
+</dialog>
+</section>
+<section class="story">
+<div>
+<div class="eyebrow">
        PROJECT STORY
       </div>
-      <h2>
+<h2>
        WHY IT
        <br/>
        MATTERS.
       </h2>
-     </div>
-     <div class="story-list">
-      <div class="story-item">
-       <h3>
+</div>
+<div class="story-list">
+<div class="story-item">
+<h3>
         Clear discovery
        </h3>
-       <p>
+<p>
         The layout keeps navigation and product discovery clear so visitors can find what they need without too much information competing for attention.
        </p>
-      </div>
-      <div class="story-item">
-       <h3>
+</div>
+<div class="story-item">
+<h3>
         Repeat engagement
        </h3>
-       <p>
+<p>
         Recommendations, loyalty features and subscriptions give returning customers useful reasons to come back.
        </p>
-      </div>
-      <div class="story-item">
-       <h3>
+</div>
+<div class="story-item">
+<h3>
         Live website
        </h3>
-       <p>
+<p>
         This page shows the main screens and design choices, while the live BrewBean website can be opened separately.
        </p>
-      </div>
-     </div>
-    </section>
-   </div>
-  </main>
-  <footer class="footer">
-   <div class="container footer-inner">
-    <a href="mailto:arikesh873@gmail.com">
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="footer">
+<div class="container footer-inner">
+<a href="mailto:arikesh873@gmail.com">
      Rikesh Adhikari · arikesh873@gmail.com
     </a>
-    <button class="back-top" data-back-top="" type="button">
+<button class="back-top" data-back-top="" type="button">
      Back to top ↑
     </button>
-   </div>
-  </footer>
-  <script src="../../site.js">
-  </script>
-  <script src="../../project.js">
-  </script>
- </body>
+</div>
+</footer>
+<script defer="" src="../../site.js"></script>
+<script defer="" src="../../project.js"></script>
+</body>
 </html>

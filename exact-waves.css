@@ -1,0 +1,603 @@
+
+
+:root {
+  --exact-wave-light-1: #b9ead8;
+  --exact-wave-light-2: #91ddc6;
+  --exact-wave-light-3: #c8f2e3;
+  --exact-wave-dark-1: #d9b650;
+  --exact-wave-dark-2: #e49358;
+  --exact-wave-dark-3: #f1ce76;
+}
+
+#waveCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .32s ease;
+}
+
+body.exact-wave-story-active #waveCanvas {
+  opacity: var(--exact-wave-opacity, 1);
+}
+body.exact-wave-story-active .bg-canvas {
+  opacity: var(--story-bg-opacity, .56) !important;
+}
+body.exact-wave-story-active .cosmic-veil {
+  opacity: var(--story-veil-opacity, .24) !important;
+}
+body.exact-wave-story-active .ambient { opacity: 1; }
+
+#waveCanvas,
+.bg-canvas,
+.cosmic-veil {
+  transition: opacity .55s cubic-bezier(.16,1,.3,1);
+}
+
+
+#fireworks-foreground {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 6000;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .2s ease, visibility .2s ease;
+}
+#fireworks-foreground.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+.wave-story.story {
+  position: relative !important;
+  height: 500vh !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+.wave-story .story-sticky,
+.wave-story .wave-story-sticky {
+  position: sticky !important;
+  top: 0 !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  min-height: 100svh !important;
+  overflow: hidden !important;
+  isolation: isolate;
+  background: transparent !important;
+}
+
+.wave-story .story-sticky::before,
+.wave-story .story-sticky::after,
+.wave-story .wave-story-sticky::before,
+.wave-story .wave-story-sticky::after {
+  content: none !important;
+  display: none !important;
+}
+
+.wave-story .chapter-number,
+.wave-story .chapter-total,
+.wave-story .scroll-label,
+.wave-story .eyebrow {
+  font-family: "Space Mono", monospace !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+}
+
+.wave-story .chapter-number {
+  position: absolute !important;
+  z-index: 4;
+  top: clamp(105px, 15vh, 150px) !important;
+  left: clamp(22px, 5vw, 74px) !important;
+  color: var(--text) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+
+.wave-story .chapter-total {
+  position: absolute !important;
+  z-index: 4;
+  right: clamp(22px, 5vw, 74px) !important;
+  bottom: max(34px, env(safe-area-inset-bottom)) !important;
+  color: var(--muted) !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+.wave-story .scroll-label {
+  position: absolute !important;
+  z-index: 4;
+  left: clamp(22px, 5vw, 74px) !important;
+  bottom: max(34px, env(safe-area-inset-bottom)) !important;
+  color: var(--muted) !important;
+  font-size: 10px !important;
+  line-height: 1 !important;
+}
+
+.wave-story .scroll-label span {
+  color: var(--gold2) !important;
+  font-size: 16px !important;
+}
+
+.wave-story .story-progress {
+  position: absolute !important;
+  z-index: 4;
+  left: 50% !important;
+  right: auto !important;
+  bottom: max(39px, calc(env(safe-area-inset-bottom) + 5px)) !important;
+  width: min(36vw, 360px) !important;
+  height: 1px !important;
+  transform: translateX(-50%) !important;
+  background: var(--line) !important;
+  overflow: hidden !important;
+}
+
+.wave-story .story-progress-fill {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: var(--text) !important;
+  transform: scaleX(0);
+  transform-origin: left !important;
+}
+
+.wave-story .story-copy-wrap {
+  position: absolute !important;
+  z-index: 3;
+  inset: 0 !important;
+  pointer-events: none !important;
+}
+
+.wave-story .story-copy {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  width: min(90vw, 980px) !important;
+  max-width: none !important;
+  transform: translate(-50%, -50%) !important;
+  opacity: 0 !important;
+  visibility: visible !important;
+  transition: opacity .45s ease !important;
+  text-align: center !important;
+}
+
+.wave-story .story-copy.is-active {
+  opacity: 1 !important;
+}
+
+.wave-story .eyebrow {
+  margin: 0 0 18px !important;
+  color: var(--muted) !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+.wave-story .story-copy h1,
+.wave-story .story-copy h2 {
+  margin: 0 auto !important;
+  max-width: 14ch !important;
+  color: var(--text) !important;
+  font-family: "Playfair Display", "Times New Roman", serif !important;
+  font-weight: 400 !important;
+  font-size: clamp(46px, 5.6vw, 92px) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.045em !important;
+  text-wrap: balance;
+  text-align: center !important;
+  text-shadow: none !important;
+}
+
+.wave-story .word {
+  display: inline-block !important;
+  overflow: visible !important;
+  vertical-align: top !important;
+  margin-right: .16em !important;
+  padding: .04em .035em .10em !important;
+}
+
+.wave-story .word > span {
+  display: inline-block !important;
+  opacity: 0 !important;
+  transform: translateY(82%) rotate(1.5deg) !important;
+  clip-path: inset(0 0 92% 0);
+  transition:
+    transform .82s cubic-bezier(.16,1,.3,1),
+    opacity .62s ease,
+    clip-path .82s cubic-bezier(.16,1,.3,1) !important;
+  transform-origin: center top !important;
+  will-change: transform, opacity, clip-path;
+}
+
+.wave-story .story-copy.is-active .word > span {
+  opacity: 1 !important;
+  transform: translateY(0) rotate(0deg) !important;
+  clip-path: inset(0 0 0 0) !important;
+}
+
+
+html[data-theme="light"] body.exact-wave-story-active .ambient {
+  background: #f6f4ee !important;
+}
+html[data-theme="dark"] body.exact-wave-story-active .ambient {
+  background: #07080b !important;
+}
+
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring { display: none !important; }
+}
+
+@media (max-width: 760px) {
+  .wave-story.story { height: 500vh !important; }
+
+  .wave-story .chapter-number {
+    top: 108px !important;
+    left: 22px !important;
+  }
+
+  .wave-story .story-copy {
+    left: 50% !important;
+    top: 48% !important;
+    width: calc(100vw - 36px) !important;
+    transform: translate(-50%, -50%) !important;
+    text-align: center !important;
+  }
+
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    max-width: 11.5ch !important;
+    margin-inline: auto !important;
+    font-size: clamp(32px, 8.7vw, 46px) !important;
+    line-height: 1.04 !important;
+    text-align: center !important;
+  }
+
+  .wave-story .eyebrow {
+    margin-bottom: 12px !important;
+    font-size: 9px !important;
+  }
+
+  .wave-story .scroll-label {
+    left: 22px !important;
+    bottom: max(27px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .wave-story .chapter-total {
+    right: 22px !important;
+    bottom: max(29px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .wave-story .story-progress {
+    left: 150px !important;
+    right: 76px !important;
+    width: auto !important;
+    transform: none !important;
+    bottom: max(34px, calc(env(safe-area-inset-bottom) + 5px)) !important;
+  }
+
+  #waveCanvas,
+  #fireworks-foreground {
+    height: 100dvh !important;
+    touch-action: pan-y;
+  }
+}
+
+@media (max-width: 420px) {
+  .wave-story .story-copy {
+    top: 48% !important;
+  }
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    font-size: clamp(32px, 9vw, 42px) !important;
+    max-width: 11ch !important;
+  }
+  .wave-story .story-progress {
+    left: 138px !important;
+    right: 64px !important;
+  }
+}
+
+
+.ambient::before,
+.site-intro::before {
+  content: none !important;
+  display: none !important;
+  background-image: none !important;
+}
+
+.wave-story .eyebrow {
+  text-align: center !important;
+}
+
+.story-theme-dock {
+  position: absolute;
+  z-index: 6;
+  left: clamp(22px, 5vw, 74px);
+  bottom: max(68px, calc(env(safe-area-inset-bottom) + 48px));
+  pointer-events: auto;
+}
+
+.theme-toggle-story,
+.theme-dock-global .theme-toggle {
+  min-height: 40px;
+  padding: 9px 13px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.theme-dock-global {
+  position: fixed;
+  z-index: 990;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(18px, env(safe-area-inset-bottom));
+}
+
+body.menu-open {
+  overscroll-behavior: none;
+}
+.site-header { z-index: 1000; }
+
+.mobile-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: rgba(6, 8, 12, .46);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .28s ease, visibility 0s linear .30s;
+}
+body.menu-open .mobile-menu-backdrop {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+.mobile-menu.open { z-index: 1002 !important; }
+.menu-toggle {
+  transition: transform .30s cubic-bezier(.16,1,.3,1), color .2s ease;
+}
+.menu-toggle.is-open {
+  transform: rotate(90deg) scale(1.05);
+}
+
+@media (max-width: 1100px) {
+  .mobile-menu {
+    top: 78px !important;
+    bottom: max(12px, env(safe-area-inset-bottom)) !important;
+    max-height: calc(100dvh - 90px) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y !important;
+    align-content: start;
+    scrollbar-gutter: stable;
+    display: grid !important;
+    gap: 3px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-16px) scale(.985);
+    transform-origin: top center;
+    transition:
+      opacity .24s ease,
+      transform .34s cubic-bezier(.16,1,.3,1),
+      visibility 0s linear .34s;
+  }
+  .mobile-menu.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+    transition-delay: 0s;
+  }
+  .story-theme-dock {
+    left: 22px;
+    bottom: max(72px, calc(env(safe-area-inset-bottom) + 50px));
+  }
+  .theme-toggle-compact,
+  .theme-toggle-mobile { display: none !important; }
+}
+
+
+html[data-theme="light"] body.exact-wave-story-active .ambient {
+  background:
+    radial-gradient(circle at 48% 45%, rgba(200, 143, 29, .10), transparent 35%),
+    radial-gradient(circle at 72% 64%, rgba(82, 150, 132, .09), transparent 42%),
+    #f3efe6 !important;
+}
+html[data-theme="light"] body.exact-wave-story-active .bg-canvas {
+  filter: saturate(1.15) contrast(1.26) brightness(.88) !important;
+}
+html[data-theme="light"] body.exact-wave-story-active .cosmic-veil {
+  background:
+    radial-gradient(ellipse at 52% 50%, transparent 0 58%, rgba(243,239,230,.08) 76%, rgba(243,239,230,.22) 100%) !important;
+}
+
+@media (max-width: 760px) {
+  .mobile-menu {
+    left: 10px !important;
+    right: 10px !important;
+    top: 70px !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    max-height: calc(100dvh - 82px) !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+  .mobile-menu .nav-btn,
+  .mobile-menu a {
+    min-height: 48px;
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave-story .word > span {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+.wave-story .story-copy-wrap {
+  display: grid !important;
+  place-items: center !important;
+  padding: clamp(108px, 14vh, 150px) clamp(24px, 6vw, 90px) clamp(112px, 15vh, 160px) !important;
+}
+.wave-story .story-copy {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  padding: inherit !important;
+  display: grid !important;
+  place-content: center !important;
+  transform: none !important;
+  text-align: center !important;
+}
+.wave-story .story-copy h1,
+.wave-story .story-copy h2 {
+  width: min(100%, 15ch) !important;
+  max-width: min(100%, 15ch) !important;
+  margin-inline: auto !important;
+  overflow: visible !important;
+}
+@media (max-width: 760px) {
+  .wave-story .story-copy-wrap {
+    padding: 104px 22px 128px !important;
+  }
+  .wave-story .story-copy {
+    padding: inherit !important;
+  }
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    width: min(100%, 11.5ch) !important;
+    max-width: min(100%, 11.5ch) !important;
+    font-size: clamp(38px, 10.6vw, 54px) !important;
+    line-height: 1.02 !important;
+  }
+}
+
+
+/* ================================================================
+   PORTFOLIO HOME STORY — FINAL LAYOUT CORRECTION (25 OCT 2026)
+   The live homepage uses .wave-story / .story-copy, NOT .wave-story-frame.
+   This block supersedes the older full-screen-centre + 15ch heading rules.
+   Goal: whole sentence comfortably within the left visual area, below nav,
+   with enough space for the animated concentric circles to its right.
+   ================================================================ */
+
+/* Neutralise old centering/padding rules from earlier theme revisions. */
+.wave-story .story-copy-wrap {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+.wave-story .story-copy-wrap .story-copy {
+  position: absolute !important;
+  inset: auto !important;
+  top: clamp(215px, 26vh, 240px) !important;
+  left: clamp(95px, 7.3vw, 128px) !important;
+  width: min(37vw, 610px) !important;
+  max-width: none !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  transform: none !important;
+  text-align: left !important;
+  place-content: initial !important;
+  align-items: initial !important;
+}
+
+.wave-story .story-copy-wrap .story-copy .eyebrow {
+  text-align: left !important;
+  margin: 0 0 15px !important;
+  font-size: 10px !important;
+}
+
+.wave-story .story-copy-wrap .story-copy h1,
+.wave-story .story-copy-wrap .story-copy h2 {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: clamp(36px, 3.3vw, 55px) !important;
+  line-height: 1.09 !important;
+  letter-spacing: -.038em !important;
+  text-align: left !important;
+  text-wrap: balance;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* Older CSS wraps each heading word in its own inline-block to animate it.
+   Preserve those spans and transitions without forcing a word per line. */
+.wave-story .story-copy-wrap .story-copy .word {
+  display: inline-block !important;
+  margin-right: .10em !important;
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+  .wave-story .story-copy-wrap .story-copy {
+    top: clamp(175px, 22vh, 212px) !important;
+    left: clamp(42px, 6vw, 75px) !important;
+    width: min(53vw, 565px) !important;
+  }
+  .wave-story .story-copy-wrap .story-copy h1,
+  .wave-story .story-copy-wrap .story-copy h2 {
+    font-size: clamp(34px, 4vw, 46px) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .wave-story .story-copy-wrap .story-copy {
+    top: clamp(150px, 21vh, 195px) !important;
+    left: 22px !important;
+    width: calc(100vw - 44px) !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .wave-story .story-copy-wrap .story-copy .eyebrow {
+    font-size: 9px !important;
+    margin-bottom: 14px !important;
+  }
+  .wave-story .story-copy-wrap .story-copy h1,
+  .wave-story .story-copy-wrap .story-copy h2 {
+    font-size: clamp(30px, 7.6vw, 43px) !important;
+    line-height: 1.12 !important;
+    letter-spacing: -.028em !important;
+  }
+}
+
+@media (max-height: 680px) and (min-width: 761px) {
+  .wave-story .story-copy-wrap .story-copy {
+    top: 165px !important;
+  }
+  .wave-story .story-copy-wrap .story-copy h1,
+  .wave-story .story-copy-wrap .story-copy h2 {
+    font-size: clamp(29px, 2.8vw, 44px) !important;
+  }
+}

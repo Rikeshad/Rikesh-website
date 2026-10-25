@@ -1,591 +1,611 @@
 <!DOCTYPE html>
+
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <title>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>
    Explore Darwin — Rikesh Adhikari
   </title>
-  <meta content="A practical visual guide to visiting Darwin, Northern Territory." name="description"/>
-  <script>
-   (() => {
-    try {
-     const savedTheme = localStorage.getItem('rikeshTheme');
-     document.documentElement.dataset.theme = savedTheme === 'light' ? 'light' : 'dark';
-    } catch {
-     document.documentElement.dataset.theme = 'dark';
-    }
-   })();
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-  <link href="../assets/favicon.svg" rel="icon"/>
-  <link href="../styles.css" rel="stylesheet"/>
- </head>
- <body>
-  <div class="site-intro" id="site-intro">
-   <div class="intro-main">
-    <div class="intro-copy">
-     <span>
+<meta content="A practical visual guide to visiting Darwin, Northern Territory." name="description"/>
+<script src="../theme-bootstrap.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="../assets/favicon.svg" rel="icon">
+<link href="../styles.css" rel="stylesheet">
+</link></link></head>
+<body>
+<div class="site-intro" id="site-intro">
+<div class="intro-main">
+<div class="intro-copy">
+<span>
       WELCOME
      </span>
-     <span class="indent">
+<span class="indent">
       TO MY
      </span>
-     <span class="outline">
+<span class="outline">
       WEBSITE
      </span>
-    </div>
-    <div aria-hidden="true" class="intro-star">
-    </div>
-   </div>
-   <div class="intro-bottom">
-    <span>
+</div>
+<div aria-hidden="true" class="intro-star">
+</div>
+</div>
+<div class="intro-bottom">
+<span>
      ENTERING EXPERIENCE
     </span>
-    <span class="intro-pct" data-intro-pct="">
+<span class="intro-pct" data-intro-pct="">
      0%
     </span>
-    <div class="intro-progress">
-     <i data-intro-bar="">
-     </i>
-    </div>
-   </div>
-  </div>
-  <div class="ambient">
-  </div>
-  <canvas class="bg-canvas" aria-hidden="true">
-  </canvas>
-  <div class="cosmic-veil" aria-hidden="true"></div>
-  <div class="cursor-dot">
-  </div>
-  <div class="cursor-ring">
-  </div>
-  <div class="toast" id="toast">
-  </div>
-  <main class="subpage">
-   <div class="container">
-    <div class="subnav">
-     <a class="back-home" href="../">
+<div class="intro-progress">
+<i data-intro-bar="">
+</i>
+</div>
+</div>
+</div>
+<div class="ambient">
+</div>
+<canvas aria-hidden="true" class="bg-canvas">
+</canvas>
+<div aria-hidden="true" class="cosmic-veil"></div>
+<div class="cursor-dot">
+</div>
+<div class="cursor-ring">
+</div>
+<div class="toast" id="toast">
+</div><header class="site-header">
+<div class="nav-shell glass">
+<a class="brand" href="../">
+<span class="brand-mark">RA</span>
+<span class="brand-copy"><strong>RIKESH ADHIKARI</strong><small>Telecommunications Network Planner</small></span>
+</a>
+<nav aria-label="Primary" class="site-nav">
+<a class="nav-btn nav-link" href="../">Home</a>
+<a class="nav-btn nav-link" href="../#projects">Projects</a>
+<a class="nav-btn nav-link" href="../#tools">Tools</a>
+<a class="nav-btn nav-link" href="../#about">About</a>
+<a class="nav-btn nav-link active" href="./">Darwin</a>
+</nav>
+<div class="nav-right nav-actions">
+<button aria-label="Switch colour mode" class="theme-toggle nav-theme-toggle" data-theme-toggle="" title="Switch colour mode" type="button">
+<span aria-hidden="true" class="theme-toggle-icon" data-theme-icon="">☾</span><span data-theme-label="">Night</span>
+</button>
+<a class="nav-contact" href="../#contact">Contact</a>
+</div>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" type="button">☰</button>
+</div>
+<div aria-label="Mobile navigation" class="mobile-menu glass">
+<a class="nav-btn nav-link" href="../">Home</a>
+<a class="nav-btn nav-link" href="../#projects">Projects</a>
+<a class="nav-btn nav-link" href="../#tools">Tools</a>
+<a class="nav-btn nav-link" href="../#about">About</a>
+<a class="nav-btn nav-link active" href="./">Darwin</a>
+<button aria-label="Switch colour mode" class="theme-toggle theme-toggle-mobile" data-theme-toggle="" title="Switch colour mode" type="button">
+<span aria-hidden="true" class="theme-toggle-icon" data-theme-icon="">☾</span><span data-theme-label="">Night mode</span>
+</button>
+<a class="nav-contact mobile-contact" href="../#contact">Contact</a>
+</div>
+<button aria-label="Close navigation" class="mobile-menu-backdrop" data-menu-backdrop="" tabindex="-1" type="button"></button>
+</header>
+
+<main class="subpage">
+<div class="container">
+<div class="subnav">
+<a class="back-home" href="../">
       ← Back to portfolio
      </a>
-     <div class="subnav-actions">
-      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Switch to day mode" title="Switch colour mode">
-       <span class="theme-toggle-icon" data-theme-icon aria-hidden="true">☀</span>
-       <span data-theme-label>Day</span>
-      </button>
-      <span class="darwin-chip">
-      <i class="live-dot">
-      </i>
+<div class="subnav-actions">
+<span class="darwin-chip">
+<i class="live-dot">
+</i>
       Darwin time
       <b data-darwin-time="">
        --:--
       </b>
-     </span>
-     </div>
-    </div>
-    <section class="darwin-hero">
-     <div class="eyebrow">
+</span>
+</div>
+</div>
+<section class="darwin-hero">
+<div class="eyebrow">
       DARWIN / NORTHERN TERRITORY / AUSTRALIA
      </div>
-     <h1>
+<h1>
       EXPLORE
       <br/>
       DARWIN.
      </h1>
-     <p>
+<p>
       Darwin is a tropical harbour city with great food, an easy-going outdoor lifestyle, memorable sunsets and quick access to some of the Top End’s best national parks. I’ve put together the things I’d want a visitor to know before spending time here.
      </p>
-     <div class="darwin-stats">
-      <div class="darwin-stat glass">
-       <strong>
+<div class="darwin-stats">
+<div class="darwin-stat glass">
+<strong>
         May–Oct
        </strong>
-       <span>
+<span>
         Most comfortable Dry season
        </span>
-      </div>
-      <div class="darwin-stat glass">
-       <strong>
+</div>
+<div class="darwin-stat glass">
+<strong>
         2–7 days
        </strong>
-       <span>
+<span>
         Typical Darwin + surrounds stay
        </span>
-      </div>
-      <div class="darwin-stat glass">
-       <strong>
+</div>
+<div class="darwin-stat glass">
+<strong>
         20–33°C
        </strong>
-       <span>
+<span>
         Typical Dry-season range
        </span>
-      </div>
-     </div>
-     <div class="darwin-personal-note glass">
-      <span class="note-kicker">
+</div>
+</div>
+<div class="darwin-personal-note glass">
+<span class="note-kicker">
        PERSONAL NOTE · FROM RIKESH
       </span>
-      <h2>
+<h2>
        WHY DARWIN MATTERS TO ME.
       </h2>
-      <p>
+<p>
        I love Darwin. It has become an important part of my life and a place I feel genuinely connected to. I value the community, the tropical lifestyle and the character of the Northern Territory, and I hope to keep living, working and contributing here for the long term.
       </p>
-     </div>
-    </section>
-    <section class="travel-banner glass">
-     <h2>
+</div>
+</section>
+<section class="travel-banner glass">
+<h2>
       WHEN SHOULD YOU GO?
      </h2>
-     <p>
-      <strong style="color:#fff">
+<p>
+<strong class="darwin-strong-light">
        Dry season (May–October):
       </strong>
       sunny days, lower humidity, cooler nights and easier access to outdoor attractions.
-      <strong style="color:#fff">
+      <strong class="darwin-strong-light">
        Wet season (November–April):
       </strong>
       hotter and more humid, but greener landscapes, dramatic storms, spectacular sunsets and fewer visitors.
      </p>
-    </section>
-    <section class="section">
-     <div class="section-head">
-      <div>
-       <div class="section-index">
+</section>
+<section class="section">
+<div class="section-head">
+<div>
+<div class="section-index">
         01 // BEST PLACES
        </div>
-       <h2>
+<h2>
         SEE DARWIN
         <br/>
         AT ITS BEST.
        </h2>
-      </div>
-      <p>
+</div>
+<p>
        These images are loaded directly from external websites at view time; they are not bundled or downloaded into this portfolio.
       </p>
-     </div>
-     <div class="place-grid">
-      <article class="place-card">
-       <img alt="Mindil Beach Sunset Market" loading="lazy" onerror="this.style.display='none'" referrerpolicy="no-referrer" src="https://tripates.com/media/australia-northern-territory-top-attractions-mindil-beach-mindil-beach-markets-darwin.jpg"/>
-       <div class="place-card-body">
-        <h3>
+</div>
+<div class="place-grid">
+<article class="place-card">
+<img alt="Mindil Beach Sunset Market" data-hide-on-error="" loading="lazy" referrerpolicy="no-referrer" src="https://tripates.com/media/australia-northern-territory-top-attractions-mindil-beach-mindil-beach-markets-darwin.jpg"/>
+<div class="place-card-body">
+<h3>
          Mindil Beach Sunset Market
         </h3>
-        <p>
+<p>
          Watch the Timor Sea sunset, browse food and specialty stalls and experience one of Darwin’s signature evening gatherings.
         </p>
-        <div class="place-meta">
-         <div>
-          <b>
+<div class="place-meta">
+<div>
+<b>
            Best time
           </b>
-          <span>
+<span>
            Late afternoon → sunset
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Allow
           </b>
-          <span>
+<span>
            2–4 hours
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Season
           </b>
-          <span>
+<span>
            Dry season market nights
           </span>
-         </div>
-        </div>
-        <p>
-         <strong style="color:#d7dbe2">
+</div>
+</div>
+<p>
+<strong class="darwin-strong-muted">
           Tip:
          </strong>
          Arrive before sunset; the market typically runs Thursday and Sunday evenings in the Dry.
         </p>
-        <a class="source-link" href="https://mindil.com.au/" rel="noopener" target="_blank">
+<a class="source-link" href="https://mindil.com.au/" rel="noopener" target="_blank">
          Official / source page ↗
         </a>
-       </div>
-      </article>
-      <article class="place-card">
-       <img alt="Darwin Waterfront" loading="lazy" onerror="this.style.display='none'" referrerpolicy="no-referrer" src="https://images.trvl-media.com/lodging/91000000/90750000/90740900/90740886/8a743a8a.jpg?impolicy=resizecrop&amp;ra=fill&amp;rh=900&amp;rw=1400"/>
-       <div class="place-card-body">
-        <h3>
+</div>
+</article>
+<article class="place-card">
+<img alt="Darwin Waterfront" data-hide-on-error="" loading="lazy" referrerpolicy="no-referrer" src="https://images.trvl-media.com/lodging/91000000/90750000/90740900/90740886/8a743a8a.jpg?impolicy=resizecrop&amp;ra=fill&amp;rh=900&amp;rw=1400"/>
+<div class="place-card-body">
+<h3>
          Darwin Waterfront
         </h3>
-        <p>
+<p>
          A walkable CBD precinct for waterfront dining, relaxed harbour views and a convenient base for combining city attractions.
         </p>
-        <div class="place-meta">
-         <div>
-          <b>
+<div class="place-meta">
+<div>
+<b>
            Best time
           </b>
-          <span>
+<span>
            Morning or late afternoon
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Allow
           </b>
-          <span>
+<span>
            2–4 hours
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Season
           </b>
-          <span>
+<span>
            Year-round
           </span>
-         </div>
-        </div>
-        <p>
-         <strong style="color:#d7dbe2">
+</div>
+</div>
+<p>
+<strong class="darwin-strong-muted">
           Tip:
          </strong>
          Allow extra time for Stokes Hill Wharf and the surrounding CBD/Esplanade.
         </p>
-        <a class="source-link" href="https://northernterritory.com/darwin-and-surrounds/see-and-do/darwin-waterfront" rel="noopener" target="_blank">
+<a class="source-link" href="https://northernterritory.com/darwin-and-surrounds/see-and-do/darwin-waterfront" rel="noopener" target="_blank">
          Official / source page ↗
         </a>
-       </div>
-      </article>
-      <article class="place-card">
-       <img alt="Museum &amp; Art Gallery of the NT" loading="lazy" onerror="this.style.display='none'" referrerpolicy="no-referrer" src="https://res.klook.com/image/upload/w_1200%2Ch_750%2Cc_fill%2Cq_85/activities/hwxxym2v4wzny1eratuw.jpg"/>
-       <div class="place-card-body">
-        <h3>
+</div>
+</article>
+<article class="place-card">
+<img alt="Museum &amp; Art Gallery of the NT" data-hide-on-error="" loading="lazy" referrerpolicy="no-referrer" src="https://res.klook.com/image/upload/w_1200%2Ch_750%2Cc_fill%2Cq_85/activities/hwxxym2v4wzny1eratuw.jpg"/>
+<div class="place-card-body">
+<h3>
          Museum &amp; Art Gallery of the NT
         </h3>
-        <p>
+<p>
          A strong stop for Northern Territory art, natural history and stories that add context to the Top End.
         </p>
-        <div class="place-meta">
-         <div>
-          <b>
+<div class="place-meta">
+<div>
+<b>
            Best time
           </b>
-          <span>
+<span>
            Late morning / midday
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Allow
           </b>
-          <span>
+<span>
            1.5–3 hours
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Season
           </b>
-          <span>
+<span>
            Great in any weather
           </span>
-         </div>
-        </div>
-        <p>
-         <strong style="color:#d7dbe2">
+</div>
+</div>
+<p>
+<strong class="darwin-strong-muted">
           Tip:
          </strong>
          Good midday option when the heat is strongest; check current exhibitions before visiting.
         </p>
-        <a class="source-link" href="https://magnt.net.au/" rel="noopener" target="_blank">
+<a class="source-link" href="https://magnt.net.au/" rel="noopener" target="_blank">
          Official / source page ↗
         </a>
-       </div>
-      </article>
-      <article class="place-card">
-       <img alt="Crocosaurus Cove" loading="lazy" onerror="this.style.display='none'" referrerpolicy="no-referrer" src="https://framerusercontent.com/images/zmasRMbJaT4E9PkG27dE2cD8GE.jpg?size=1080x1080"/>
-       <div class="place-card-body">
-        <h3>
+</div>
+</article>
+<article class="place-card">
+<img alt="Crocosaurus Cove" data-hide-on-error="" loading="lazy" referrerpolicy="no-referrer" src="https://framerusercontent.com/images/zmasRMbJaT4E9PkG27dE2cD8GE.jpg?size=1080x1080"/>
+<div class="place-card-body">
+<h3>
          Crocosaurus Cove
         </h3>
-        <p>
+<p>
          A city-centre wildlife attraction focused on Northern Territory reptiles and saltwater crocodiles.
         </p>
-        <div class="place-meta">
-         <div>
-          <b>
+<div class="place-meta">
+<div>
+<b>
            Best time
           </b>
-          <span>
+<span>
            Morning
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Allow
           </b>
-          <span>
+<span>
            2–3 hours
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Season
           </b>
-          <span>
+<span>
            Year-round
           </span>
-         </div>
-        </div>
-        <p>
-         <strong style="color:#d7dbe2">
+</div>
+</div>
+<p>
+<strong class="darwin-strong-muted">
           Tip:
          </strong>
          Book signature experiences ahead if they matter to your visit.
         </p>
-        <a class="source-link" href="https://www.crocosauruscove.com/" rel="noopener" target="_blank">
+<a class="source-link" href="https://www.crocosauruscove.com/" rel="noopener" target="_blank">
          Official / source page ↗
         </a>
-       </div>
-      </article>
-      <article class="place-card">
-       <img alt="George Brown Darwin Botanic Gardens" loading="lazy" onerror="this.style.display='none'" referrerpolicy="no-referrer" src="https://www.yha.com.au/contentassets/7f049d3c9e71494483b485ff84c38073/darwin_credit_tourismnt-nickpincott_gardens.jpg"/>
-       <div class="place-card-body">
-        <h3>
+</div>
+</article>
+<article class="place-card">
+<img alt="George Brown Darwin Botanic Gardens" data-hide-on-error="" loading="lazy" referrerpolicy="no-referrer" src="https://www.yha.com.au/contentassets/7f049d3c9e71494483b485ff84c38073/darwin_credit_tourismnt-nickpincott_gardens.jpg"/>
+<div class="place-card-body">
+<h3>
          George Brown Darwin Botanic Gardens
         </h3>
-        <p>
+<p>
          A shady tropical walk through Top End plant collections close to the city.
         </p>
-        <div class="place-meta">
-         <div>
-          <b>
+<div class="place-meta">
+<div>
+<b>
            Best time
           </b>
-          <span>
+<span>
            Early morning
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Allow
           </b>
-          <span>
+<span>
            1–2 hours
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Season
           </b>
-          <span>
+<span>
            Dry mornings are easiest
           </span>
-         </div>
-        </div>
-        <p>
-         <strong style="color:#d7dbe2">
+</div>
+</div>
+<p>
+<strong class="darwin-strong-muted">
           Tip:
          </strong>
          Go early, carry water and combine it with Mindil Beach later in the day.
         </p>
-        <a class="source-link" href="https://www.parksandwildlife.nt.gov.au/parks/find/george-brown-darwin-botanic-gardens" rel="noopener" target="_blank">
+<a class="source-link" href="https://www.parksandwildlife.nt.gov.au/parks/find/george-brown-darwin-botanic-gardens" rel="noopener" target="_blank">
          Official / source page ↗
         </a>
-       </div>
-      </article>
-      <article class="place-card">
-       <img alt="Litchfield National Park · Florence Falls" loading="lazy" onerror="this.style.display='none'" referrerpolicy="no-referrer" src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/9e/3b/38/florence-falls.jpg?w=1200&amp;h=-1&amp;s=1"/>
-       <div class="place-card-body">
-        <h3>
+</div>
+</article>
+<article class="place-card">
+<img alt="Litchfield National Park · Florence Falls" data-hide-on-error="" loading="lazy" referrerpolicy="no-referrer" src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/9e/3b/38/florence-falls.jpg?w=1200&amp;h=-1&amp;s=1"/>
+<div class="place-card-body">
+<h3>
          Litchfield National Park · Florence Falls
         </h3>
-        <p>
+<p>
          A classic Darwin day trip with waterfalls, monsoon forest, swimming holes and walking tracks.
         </p>
-        <div class="place-meta">
-         <div>
-          <b>
+<div class="place-meta">
+<div>
+<b>
            Best time
           </b>
-          <span>
+<span>
            Full-day trip
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Allow
           </b>
-          <span>
+<span>
            6–10 hours
           </span>
-         </div>
-         <div>
-          <b>
+</div>
+<div>
+<b>
            Season
           </b>
-          <span>
+<span>
            Dry season; early Dry is especially scenic
           </span>
-         </div>
-        </div>
-        <p>
-         <strong style="color:#d7dbe2">
+</div>
+</div>
+<p>
+<strong class="darwin-strong-muted">
           Tip:
          </strong>
          Visitor park passes apply for many NT parks. Check swimming access and park conditions before leaving Darwin.
         </p>
-        <a class="source-link" href="https://northernterritory.com/darwin-and-surrounds/see-and-do/florence-falls" rel="noopener" target="_blank">
+<a class="source-link" href="https://northernterritory.com/darwin-and-surrounds/see-and-do/florence-falls" rel="noopener" target="_blank">
          Official / source page ↗
         </a>
-       </div>
-      </article>
-     </div>
-     <p class="remote-note">
+</div>
+</article>
+</div>
+<p class="remote-note">
       Remote image availability depends on the source website. Source/official links are provided on each card.
      </p>
-    </section>
-    <section class="section">
-     <div class="section-head">
-      <div>
-       <div class="section-index">
+</section>
+<section class="section">
+<div class="section-head">
+<div>
+<div class="section-index">
         02 // QUICK PLAN
        </div>
-       <h2>
+<h2>
         A SIMPLE
         <br/>
         2-DAY START.
        </h2>
-      </div>
-      <p>
+</div>
+<p>
        Enough to see the city highlights and make one nature day trip without turning the visit into a race.
       </p>
-     </div>
-     <div class="itinerary">
-      <article class="day-card glass">
-       <h3>
+</div>
+<div class="itinerary">
+<article class="day-card glass">
+<h3>
         Day 1 · Darwin city
        </h3>
-       <ol>
-        <li>
+<ol>
+<li>
          Early walk through George Brown Darwin Botanic Gardens.
         </li>
-        <li>
+<li>
          Spend late morning or midday at MAGNT.
         </li>
-        <li>
+<li>
          Explore Darwin Waterfront / Stokes Hill Wharf.
         </li>
-        <li>
+<li>
          Finish at Mindil Beach for sunset when the market is operating.
         </li>
-       </ol>
-      </article>
-      <article class="day-card glass">
-       <h3>
+</ol>
+</article>
+<article class="day-card glass">
+<h3>
         Day 2 · Litchfield
        </h3>
-       <ol>
-        <li>
+<ol>
+<li>
          Leave Darwin early for Litchfield National Park.
         </li>
-        <li>
+<li>
          Florence Falls and nearby walks/swimming areas if open and permitted.
         </li>
-        <li>
+<li>
          Continue to another accessible waterfall or rockhole based on current park conditions.
         </li>
-        <li>
+<li>
          Return to Darwin before evening.
         </li>
-       </ol>
-      </article>
-     </div>
-    </section>
-    <section class="section">
-     <div class="section-head">
-      <div>
-       <div class="section-index">
+</ol>
+</article>
+</div>
+</section>
+<section class="section">
+<div class="section-head">
+<div>
+<div class="section-index">
         03 // NEED TO KNOW
        </div>
-       <h2>
+<h2>
         PLAN IT
         <br/>
         PROPERLY.
        </h2>
-      </div>
-      <p>
+</div>
+<p>
        Top End conditions are part of the experience. A little preparation makes the visit much easier.
       </p>
-     </div>
-     <div class="practical-grid">
-      <article class="practical-card glass">
-       <h3>
+</div>
+<div class="practical-grid">
+<article class="practical-card glass">
+<h3>
         Heat &amp; sun
        </h3>
-       <p>
+<p>
         Carry water, use sunscreen and a hat, and plan exposed walks earlier in the day. Humidity rises sharply during the Wet.
        </p>
-      </article>
-      <article class="practical-card glass">
-       <h3>
+</article>
+<article class="practical-card glass">
+<h3>
         Croc &amp; water safety
        </h3>
-       <p>
+<p>
         Be Crocwise around waterways. Darwin beaches are beautiful, but do not assume ocean swimming is safe; follow signs and use designated swimming areas.
        </p>
-      </article>
-      <article class="practical-card glass">
-       <h3>
+</article>
+<article class="practical-card glass">
+<h3>
         Park passes
        </h3>
-       <p>
+<p>
         Darwin city itself does not require a park pass, but visitors heading to many NT parks, including Litchfield, should check current visitor-pass requirements.
        </p>
-      </article>
-      <article class="practical-card glass">
-       <h3>
+</article>
+<article class="practical-card glass">
+<h3>
         Getting around
        </h3>
-       <p>
+<p>
         The CBD and Waterfront are walkable, while a car or tour is far more practical for Litchfield and other Top End day trips.
        </p>
-      </article>
-      <article class="practical-card glass">
-       <h3>
+</article>
+<article class="practical-card glass">
+<h3>
         How long?
        </h3>
-       <p>
+<p>
         Two to three days works for Darwin plus Litchfield highlights. Three to seven days gives room to add Kakadu or a broader Top End road trip.
        </p>
-      </article>
-      <article class="practical-card glass">
-       <h3>
+</article>
+<article class="practical-card glass">
+<h3>
         Peak season
        </h3>
-       <p>
+<p>
         The Dry is busiest. Book popular tours and accommodation early, especially around festivals and major events.
        </p>
-      </article>
-     </div>
-    </section>
-   </div>
-  </main>
-  <footer class="footer">
-   <div class="container footer-inner">
-    <span>
+</article>
+</div>
+</section>
+</div>
+</main>
+<footer class="footer">
+<div class="container footer-inner">
+<span>
      Darwin guide · rikeshad.com
     </span>
-    <button class="back-top" data-back-top="" type="button">
+<button class="back-top" data-back-top="" type="button">
      Back to top ↑
     </button>
-   </div>
-  </footer>
-  <script src="../site.js">
-  </script>
- </body>
+</div>
+</footer>
+<script defer="" src="../site.js"></script>
+</body>
 </html>

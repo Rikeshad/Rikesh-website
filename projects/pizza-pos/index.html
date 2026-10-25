@@ -2,7 +2,7 @@
 
 <html lang="en">
 <head>
-<meta name="portfolio-build" content="v45-2026-10-25"/>
+<meta name="portfolio-build" content="v46-2026-10-25"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>
@@ -15,6 +15,7 @@
 <link href="../../assets/favicon.svg" rel="icon"/>
 <link href="../../styles.css" rel="stylesheet"/>
 <link as="image" href="../../assets/images/pos/login.png" rel="preload"/>
+<link rel="stylesheet" href="../../responsive-cinematic.css"/>
 </head>
 <body>
 <div class="site-intro" id="site-intro">
@@ -75,9 +76,9 @@
 </button>
 <a class="nav-contact" href="../../#contact">Contact</a>
 </div>
-<button aria-expanded="false" aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" type="button">☰</button>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" aria-controls="mobile-navigation" type="button">☰</button>
 </div>
-<div aria-label="Mobile navigation" class="mobile-menu glass">
+<div aria-label="Mobile navigation" class="mobile-menu glass" id="mobile-navigation">
 <a class="nav-btn nav-link" href="../../">Home</a>
 <a class="nav-btn nav-link active" href="../../#projects">Projects</a>
 <a class="nav-btn nav-link" href="../../#tools">Tools</a>

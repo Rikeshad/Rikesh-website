@@ -1,5 +1,0 @@
-v45
-Base archive: rikesh-portfolio-waves-v44.zip
-Build date: 2026-10-25
-Story headings remain plain text and animate as complete blocks.
-Stage 003 wave is lowered and reduced behind the writing.

@@ -2,7 +2,7 @@
 
 <html lang="en">
 <head>
-<meta name="portfolio-build" content="v45-2026-10-25"/>
+<meta name="portfolio-build" content="v47-2026-10-25"/>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <title>
@@ -17,8 +17,9 @@
 <link href="assets/favicon.svg" rel="icon">
 <link href="styles.css" rel="stylesheet">
 <link href="exact-waves.css" rel="stylesheet">
-</link></link></link></head>
-<body>
+</link></link></link><link rel="stylesheet" href="./responsive-cinematic.css"/>
+</head>
+<body class="has-intro">
 <div class="site-intro" id="site-intro">
 <div class="intro-main">
 <div class="intro-copy">
@@ -79,9 +80,9 @@
 </button>
 <button class="nav-contact" data-scroll-target="contact" type="button">Contact</button>
 </div>
-<button aria-expanded="false" aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" type="button">☰</button>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-toggle" data-menu-toggle="" aria-controls="mobile-navigation" type="button">☰</button>
 </div>
-<div aria-label="Mobile navigation" class="mobile-menu glass">
+<div aria-label="Mobile navigation" class="mobile-menu glass" id="mobile-navigation">
 <button class="nav-btn active" data-scroll-target="home" type="button">Home</button>
 <button class="nav-btn" data-scroll-target="projects" type="button">Projects</button>
 <button class="nav-btn" data-scroll-target="tools" type="button">Tools</button>
@@ -102,19 +103,36 @@
 <div aria-live="polite" class="story-copy-wrap">
 <article class="story-copy is-active" data-chapter="0">
 <p class="eyebrow">TELECOMMUNICATIONS</p>
-<h1>I plan networks and think about how systems fit together.</h1>
+<h1>
+<span class="cinematic-line"><span>I plan networks</span></span>
+<span class="cinematic-line"><span>and think about</span></span>
+<span class="cinematic-line"><span>how systems</span></span>
+<span class="cinematic-line"><span>fit together.</span></span>
+</h1>
 </article>
 <article class="story-copy" data-chapter="1">
 <p class="eyebrow">DESKTOP SYSTEMS</p>
-<h2>I build software for real day-to-day work.</h2>
+<h2>
+<span class="cinematic-line"><span>I build software</span></span>
+<span class="cinematic-line"><span>for real</span></span>
+<span class="cinematic-line"><span>day-to-day work.</span></span>
+</h2>
 </article>
 <article class="story-copy" data-chapter="2">
 <p class="eyebrow">WEB DEVELOPMENT</p>
-<h2>I develop web experiences that stay clear and useful.</h2>
+<h2>
+<span class="cinematic-line"><span>I develop web</span></span>
+<span class="cinematic-line"><span>experiences that</span></span>
+<span class="cinematic-line"><span>stay clear</span></span>
+<span class="cinematic-line"><span>and useful.</span></span>
+</h2>
 </article>
 <article class="story-copy" data-chapter="3">
 <p class="eyebrow">PORTFOLIO</p>
-<h2>This is the work I want to share.</h2>
+<h2>
+<span class="cinematic-line"><span>This is the work</span></span>
+<span class="cinematic-line"><span>I want to share.</span></span>
+</h2>
 </article>
 </div>
 <div class="scroll-label">SCROLL DOWN <span>›</span></div>

@@ -7,7 +7,24 @@
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const lowPower = (navigator.hardwareConcurrency || 4) <= 4 || (navigator.deviceMemory || 8) <= 4;
 
-  if (!canvas || !story || !copies.length || !window.THREE) return;
+  if (!story || !copies.length) return;
+
+  // Stage typography must function even if the remote 3D library fails to load.
+  if (!canvas || !window.THREE) {
+    const updateTextOnly = () => {
+      const rect = story.getBoundingClientRect();
+      const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - innerHeight)));
+      const index = Math.min(copies.length - 1, Math.floor(progress * copies.length));
+      copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
+      if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
+      if (progressFill) progressFill.style.transform = `scaleX(${progress})`;
+    };
+    addEventListener('scroll', updateTextOnly, { passive: true });
+    addEventListener('resize', updateTextOnly, { passive: true });
+    updateTextOnly();
+    return;
+  }
+
 
 
 

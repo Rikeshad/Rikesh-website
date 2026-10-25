@@ -1,0 +1,328 @@
+/* v46: responsive navigation and cinematic front-layer headings. */
+
+/* Keep all header controls inside the actual viewport, at normal browser zoom. */
+.site-header {
+  z-index: 12000 !important;
+}
+.nav-shell {
+  min-width: 0 !important;
+}
+@media (max-width: 1100px) {
+  .site-header {
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 0 !important;
+  }
+  .site-header .nav-shell {
+    position: relative !important;
+    z-index: 3 !important;
+    display: flex !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 60px !important;
+    gap: 10px !important;
+    padding: 7px 9px !important;
+  }
+  .site-header .site-nav,
+  .site-header .nav-actions,
+  .site-header .nav-right {
+    display: none !important;
+  }
+  .site-header .brand {
+    display: flex !important;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    overflow: hidden !important;
+  }
+  .site-header .brand-mark { flex-shrink: 0 !important; }
+  .site-header .brand-copy { min-width: 0 !important; }
+  .site-header .brand-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .site-header .menu-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    position: relative !important;
+    z-index: 4 !important;
+    flex: 0 0 46px !important;
+    width: 46px !important;
+    height: 46px !important;
+    min-width: 46px !important;
+    margin: 0 0 0 auto !important;
+    padding: 0 !important;
+    transform: none !important;
+    font-size: 26px !important;
+    line-height: 1 !important;
+  }
+  .site-header .menu-toggle.is-open { transform: none !important; }
+  .site-header .mobile-menu-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+  }
+  .site-header .mobile-menu {
+    position: fixed !important;
+    z-index: 2 !important;
+    display: grid !important;
+    align-content: start !important;
+    grid-auto-rows: minmax(44px, auto) !important;
+    gap: 5px !important;
+    top: calc(80px + env(safe-area-inset-top, 0px)) !important;
+    left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    right: max(12px, env(safe-area-inset-right, 0px)) !important;
+    bottom: auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: calc(100dvh - 94px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 12px !important;
+    scrollbar-gutter: auto !important;
+    border-radius: 16px !important;
+  }
+  .site-header .mobile-menu:not(.open) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  .site-header .mobile-menu.open {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  /* Exact-waves.css hid the only colour-mode control in the open mobile menu. */
+  .site-header .mobile-menu .theme-toggle-mobile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-shrink: 0 !important;
+    min-height: 50px !important;
+    width: 100% !important;
+    margin: 4px 0 0 !important;
+    padding: 10px 16px !important;
+  }
+  .site-header .mobile-menu .nav-btn,
+  .site-header .mobile-menu .nav-link,
+  .site-header .mobile-menu .mobile-contact {
+    flex-shrink: 0 !important;
+    width: 100% !important;
+    min-height: 48px !important;
+  }
+  body.menu-open { overflow: hidden !important; }
+}
+@media (max-width: 600px) {
+  .site-header .nav-shell { min-height: 58px !important; }
+  .site-header .mobile-menu { top: calc(76px + env(safe-area-inset-top, 0px)) !important; max-height: calc(100dvh - 86px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important; }
+}
+@media (max-width: 360px) {
+  .site-header { padding-inline: 8px !important; }
+  .site-header .mobile-menu { left: 8px !important; right: 8px !important; }
+}
+
+/* The 3D canvases and veils must never paint over the story typography. */
+#waveCanvas, .bg-canvas, .cosmic-veil, .ambient { pointer-events: none !important; }
+.wave-story .story-sticky,
+.wave-story .wave-story-sticky { isolation: isolate !important; z-index: 7000 !important; }
+.wave-story .story-copy-wrap {
+  z-index: 100 !important;
+  overflow: visible !important;
+  pointer-events: none !important;
+}
+.wave-story .story-copy {
+  z-index: 101 !important;
+  filter: none !important;
+  overflow: visible !important;
+  /* Animate the text itself, not the whole layout box. */
+  transform: none !important;
+  transition: opacity .23s ease, visibility 0s linear .23s !important;
+}
+.wave-story .story-copy.is-active {
+  transform: none !important;
+  transition-delay: 0s !important;
+}
+.wave-story .story-copy h1,
+.wave-story .story-copy h2 {
+  position: relative !important;
+  z-index: 103 !important;
+  display: block !important;
+  width: min(100%, 18ch) !important;
+  max-width: min(100%, 18ch) !important;
+  inline-size: min(18ch, calc(100vw - 112px)) !important;
+  max-inline-size: min(18ch, calc(100vw - 112px)) !important;
+  transform: translateX(clamp(16px, 2.3vw, 34px)) !important;
+  overflow: visible !important;
+  text-wrap: initial !important;
+  text-shadow: 0 2px 30px rgba(0,0,0,.21) !important;
+  line-height: 1.075 !important;
+}
+.wave-story .cinematic-line {
+  display: block !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  width: 100% !important;
+}
+.wave-story .cinematic-line > span {
+  display: inline-block !important;
+  max-width: 100%;
+  opacity: 1;
+  transform: none;
+  filter: none;
+  backface-visibility: hidden;
+  transform-origin: 50% 80%;
+}
+/* Each line forms in from depth with staggered focus/opacity, like a title sequence. */
+body.experience-ready .wave-story .story-copy.is-active .cinematic-line > span {
+  animation: cinematicLineFormIn 970ms cubic-bezier(.16,1,.3,1) both !important;
+  animation-delay: calc(95ms + var(--line-index, 0) * 145ms) !important;
+}
+.wave-story .cinematic-line:nth-child(1) { --line-index: 0; }
+.wave-story .cinematic-line:nth-child(2) { --line-index: 1; }
+.wave-story .cinematic-line:nth-child(3) { --line-index: 2; }
+.wave-story .cinematic-line:nth-child(4) { --line-index: 3; }
+@keyframes cinematicLineFormIn {
+  0%   { opacity: 0; transform: translate3d(0, .60em, 0) scale(.965); filter: blur(12px); }
+  45%  { opacity: .7; filter: blur(3px); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+/* Keep the eyebrow legible and ahead of the graphical effect too. */
+.wave-story .story-copy .eyebrow { position: relative !important; z-index: 103 !important; }
+@media (max-width: 1100px) {
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    width: min(100%, 17ch) !important;
+    max-width: min(100%, 17ch) !important;
+    inline-size: min(17ch, calc(100vw - 85px)) !important;
+    max-inline-size: min(17ch, calc(100vw - 85px)) !important;
+  }
+}
+@media (max-width: 760px) {
+  .wave-story .story-copy-wrap { padding-inline: 20px !important; }
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    width: min(100%, 17ch) !important;
+    max-width: min(100%, 17ch) !important;
+    inline-size: min(17ch, calc(100vw - 50px)) !important;
+    max-inline-size: min(17ch, calc(100vw - 50px)) !important;
+    font-size: clamp(31px, 8.4vw, 46px) !important;
+    transform: translateX(10px) !important;
+    line-height: 1.11 !important;
+  }
+}
+@media (max-width: 390px) {
+  .wave-story .story-copy h1,
+  .wave-story .story-copy h2 {
+    inline-size: min(17ch, calc(100vw - 40px)) !important;
+    max-inline-size: min(17ch, calc(100vw - 40px)) !important;
+    font-size: clamp(29px, 8.4vw, 36px) !important;
+    transform: translateX(7px) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.experience-ready .wave-story .story-copy.is-active .cinematic-line > span {
+    animation: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+  .site-header .mobile-menu { transition-duration: 0s !important; }
+}
+
+/* Important: the homepage inherited the unrelated two-column .story grid.
+   At desktop widths this restricted the entire scroll narrative to ~1/3 of
+   the viewport and pushed its headings off the left edge. */
+.wave-story.story {
+  display: block !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  grid-template-columns: none !important;
+}
+.wave-story.story > .story-sticky {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+/* Do not let oversized decorative elements change mobile viewport width. */
+html { overflow-x: clip; }
+body { overflow-x: clip; }
+
+/* A compact dropdown on tablets; full-width only on narrow phones. */
+@media (min-width: 761px) and (max-width: 1100px) {
+  .site-header .mobile-menu {
+    left: auto !important;
+    right: max(12px, env(safe-area-inset-right, 0px)) !important;
+    width: min(380px, calc(100vw - 24px)) !important;
+  }
+}
+
+/* A leaving chapter must not sit on top of the incoming title sequence. */
+.wave-story .story-copy:not(.is-active) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: none !important;
+}
+.wave-story .story-copy.is-active {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Keep a compact colour-mode switch beside the hamburger itself. The desktop
+   Contact action is moved into the dropdown so neither control gets pushed out. */
+@media (max-width: 1100px) {
+  .site-header .nav-actions.nav-right {
+    display: flex !important;
+    align-items: center !important;
+    flex: 0 0 auto !important;
+    margin: 0 0 0 auto !important;
+    position: relative !important;
+    z-index: 4 !important;
+  }
+  .site-header .nav-actions.nav-right > .nav-contact { display: none !important; }
+  .site-header .nav-actions .nav-theme-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+  }
+  .site-header .nav-actions .nav-theme-toggle [data-theme-label] { display: none !important; }
+  .site-header .menu-toggle { margin-left: 0 !important; }
+  .site-header .brand { flex: 1 1 0 !important; }
+}
+
+
+/* v47: welcome screen must be truly full-screen and navigation-free.
+   v46 raised the header to z-index 12000 over the intro's 10000. */
+body.has-intro:not(.experience-ready) .site-header {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: none !important;
+}
+body.has-intro.experience-ready .site-header {
+  opacity: 1 !important;
+  visibility: visible !important;
+  /* The nav shell retains pointer-events:auto for its controls. */
+  transition: opacity .4s ease !important;
+}
+.site-intro {
+  z-index: 20000 !important;
+}

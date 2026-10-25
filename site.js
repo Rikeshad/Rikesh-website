@@ -74,15 +74,21 @@
 
   function finishIntro() {
     if (!intro) return;
+    // Keep the navigation hidden until the welcome screen has fully faded.
+    // Adding experience-ready before the fade ended exposed the header.
     intro.classList.add('intro-hidden');
-    document.body.classList.remove('no-scroll');
-    setTimeout(() => intro.remove(), 750);
+    setTimeout(() => {
+      intro.remove();
+      document.body.classList.remove('no-scroll');
+      document.body.classList.add('experience-ready');
+    }, 700);
   }
 
   if (intro) {
     if (introSeen) {
       intro.remove();
       document.body.classList.remove('no-scroll');
+      document.body.classList.add('experience-ready');
     } else {
       document.body.classList.add('no-scroll');
       const bar = $('[data-intro-bar]', intro);
@@ -105,6 +111,8 @@
     }
   }
 
+
+  if (!intro) document.body.classList.add('experience-ready');
 
   const cursorDot = $('.cursor-dot');
   const cursorRing = $('.cursor-ring');
@@ -1405,29 +1413,22 @@
   const mobileMenuBackdrop = $('[data-menu-backdrop]');
   let menuScrollY = 0;
   let menuTouchStartY = null;
+  let priorRootOverflow = '';
 
   function lockPageForMenu() {
     if (document.body.classList.contains('menu-open')) return;
     menuScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    priorRootOverflow = document.documentElement.style.overflow;
     document.body.classList.add('menu-open');
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${menuScrollY}px`;
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
+    // Lock scroll without switching body to position:fixed or changing its width.
+    // Fixed positioning previously displaced the header/menu on smaller devices.
     document.documentElement.style.overflow = 'hidden';
   }
 
   function unlockPageForMenu() {
     if (!document.body.classList.contains('menu-open')) return;
     document.body.classList.remove('menu-open');
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
-    document.documentElement.style.overflow = '';
-    window.scrollTo(0, menuScrollY);
+    document.documentElement.style.overflow = priorRootOverflow;
   }
 
   function closeMobileMenu() {

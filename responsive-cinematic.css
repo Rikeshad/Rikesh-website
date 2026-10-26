@@ -326,3 +326,77 @@ body.has-intro.experience-ready .site-header {
 .site-intro {
   z-index: 20000 !important;
 }
+
+/* v48 — prevent narrow screens from inheriting desktop display type sizes.
+   The previous 19vw/14vw rules and min-content grid sizing pushed real text,
+   email actions and contact inputs beyond the visible phone viewport. */
+@media (max-width: 760px) {
+  /* Keep layout tracks shrinkable, instead of allowing a long heading to
+     determine the minimum width of the entire contact area. */
+  #hero-main,
+  #hero-main .hero-left,
+  #contact,
+  #contact .contact-grid,
+  #contact .contact-copy,
+  #contact .contact-form,
+  #contact .form-grid,
+  #contact .field {
+    min-width: 0 !important;
+    max-width: 100%;
+  }
+
+  #hero-main .hero-title {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    font-size: clamp(44px, 14vw, 74px) !important;
+    line-height: .93 !important;
+    letter-spacing: -.058em !important;
+  }
+  #hero-main .hero-title .wave-line {
+    max-width: 100%;
+    white-space: nowrap;
+  }
+  #hero-main .hero-title .wave-line:nth-child(2) {
+    padding-left: clamp(6px, 3vw, 18px) !important;
+  }
+  #hero-main .hero-title .wave-line:nth-child(3) {
+    padding-left: clamp(12px, 6vw, 32px) !important;
+  }
+
+  #contact .contact-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 26px;
+  }
+  #contact .contact-copy h2 {
+    max-width: 100%;
+    font-size: clamp(27px, 7.65vw, 45px) !important;
+    line-height: 1.06 !important;
+    letter-spacing: -.047em !important;
+    overflow-wrap: anywhere;
+  }
+  #contact .contact-copy > p { max-width: 100%; }
+  #contact .identity-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    padding: 18px;
+  }
+  #contact .identity-card > div { flex: 1 1 205px; min-width: 0; }
+  #contact .email-value { overflow-wrap: anywhere; word-break: normal; }
+  #contact .identity-card .copy-btn { flex: 0 0 auto; max-width: 100%; }
+  #contact .contact-form { width: 100%; box-sizing: border-box; padding: 20px !important; }
+  #contact .form-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  #contact .field input,
+  #contact .field textarea,
+  #contact .send-btn { width: 100%; min-width: 0; max-width: 100%; }
+}
+@media (max-width: 360px) {
+  #hero-main .hero-title { font-size: clamp(43px, 13.6vw, 49px) !important; }
+  #contact .contact-copy h2 { font-size: 27px !important; }
+}

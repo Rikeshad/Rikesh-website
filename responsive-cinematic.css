@@ -178,6 +178,19 @@
   backface-visibility: hidden;
   transform-origin: 50% 80%;
 }
+/* v50 — prevent the landing heading flashing fully formed before its reveal.
+   The intro sets .experience-ready only after it finishes. Without this
+   pre-reveal state, v49 paints the heading with opacity:1 first, then the
+   cinematic animation restarts at opacity:0 and draws the same text again. */
+body.has-intro:not(.experience-ready) .wave-story .story-copy.is-active .cinematic-line > span {
+  opacity: 0 !important;
+  transform: translate3d(0, .60em, 0) scale(.965) !important;
+  filter: blur(12px) !important;
+}
+body.has-intro:not(.experience-ready) .wave-story .story-copy.is-active .eyebrow {
+  opacity: 0 !important;
+}
+
 /* Each line forms in from depth with staggered focus/opacity, like a title sequence. */
 body.experience-ready .wave-story .story-copy.is-active .cinematic-line > span {
   animation: cinematicLineFormIn 970ms cubic-bezier(.16,1,.3,1) both !important;

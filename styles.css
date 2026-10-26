@@ -91,7 +91,7 @@ img,video {
 }
 
 .eyebrow {
-  font:700 60px/1.25 'Space Mono',monospace;
+  font:700 12px/1.25 'Space Mono',monospace;
   letter-spacing:.12em;
   text-transform:uppercase;
   color:var(--gold2)
@@ -494,7 +494,7 @@ img,video {
 
 .hero-sub {
   max-width:700px;
-  color:#adc2e4;
+  color:#c7ccd4;
   font-size:clamp(16px,1.15vw,19px);
   line-height:1.72
 }

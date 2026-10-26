@@ -4,6 +4,17 @@
   const copies = [...document.querySelectorAll('.wave-story .story-copy')];
   const chapterNumber = document.getElementById('chapterNumber');
   const progressFill = document.getElementById('progressFill');
+  // Shorter opening chapter, then three spacious chapters.
+  // Thresholds deliberately bring the first visible change within a swipe.
+  const chapterStops = [0, .15, .42, .70, 1];
+  const chapterFor = progress => {
+    for (let i = 0; i < 4; i += 1) {
+      if (progress < chapterStops[i + 1]) return i;
+    }
+    return 3;
+  };
+  const localChapterProgress = (progress, index) => Math.min(1, Math.max(0,
+    (progress - chapterStops[index]) / (chapterStops[index + 1] - chapterStops[index])));
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const lowPower = (navigator.hardwareConcurrency || 4) <= 4 || (navigator.deviceMemory || 8) <= 4;
 
@@ -14,7 +25,10 @@
     const updateTextOnly = () => {
       const rect = story.getBoundingClientRect();
       const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - innerHeight)));
-      const index = Math.min(copies.length - 1, Math.floor(progress * copies.length));
+      const index = chapterFor(progress);
+      const chapterProgress = localChapterProgress(progress, index);
+      story.style.setProperty('--story-swipe-lift', `${(-18 * chapterProgress).toFixed(1)}px`);
+      story.style.setProperty('--story-swipe-scale', (1 - .025 * chapterProgress).toFixed(4));
       copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
       if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
       if (progressFill) progressFill.style.transform = `scaleX(${progress})`;
@@ -158,7 +172,11 @@
   }
 
   function updateChapter(p) {
-    const index = Math.min(3, Math.floor(p * 4.0001));
+    const index = chapterFor(p);
+    const chapterProgress = localChapterProgress(p, index);
+    // A measured lift/zoom gives immediate feedback, even before the next chapter.
+    story.style.setProperty('--story-swipe-lift', `${(-18 * chapterProgress).toFixed(1)}px`);
+    story.style.setProperty('--story-swipe-scale', (1 - .025 * chapterProgress).toFixed(4));
     if (index !== state.chapter) {
       state.chapter = index;
       copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
@@ -215,7 +233,7 @@
 
     const handoff = smoothstep(seg(p, .82, 1));
     const exactSceneOpacity = 1 - handoff * .94;
-    const galaxyBuild = smoothstep(seg(p, .08, .72));
+    const galaxyBuild = smoothstep(seg(p, .015, .50));
     const galaxyBaseOpacity = dark
       ? mix(.16, .28, galaxyBuild)
       : mix(.20, .34, galaxyBuild);
@@ -224,9 +242,9 @@
     document.body.style.setProperty('--story-bg-opacity', galaxySceneOpacity.toFixed(3));
     document.body.style.setProperty('--story-veil-opacity', (dark ? mix(.08, .46, handoff) : mix(.02, .10, handoff)).toFixed(3));
 
-    const camIntro = smoothstep(seg(p, 0, .52));
+    const camIntro = smoothstep(seg(p, 0, .22));
     const camFinal = easeOutCubic(seg(p, .55, 1));
-    camera.position.z = mix(mobile ? 9.45 : 7.65, mobile ? 8.15 : 6.15, camIntro);
+    camera.position.z = mix(mobile ? 9.45 : 7.65, mobile ? 7.9 : 6.05, camIntro);
     camera.position.x = mix(mobile ? 0 : .75, mobile ? 0 : -.2, camFinal) + state.pointerSmoothX * (mobile ? .025 : .09);
     camera.position.y = mix(.1, -.08, camFinal) - state.pointerSmoothY * (mobile ? .018 : .07);
     camera.lookAt(0, mobile ? -.48 : -.18, 0);

@@ -1,23 +1,13 @@
-# Rikesh Portfolio v48 — Mobile Layout Fix
+# Rikesh Adhikari Portfolio — v52 Personal SEO
 
-Extract this archive, then upload **the files inside `rikesh-portfolio-waves-v48`** into your existing website's root folder. Replace older copies, keeping the same structure.
+This is a complete **GitHub Pages static-site build** based on the earlier v51 reviewed archive. It adds personal-identity search metadata without replacing the visual design. Read `RELEASE-NOTES-v52.md` for the precise changes.
 
-## Fixes in v48
-- Mobile homepage hero `CREATE / WITHOUT / LIMITS.` scales down while keeping the staggered three-line appearance. Removed excessive small-screen line indentation and clipping.
-- Mobile contact heading now scales and wraps without forcing the contact grid wider than the viewport.
-- Contact/email card, Copy button, input fields, textarea and Send button all fit on narrow phones.
-- Added min-width constraints and a single-column grid for screens 760px and narrower; prevents long text from stretching other content.
-- Changed `responsive-cinematic.css` links to `?v=48` in all four pages so a cached older CSS file is less likely to linger after deployment.
-- Welcome-only intro (v47), mobile menu and theme toggle (v46), and homepage cinematic line reveals (v46) are unchanged.
+## Install
+1. Back up your current GitHub working directory. Your online site might contain changes made since the v51 package.
+2. Extract this ZIP. Copy the files **inside** `rikesh-portfolio-waves-v52-personal-seo` into the root of your existing checked-out `rikeshad.com` repository. Keep the existing `.git` directory.
+3. Review changed files in VS Code Source Control. Newer local edits must be reconciled before replacement.
+4. From Windows PowerShell in your repository folder, run: `git add .; if ($LASTEXITCODE -eq 0) { git commit -m "Improve Rikesh Adhikari personal SEO v52"; if ($LASTEXITCODE -eq 0) { git push origin main } }`
+5. After GitHub Pages deployment, submit `https://rikeshad.com/sitemap.xml` in Google Search Console and inspect the homepage.
 
-### Verification
-Layout measured in a local headless Chromium rendering at viewport widths 320, 360, 390, 430, 600, 760, 768, 1024 and 1440px. External web fonts, Three.js effects and hosting services were not part of those offline checks.
-
-### Git (Windows PowerShell)
-From your site's local Git repository folder, after extracting and replacing files:
-
-`git add .; if ($LASTEXITCODE -eq 0) { git commit -m "Fix mobile website layout v48"; if ($LASTEXITCODE -eq 0) { git push origin main } }`
-
-### v50 — First-title animation fix
-
-The first scroll heading remains hidden until the welcome screen finishes and the cinematic line reveal begins, so the title does not flash fully formed before animating.
+## What this cannot do
+No static files can guarantee position #1 in Google. Inspect Cloudflare redirects and the unexpected `/.well-known/` paths separately; verify they return real HTTP 404 responses. This archive cannot change Cloudflare settings or Google indexing directly.

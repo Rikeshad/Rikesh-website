@@ -70,7 +70,8 @@
 
 
   const intro = $('#site-intro');
-  const introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1';
+  let introSeen = false;
+  try { introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1'; } catch { /* private browsing may block storage */ }
 
   function finishIntro() {
     if (!intro) return;
@@ -103,7 +104,7 @@
 
           if (progress >= 100) {
             clearInterval(introTimer);
-            sessionStorage.setItem('rikeshIntroSeen', '1');
+            try { sessionStorage.setItem('rikeshIntroSeen', '1'); } catch { /* still finish intro */ }
             setTimeout(finishIntro, 350);
           }
         }, 95);

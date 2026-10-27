@@ -448,3 +448,38 @@ body.has-intro.experience-ready .site-header {
     transform: translateX(7px) !important;
   }
 }
+
+/* v51: protect projects' mobile headings and cards from minimum-content overflow. */
+@media (max-width: 760px) {
+  .project-hero { grid-template-columns: minmax(0, 1fr) !important; min-width: 0; }
+  .project-hero > *, .project-hero-copy, .project-hero-copy > * { min-width: 0; max-width: 100%; }
+  .project-hero h1 { font-size: clamp(2.5rem, 12.6vw, 5.75rem) !important; line-height: .94 !important; overflow-wrap: anywhere; }
+  .project-actions { flex-wrap: wrap; }
+  .project-actions > * { max-width: 100%; }
+  .intro-copy { max-width: 100%; }
+}
+/* Prevent cover art/motion transforms from creating side scrolling. */
+html, body { max-width: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .intro-star { animation: none !important; }
+}
+
+/* Mobile navigation: prevent background hero text from shining through controls. */
+@media (max-width: 1100px) {
+  .site-header .mobile-menu {
+    background: var(--panel-solid, #14141b) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* v51: project hero artwork stays dark in both themes; keep its text legible. */
+html[data-theme="light"] .project-hero,
+html[data-theme="light"] .project-hero h1 { color: #fcfaf5 !important; }
+html[data-theme="light"] .project-hero-copy p,
+html[data-theme="light"] .project-hero .facts span { color: #e1e3e9 !important; }
+html[data-theme="light"] .project-hero .eyebrow { color: #f3da91 !important; }
+html[data-theme="light"] .project-hero .btn-glass { color: #fff !important; border-color: rgba(255,255,255,.5) !important; }
+
+.contact-delivery-note { font-size: .8rem; line-height: 1.5; color: var(--muted); margin: 10px 0 0; }

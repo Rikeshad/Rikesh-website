@@ -282,7 +282,7 @@
   };
 
   function saveTimer() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* timer remains usable without persistence */ }
   }
 
   function formatTime(milliseconds) {

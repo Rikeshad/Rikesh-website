@@ -71,16 +71,16 @@
 
   const intro = $('#site-intro');
   let introSeen = false;
-  try { introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1'; } catch { /* private browsing may block storage */ }
+  try { introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1'; } catch {  }
 
   function finishIntro() {
     if (!intro) return;
-    // Keep the navigation hidden until the welcome screen has fully faded.
-    // Adding experience-ready before the fade ended exposed the header.
+
+
     intro.classList.add('intro-hidden');
     setTimeout(() => {
       intro.remove();
-      document.body.classList.remove('no-scroll');
+      document.body.classList.remove('no-scroll', 'has-intro');
       document.body.classList.add('experience-ready');
     }, 700);
   }
@@ -88,7 +88,7 @@
   if (intro) {
     if (introSeen) {
       intro.remove();
-      document.body.classList.remove('no-scroll');
+      document.body.classList.remove('no-scroll', 'has-intro');
       document.body.classList.add('experience-ready');
     } else {
       document.body.classList.add('no-scroll');
@@ -104,7 +104,7 @@
 
           if (progress >= 100) {
             clearInterval(introTimer);
-            try { sessionStorage.setItem('rikeshIntroSeen', '1'); } catch { /* still finish intro */ }
+            try { sessionStorage.setItem('rikeshIntroSeen', '1'); } catch {  }
             setTimeout(finishIntro, 350);
           }
         }, 95);
@@ -1421,8 +1421,8 @@
     menuScrollY = window.scrollY || document.documentElement.scrollTop || 0;
     priorRootOverflow = document.documentElement.style.overflow;
     document.body.classList.add('menu-open');
-    // Lock scroll without switching body to position:fixed or changing its width.
-    // Fixed positioning previously displaced the header/menu on smaller devices.
+
+
     document.documentElement.style.overflow = 'hidden';
   }
 

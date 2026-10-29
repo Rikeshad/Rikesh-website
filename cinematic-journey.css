@@ -1,0 +1,141 @@
+:root { --journey-shift: 0px; --journey-darwin: 0; --journey-image-opacity: 1; }
+.wave-story .wave-story-sticky { isolation:isolate; }
+.wave-story .scenic-layers { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; opacity:var(--journey-image-opacity); transform:translateZ(0); }
+.wave-story .scenic-shot { position:absolute; inset:-7% -3%; background-position:center; background-size:cover; background-repeat:no-repeat; will-change:transform,opacity; transition:opacity .24s linear; transform:translate3d(0,var(--journey-shift),0) scale(1.08); }
+.wave-story .scenic-nepal { background-image:url('./assets/images/scenery/nepal-himalayas.webp'); opacity:calc(1 - var(--journey-darwin)); }
+.wave-story .scenic-nepal::after {content:'';position:absolute;inset:0;background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Himalayas_Nepal.jpg?width=1800');background-position:center;background-size:cover;}
+.wave-story .scenic-darwin { background-color:#502c36; background-image:url('./assets/images/scenery/darwin-artwork-fallback.webp'); opacity:var(--journey-darwin); }
+.wave-story .scenic-darwin::after { content:''; position:absolute; inset:0; background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Sunset_over_Darwin%27s_Mindil_beach.jpg?width=1800'); background-size:cover; background-position:center; }
+.wave-story .scenic-overlay { position:absolute; inset:0; z-index:2; pointer-events:none; background:linear-gradient(90deg,rgba(3,8,18,.25),rgba(4,9,15,.18) 50%,rgba(0,0,0,.25)),linear-gradient(0deg,rgba(3,8,16,.18),transparent 32%,rgba(3,7,15,.10)); }
+.wave-story .story-copy-wrap { z-index:30 !important; }
+.wave-story .story-copy h1,.wave-story .story-copy h2 { text-shadow:0 3px 28px rgba(0,0,0,.6) !important; }
+html[data-theme='dark'] .wave-story .story-copy h1,html[data-theme='dark'] .wave-story .story-copy h2 {color:#fffdf7!important;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 25px rgba(0,0,0,.55)!important;}
+html[data-theme='light'] .wave-story .scenic-overlay { background:linear-gradient(90deg,rgba(255,250,238,.13) 0%,rgba(255,249,237,.09) 52%,rgba(255,249,237,.11) 100%),linear-gradient(0deg,rgba(255,249,237,.14),transparent 34%); }
+html[data-theme='light'] .wave-story .story-copy h1,html[data-theme='light'] .wave-story .story-copy h2 {color:#101722!important;text-shadow:0 1px 3px rgba(255,255,255,.98),0 0 18px rgba(255,255,255,.9),0 0 34px rgba(255,255,255,.65)!important;}
+html[data-theme='dark'] .wave-story .eyebrow,html[data-theme='dark'] .wave-story .chapter-number,html[data-theme='dark'] .wave-story .chapter-total,html[data-theme='dark'] .wave-story .scroll-label {color:rgba(255,255,255,.92) !important;}
+.wave-story .journey-caption {position:absolute;bottom:76px;left:clamp(20px,5vw,72px);right:clamp(20px,5vw,72px);z-index:34;display:flex;align-items:center;gap:15px;font:700 10px/1.4 'Space Mono',monospace;letter-spacing:.12em;opacity:.86;pointer-events:none;}
+.wave-story .journey-thread {flex:0 1 95px;height:1px;background:linear-gradient(90deg,var(--blue,#82b1ff),var(--amber,#f0b85c));}
+.wave-story .journey-flag {white-space:nowrap;}
+.wave-story .journey-flag-secondary {opacity:calc(.45 + .55 * var(--journey-darwin));}
+html[data-theme='dark'] .wave-story .journey-caption {color:#fff;}
+html[data-theme='light'] .wave-story .journey-caption {color:#182231;}
+@media (max-width:760px) {
+ .wave-story .scenic-layers {opacity:1;}
+ .wave-story .scenic-shot {inset:-4% -24%;background-position:center;transform:translate3d(0,calc(var(--journey-shift) * .45),0) scale(1.06);}
+ .wave-story .journey-caption {bottom:88px;left:22px;right:22px;gap:9px;font-size:8px;letter-spacing:.055em;}
+ .wave-story .journey-thread {flex:1 1 28px;}
+ .wave-story .journey-flag-secondary {max-width:38%;}
+}
+@media (prefers-reduced-motion:reduce) {
+ .wave-story .scenic-shot {transition:none!important;transform:none!important;will-change:auto;}
+ .wave-story .journey-caption {transition:none!important;}
+}
+
+.journey-origin{margin:0 0 22px;max-width:55ch;font:600 12px/1.6 'Space Mono',monospace;letter-spacing:.03em;color:var(--muted);}
+@media(max-width:760px){.journey-origin{font-size:11px;margin-top:-8px;margin-bottom:20px;}}
+
+.scenery-credits-link{font:600 10px/1.5 'Space Mono',monospace;text-decoration:underline;text-underline-offset:3px;color:var(--muted);}
+.scenery-credits-link:hover,.scenery-credits-link:focus-visible{color:var(--text);}
+
+.wave-story .scenic-depth { position:absolute; inset:-9% -5%; z-index:1; pointer-events:none; background-position:center 63%; background-size:cover; background-repeat:no-repeat; opacity:0; will-change:transform,opacity; mask-image:linear-gradient(to bottom,transparent 31%,rgba(0,0,0,.35) 54%,black 100%); -webkit-mask-image:linear-gradient(to bottom,transparent 31%,rgba(0,0,0,.35) 54%,black 100%); transform:translate3d(0,var(--journey-foreground,0px),0) scale(1.18);}
+.wave-story .scenic-nepal-depth { background-image:url('./assets/images/scenery/nepal-himalayas.webp'); opacity:calc((1 - var(--journey-darwin)) * .58);}
+.wave-story .scenic-darwin-depth { background-image:url('./assets/images/scenery/darwin-artwork-fallback.webp'); opacity:calc(var(--journey-darwin) * .52);}
+.wave-story .scenic-nepal,.wave-story .scenic-darwin {transform:translate3d(0,var(--journey-distance,0px),0) scale(1.12);}
+.wave-story .journey-caption {left:auto;right:clamp(28px,5vw,76px);bottom:88px;max-width:min(85vw,500px);justify-content:flex-end;}
+html[data-theme='light'] .wave-story .scenic-depth,html[data-theme='dark'] .wave-story .scenic-depth {background-blend-mode:normal;}
+@media(max-width:760px){.wave-story .scenic-depth {transform:translate3d(0,calc(var(--journey-foreground,0px) * .4),0) scale(1.10);background-position:50% center;}.wave-story .journey-caption {right:18px;left:18px;bottom:96px;justify-content:flex-end;}}
+@media(prefers-reduced-motion:reduce){.wave-story .scenic-depth,.wave-story .scenic-shot {transform:none!important;will-change:auto!important;}}
+
+/* The same scenic imagery and full pixel detail are preserved across both themes. */
+.wave-story .scenic-layers { opacity:1!important; filter:none!important; -webkit-filter:none!important; }
+.wave-story .scenic-shot, .wave-story .scenic-shot::after, .wave-story .scenic-depth { filter:none!important; -webkit-filter:none!important; image-rendering:auto; }
+.wave-story .scenic-shot::after { pointer-events:none; }
+html[data-theme="light"] .wave-story .scenic-depth { opacity:calc((1 - var(--journey-darwin)) * .26); }
+html[data-theme="light"] .wave-story .scenic-darwin-depth { opacity:calc(var(--journey-darwin) * .26); }
+@media (max-width:760px) { .wave-story .scenic-layers { opacity:1!important; } }
+
+/* Keep the location caption legible without hiding the scenery. */
+.wave-story .journey-caption { padding:8px 12px; border-radius:12px; width:max-content; }
+html[data-theme="light"] .wave-story .journey-caption { background:rgba(252,250,241,.70); color:#152034; }
+html[data-theme="dark"] .wave-story .journey-caption { background:rgba(8,13,23,.58); color:#fafafa; }
+html[data-theme="light"] .wave-story .scroll-label, html[data-theme="light"] .wave-story .chapter-total { color:#182231!important; text-shadow:0 1px 5px rgba(255,255,255,.92); }
+@media(max-width:760px){
+ .wave-story .journey-caption { bottom:155px; left:18px; right:auto; width:calc(100% - 36px); max-width:calc(100% - 36px); justify-content:space-between; gap:7px; }
+ .wave-story .journey-thread { flex:1 1 14px; }
+}
+
+.wave-story .story-spiral-waves {
+  position: absolute;
+  top: 13%;
+  right: -8%;
+  width: min(72vw, 1040px);
+  height: min(88svh, 980px);
+  z-index: 9;
+  overflow: visible;
+  color: #ffe0a0;
+  opacity: .87;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  transform: rotate(var(--story-spiral-turn, -14deg)) scale(var(--story-spiral-scale, 1));
+  filter: drop-shadow(0 0 5px rgba(255,200,107,.35));
+}
+html[data-theme="light"] .wave-story .story-spiral-waves {
+  color: #996908;
+  opacity: .88;
+  filter: drop-shadow(0 0 2px rgba(255,248,212,.75));
+}
+.wave-story .story-spiral-waves .spiral-line {
+  stroke: currentColor;
+}
+@media (max-width: 760px) {
+  .wave-story .story-spiral-waves {
+    width: 94vw;
+    height: 80svh;
+    top: 14%;
+    right: -34%;
+    opacity: .74;
+  }
+  html[data-theme="light"] .wave-story .story-spiral-waves { opacity: .70; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wave-story .story-spiral-waves { transform: none; filter: none; }
+}
+.linkedin-connect {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  max-width: 100%;
+  margin-top: 18px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #0a66c2;
+  border: 1px solid rgba(255,255,255,.24);
+  color: #fff !important;
+  text-decoration: none;
+  font: 700 14px/1.4 'Inter', system-ui, sans-serif;
+  box-shadow: 0 10px 24px rgba(4,65,130,.2);
+  transition: transform .25s ease, background-color .25s ease, box-shadow .25s ease;
+}
+.linkedin-connect:hover {
+  background: #004182;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(4,65,130,.3);
+}
+.linkedin-connect:focus-visible { outline: 3px solid #f0b85c; outline-offset: 3px; }
+.linkedin-connect-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: #fff;
+  color: #0a66c2;
+  font: 900 16px Arial, sans-serif;
+  letter-spacing: -.08em;
+}
+.linkedin-connect-arrow { margin-left: auto; font-size: 19px; }
+@media (max-width: 480px) {
+  .linkedin-connect { width: 100%; justify-content: center; font-size: 13px; padding: 13px 10px; }
+  .linkedin-connect-arrow { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .linkedin-connect { transition: none; } }

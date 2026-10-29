@@ -4,8 +4,8 @@
   const copies = [...document.querySelectorAll('.wave-story .story-copy')];
   const chapterNumber = document.getElementById('chapterNumber');
   const progressFill = document.getElementById('progressFill');
-  // Shorter opening chapter, then three spacious chapters.
-  // Thresholds deliberately bring the first visible change within a swipe.
+
+
   const chapterStops = [0, .15, .42, .70, 1];
   const chapterFor = progress => {
     for (let i = 0; i < 4; i += 1) {
@@ -20,7 +20,6 @@
 
   if (!story || !copies.length) return;
 
-  // Stage typography must function even if the remote 3D library fails to load.
   if (!canvas || !window.THREE) {
     const updateTextOnly = () => {
       const rect = story.getBoundingClientRect();
@@ -174,7 +173,7 @@
   function updateChapter(p) {
     const index = chapterFor(p);
     const chapterProgress = localChapterProgress(p, index);
-    // A measured lift/zoom gives immediate feedback, even before the next chapter.
+
     story.style.setProperty('--story-swipe-lift', `${(-18 * chapterProgress).toFixed(1)}px`);
     story.style.setProperty('--story-swipe-scale', (1 - .025 * chapterProgress).toFixed(4));
     if (index !== state.chapter) {

@@ -1,6 +1,6 @@
-/* v46: responsive navigation and cinematic front-layer headings. */
 
-/* Keep all header controls inside the actual viewport, at normal browser zoom. */
+
+
 .site-header {
   z-index: 12000 !important;
 }
@@ -98,7 +98,7 @@
     visibility: visible !important;
     pointer-events: auto !important;
   }
-  /* Exact-waves.css hid the only colour-mode control in the open mobile menu. */
+  
   .site-header .mobile-menu .theme-toggle-mobile {
     display: flex !important;
     align-items: center !important;
@@ -127,7 +127,7 @@
   .site-header .mobile-menu { left: 8px !important; right: 8px !important; }
 }
 
-/* The 3D canvases and veils must never paint over the story typography. */
+
 #waveCanvas, .bg-canvas, .cosmic-veil, .ambient { pointer-events: none !important; }
 .wave-story .story-sticky,
 .wave-story .wave-story-sticky { isolation: isolate !important; z-index: 7000 !important; }
@@ -140,7 +140,7 @@
   z-index: 101 !important;
   filter: none !important;
   overflow: visible !important;
-  /* Animate the text itself, not the whole layout box. */
+  
   transform: none !important;
   transition: opacity .23s ease, visibility 0s linear .23s !important;
 }
@@ -178,10 +178,7 @@
   backface-visibility: hidden;
   transform-origin: 50% 80%;
 }
-/* v50 — prevent the landing heading flashing fully formed before its reveal.
-   The intro sets .experience-ready only after it finishes. Without this
-   pre-reveal state, v49 paints the heading with opacity:1 first, then the
-   cinematic animation restarts at opacity:0 and draws the same text again. */
+
 body.has-intro:not(.experience-ready) .wave-story .story-copy.is-active .cinematic-line > span {
   opacity: 0 !important;
   transform: translate3d(0, .60em, 0) scale(.965) !important;
@@ -191,7 +188,7 @@ body.has-intro:not(.experience-ready) .wave-story .story-copy.is-active .eyebrow
   opacity: 0 !important;
 }
 
-/* Each line forms in from depth with staggered focus/opacity, like a title sequence. */
+
 body.experience-ready .wave-story .story-copy.is-active .cinematic-line > span {
   animation: cinematicLineFormIn 970ms cubic-bezier(.16,1,.3,1) both !important;
   animation-delay: calc(95ms + var(--line-index, 0) * 145ms) !important;
@@ -205,7 +202,7 @@ body.experience-ready .wave-story .story-copy.is-active .cinematic-line > span {
   45%  { opacity: .7; filter: blur(3px); }
   100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
 }
-/* Keep the eyebrow legible and ahead of the graphical effect too. */
+
 .wave-story .story-copy .eyebrow { position: relative !important; z-index: 103 !important; }
 @media (max-width: 1100px) {
   .wave-story .story-copy h1,
@@ -248,9 +245,7 @@ body.experience-ready .wave-story .story-copy.is-active .cinematic-line > span {
   .site-header .mobile-menu { transition-duration: 0s !important; }
 }
 
-/* Important: the homepage inherited the unrelated two-column .story grid.
-   At desktop widths this restricted the entire scroll narrative to ~1/3 of
-   the viewport and pushed its headings off the left edge. */
+
 .wave-story.story {
   display: block !important;
   padding: 0 !important;
@@ -267,11 +262,11 @@ body.experience-ready .wave-story .story-copy.is-active .cinematic-line > span {
   padding: 0 !important;
   margin: 0 !important;
 }
-/* Do not let oversized decorative elements change mobile viewport width. */
+
 html { overflow-x: clip; }
 body { overflow-x: clip; }
 
-/* A compact dropdown on tablets; full-width only on narrow phones. */
+
 @media (min-width: 761px) and (max-width: 1100px) {
   .site-header .mobile-menu {
     left: auto !important;
@@ -280,7 +275,7 @@ body { overflow-x: clip; }
   }
 }
 
-/* A leaving chapter must not sit on top of the incoming title sequence. */
+
 .wave-story .story-copy:not(.is-active) {
   opacity: 0 !important;
   visibility: hidden !important;
@@ -291,8 +286,7 @@ body { overflow-x: clip; }
   visibility: visible !important;
 }
 
-/* Keep a compact colour-mode switch beside the hamburger itself. The desktop
-   Contact action is moved into the dropdown so neither control gets pushed out. */
+
 @media (max-width: 1100px) {
   .site-header .nav-actions.nav-right {
     display: flex !important;
@@ -322,8 +316,7 @@ body { overflow-x: clip; }
 }
 
 
-/* v47: welcome screen must be truly full-screen and navigation-free.
-   v46 raised the header to z-index 12000 over the intro's 10000. */
+
 body.has-intro:not(.experience-ready) .site-header {
   opacity: 0 !important;
   visibility: hidden !important;
@@ -333,19 +326,16 @@ body.has-intro:not(.experience-ready) .site-header {
 body.has-intro.experience-ready .site-header {
   opacity: 1 !important;
   visibility: visible !important;
-  /* The nav shell retains pointer-events:auto for its controls. */
+  
   transition: opacity .4s ease !important;
 }
 .site-intro {
   z-index: 20000 !important;
 }
 
-/* v48 — prevent narrow screens from inheriting desktop display type sizes.
-   The previous 19vw/14vw rules and min-content grid sizing pushed real text,
-   email actions and contact inputs beyond the visible phone viewport. */
+
 @media (max-width: 760px) {
-  /* Keep layout tracks shrinkable, instead of allowing a long heading to
-     determine the minimum width of the entire contact area. */
+  
   #hero-main,
   #hero-main .hero-left,
   #contact,
@@ -414,9 +404,7 @@ body.has-intro.experience-ready .site-header {
   #contact .contact-copy h2 { font-size: 27px !important; }
 }
 
-/* v49 — make the scroll story feel responsive from the first swipe.
-   The original 500vh duration kept chapter 001 unchanged for about an entire
-   viewport of travel. Shorten its runway, without removing the sticky scene. */
+
 .wave-story.story { height: 390vh !important; }
 @media (max-width: 760px) {
   .wave-story.story { height: 340vh !important; }
@@ -424,8 +412,7 @@ body.has-intro.experience-ready .site-header {
   .wave-story .story-progress-fill { border-radius: inherit !important; }
 }
 
-/* Gentle ongoing motion between chapter changes; does not override the
-   staggered cinematic animation on each text line. */
+
 .wave-story .story-copy.is-active h1,
 .wave-story .story-copy.is-active h2 {
   transform: translateX(clamp(16px, 2.3vw, 34px))
@@ -449,7 +436,7 @@ body.has-intro.experience-ready .site-header {
   }
 }
 
-/* v51: protect projects' mobile headings and cards from minimum-content overflow. */
+
 @media (max-width: 760px) {
   .project-hero { grid-template-columns: minmax(0, 1fr) !important; min-width: 0; }
   .project-hero > *, .project-hero-copy, .project-hero-copy > * { min-width: 0; max-width: 100%; }
@@ -458,14 +445,14 @@ body.has-intro.experience-ready .site-header {
   .project-actions > * { max-width: 100%; }
   .intro-copy { max-width: 100%; }
 }
-/* Prevent cover art/motion transforms from creating side scrolling. */
+
 html, body { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .intro-star { animation: none !important; }
 }
 
-/* Mobile navigation: prevent background hero text from shining through controls. */
+
 @media (max-width: 1100px) {
   .site-header .mobile-menu {
     background: var(--panel-solid, #14141b) !important;
@@ -474,7 +461,7 @@ html, body { max-width: 100%; }
   }
 }
 
-/* v51: project hero artwork stays dark in both themes; keep its text legible. */
+
 html[data-theme="light"] .project-hero,
 html[data-theme="light"] .project-hero h1 { color: #fcfaf5 !important; }
 html[data-theme="light"] .project-hero-copy p,
@@ -483,3 +470,5 @@ html[data-theme="light"] .project-hero .eyebrow { color: #f3da91 !important; }
 html[data-theme="light"] .project-hero .btn-glass { color: #fff !important; border-color: rgba(255,255,255,.5) !important; }
 
 .contact-delivery-note { font-size: .8rem; line-height: 1.5; color: var(--muted); margin: 10px 0 0; }
+
+@media (max-width:1100px){.site-header .mobile-menu.open{background:var(--panel-solid,#11151e)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:0 26px 65px rgba(0,0,0,.48)!important;}}

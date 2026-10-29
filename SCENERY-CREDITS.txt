@@ -1,0 +1,6 @@
+Scenic imagery
+
+Nepal: Wikimedia Commons “Himalayas Nepal.jpg” by Anna Stavenskaya, CC BY-SA 4.0, displayed from Wikimedia where available. https://commons.wikimedia.org/wiki/File:Himalayas_Nepal.jpg ; https://creativecommons.org/licenses/by-sa/4.0/
+Nepal local fallback: original AI-generated Himalayan-inspired artwork. It is illustrative, not a documentary photograph of an identified location.
+Darwin: Wikimedia Commons “Sunset over Darwin's Mindil beach.jpg”, by Kendra Baker (Kendralea), CC BY-SA 4.0. A copy is displayed via Wikimedia's original hosted URL when available. https://commons.wikimedia.org/wiki/File:Sunset_over_Darwin%27s_Mindil_beach.jpg ; https://creativecommons.org/licenses/by-sa/4.0/
+The local background fallback for Darwin is a cropped, AI-generated illustrative composition, not location photography. Remote scenery may not load offline; the local fallback remains visible.

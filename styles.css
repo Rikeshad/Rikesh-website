@@ -1246,33 +1246,10 @@ img,video {
   padding:24px 0
 }
 
-
 .back-home {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 11px 16px;
-  border-radius: 12px;
-
-  background: linear-gradient(135deg, #bbc0ca, #c7e7b2);
-  color: #0a0a0a;
-
-  font: 800 11px 'Space Mono', monospace;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  text-decoration: none;
-
-  box-shadow: 0 12px 32px rgba(173, 135, 10, 0.16);
-
-  transition: transform .25s ease,
-              box-shadow .25s ease;
+  font:700 11px 'Space Mono';
+  color:var(--gold2)
 }
-
-.back-home:hover {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: 0 16px 38px rgba(173, 135, 10, 0.25);
-}
-
 
 .project-hero {
   position:relative;
@@ -5042,37 +5019,5 @@ html[data-theme="light"] .nav-contact:focus-visible {
   .nav-shell {
     padding-left: 8px !important;
     padding-right: 8px !important;
-  }
-}
-.linkedin-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 18px;
-  padding: 13px 20px;
-  border-radius: 12px;
-  background: #0A66C2;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: transform 0.3s ease,
-              background 0.3s ease;
-}
-
-.linkedin-link:hover {
-  background: #004182;
-  transform: translateY(-3px);
-}
-
-.linkedin-link:focus-visible {
-  outline: 3px solid #ffffff;
-  outline-offset: 3px;
-}
-
-@media (max-width: 480px) {
-  .linkedin-link {
-    max-width: 100%;
-    text-align: center;
   }
 }

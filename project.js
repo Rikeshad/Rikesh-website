@@ -1,316 +1,147 @@
 (() => {
   'use strict';
-
-  const $ = (selector, root = document) => root.querySelector(selector);
-  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const gallery = $('[data-gallery]');
+  const gallery = document.querySelector('[data-gallery]');
   if (!gallery) return;
-
-  const cards = $$('[data-gallery-card]', gallery);
-  const prev = $('[data-gallery-prev]', gallery);
-  const next = $('[data-gallery-next]', gallery);
-  const count = $('[data-gallery-count]', gallery);
-  const title = $('[data-gallery-title]', gallery);
-  const kicker = $('[data-gallery-kicker]', gallery);
-  const description = $('[data-gallery-description]', gallery);
-  const dotsWrap = $('[data-gallery-dots]', gallery);
-  const stage = $('[data-gallery-stage]', gallery);
-  const modal = $('[data-gallery-modal]');
-  const modalImage = $('[data-modal-image]', modal || document);
-  const modalTitle = $('[data-modal-title]', modal || document);
-  const modalDescription = $('[data-modal-description]', modal || document);
-  const modalClose = $('[data-modal-close]', modal || document);
+  const $ = selector => gallery.querySelector(selector);
+  const cards = [...gallery.querySelectorAll('[data-gallery-card]')];
+  const slides = [...gallery.querySelectorAll('[data-feature-slide]')];
+  if (!cards.length || slides.length < 2) return;
+  const stage = $('[data-gallery-stage]');
+  const rail = $('.gallery-rail');
+  const title = $('[data-gallery-title]');
+  const kicker = $('[data-gallery-kicker]');
+  const description = $('[data-gallery-description]');
+  const count = $('[data-gallery-count]');
+  const prev = $('[data-gallery-prev]');
+  const next = $('[data-gallery-next]');
+  const dotsWrap = $('[data-gallery-dots]');
+  const enlarge = $('[data-gallery-enlarge]');
+  const modal = document.querySelector('[data-gallery-modal]');
+  const modalImage = modal?.querySelector('[data-modal-image]');
+  const modalTitle = modal?.querySelector('[data-modal-title]');
+  const modalDescription = modal?.querySelector('[data-modal-description]');
+  const modalClose = modal?.querySelector('[data-modal-close]');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+  const wrap = value => (value + cards.length) % cards.length;
   let index = 0;
-  let autoId = null;
-  let resumeId = null;
-  let pointerStart = null;
-  let pointerDelta = 0;
+  let currentSlide = 0;
+  let pendingImage = 0;
+  let startPoint = null;
 
-  const wrapIndex = value => (value + cards.length) % cards.length;
-
-
-  function syncCardMediaSize(card) {
-    const image = $('img', card);
+  function showImage(card) {
+    const incomingIndex = 1 - currentSlide;
+    const incoming = slides[incomingIndex];
+    const image = card.querySelector('img');
     if (!image) return;
-
-    const apply = () => {
-      if (!image.naturalWidth || !image.naturalHeight) return;
-      const ratio = image.naturalWidth / image.naturalHeight;
-      card.style.setProperty('--media-ratio', `${image.naturalWidth} / ${image.naturalHeight}`);
-
-      const maxWidth = Math.min(window.innerWidth * (window.innerWidth < 760 ? 0.92 : 0.88), 1680);
-      const maxHeight = Math.min(window.innerHeight * (window.innerWidth < 760 ? 0.56 : 0.68), 760);
-      let width = maxWidth;
-      let height = width / ratio;
-      if (height > maxHeight) {
-        height = maxHeight;
-        width = height * ratio;
-      }
-
-      card.style.width = `${Math.round(width)}px`;
-      card.style.height = `${Math.round(height)}px`;
+    const src = image.currentSrc || image.getAttribute('src');
+    const bg = incoming.querySelector('[data-feature-bg]');
+    const front = incoming.querySelector('[data-feature-image]');
+    const token = ++pendingImage;
+    if (bg) bg.src = src;
+    if (front) front.src = src;
+    const finish = () => {
+      if (token !== pendingImage) return;
+      slides[currentSlide].classList.remove('is-current');
+      slides[currentSlide].setAttribute('aria-hidden', 'true');
+      incoming.classList.add('is-current');
+      incoming.setAttribute('aria-hidden', 'false');
+      currentSlide = incomingIndex;
     };
-
-    if (image.complete) apply();
-    else image.addEventListener('load', apply, { once: true });
-  }
-
-  cards.forEach(syncCardMediaSize);
-  addEventListener('resize', () => cards.forEach(syncCardMediaSize), { passive: true });
-
-  function shortestOffset(cardIndex, activeIndex) {
-    let distance = cardIndex - activeIndex;
-    const half = cards.length / 2;
-    if (distance > half) distance -= cards.length;
-    if (distance < -half) distance += cards.length;
-    return distance;
-  }
-
-  function updateDetails(card) {
-    if (!card) return;
-    if (kicker) kicker.textContent = card.dataset.kicker || '';
-    if (title) title.textContent = card.dataset.title || '';
-    if (description) description.textContent = card.dataset.description || '';
-    if (count) {
-      count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
+    if (!front || (front.complete && front.naturalWidth)) finish();
+    else {
+      front.addEventListener('load', finish, {once:true});
+      front.addEventListener('error', finish, {once:true});
     }
   }
 
-  function resetTilt(card) {
-    card.style.setProperty('--tilt-x', '0deg');
-    card.style.setProperty('--tilt-y', '0deg');
-  }
-
-  function update() {
-    index = wrapIndex(index);
-
-    cards.forEach((card, cardIndex) => {
-      const offset = shortestOffset(cardIndex, index);
-      const distance = Math.abs(offset);
-      const active = offset === 0;
-
+  function select(nextIndex, user = true) {
+    const nextValue = wrap(nextIndex);
+    const changed = nextValue !== index;
+    index = nextValue;
+    const selected = cards[index];
+    if (changed) showImage(selected);
+    cards.forEach((card, position) => {
+      const active = position === index;
       card.classList.toggle('is-active', active);
-      card.setAttribute('aria-current', active ? 'true' : 'false');
-      card.style.zIndex = String(30 - distance);
-      card.style.pointerEvents = distance <= 2 ? 'auto' : 'none';
-      card.tabIndex = distance <= 1 ? 0 : -1;
-      resetTilt(card);
-
-      let x = 0;
-      let z = 0;
-      let scale = 1;
-      let rotateY = 0;
-      let opacity = 1;
-
-      if (offset === -1) {
-        x = -46;
-        z = -90;
-        scale = 0.91;
-        rotateY = 17;
-        opacity = 0.96;
-      } else if (offset === 1) {
-        x = 46;
-        z = -90;
-        scale = 0.91;
-        rotateY = -17;
-        opacity = 0.96;
-      } else if (offset === -2) {
-        x = -77;
-        z = -190;
-        scale = 0.78;
-        rotateY = 25;
-        opacity = 0.72;
-      } else if (offset === 2) {
-        x = 77;
-        z = -190;
-        scale = 0.78;
-        rotateY = -25;
-        opacity = 0.72;
-      } else if (distance > 2) {
-        x = offset < 0 ? -118 : 118;
-        z = -260;
-        scale = 0.66;
-        rotateY = offset < 0 ? 30 : -30;
-        opacity = 0;
-      } else {
-        z = 72;
-      }
-
-      card.style.transform = active
-        ? 'translate(-50%, -50%)'
-        : [
-            'translate(-50%, -50%)',
-            `translateX(${x}%)`,
-            `translateZ(${z}px)`,
-            `rotateY(${rotateY}deg)`,
-            `scale(${scale})`
-          ].join(' ');
-      card.style.opacity = String(opacity);
-      card.style.filter = 'none';
+      card.setAttribute('aria-pressed', String(active));
+      if (active) card.setAttribute('aria-current', 'true');
+      else card.removeAttribute('aria-current');
     });
-
-    updateDetails(cards[index]);
-
-    $$('.gallery-dot', dotsWrap || gallery).forEach((dot, dotIndex) => {
-      const active = dotIndex === index;
-      dot.classList.toggle('active', active);
-      dot.setAttribute('aria-current', active ? 'true' : 'false');
+    if (kicker) kicker.textContent = selected.dataset.kicker || '';
+    if (title) title.textContent = selected.dataset.title || '';
+    if (description) description.textContent = selected.dataset.description || '';
+    if (count) count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
+    if (changed && title && !reducedMotion) {
+      title.classList.remove('timed-copy-enter');
+      void title.offsetWidth;
+      title.classList.add('timed-copy-enter');
+    }
+    dotsWrap?.querySelectorAll('.gallery-dot').forEach((dot, position) => {
+      dot.classList.toggle('active', position === index);
+      dot.setAttribute('aria-current', String(position === index));
     });
+    if (rail) {
+      const left = selected.offsetLeft + selected.offsetWidth / 2 - rail.clientWidth / 2;
+      rail.scrollTo({left:Math.max(0,left),behavior:user && !reducedMotion?'smooth':'instant'});
+    }
   }
 
-  function stopAuto() {
-    if (autoId) clearInterval(autoId);
-    if (resumeId) clearTimeout(resumeId);
-    autoId = null;
-    resumeId = null;
+  function openModal() {
+    const image = cards[index].querySelector('img');
+    if (!image || !modal || !modalImage) return;
+    modalImage.src = image.getAttribute('src');
+    modalImage.alt = image.alt || cards[index].dataset.title || 'Project screenshot';
+    if (modalTitle) modalTitle.textContent = cards[index].dataset.title || '';
+    if (modalDescription) modalDescription.textContent = cards[index].dataset.description || '';
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
   }
 
-  function startAuto(delay = 3600) {
-    stopAuto();
-    if (reducedMotion || cards.length < 2 || modal?.open) return;
-    autoId = setInterval(() => {
-      index = wrapIndex(index + 1);
-      update();
-    }, delay);
+  function closeModal() {
+    if (!modal) return;
+    if (typeof modal.close === 'function' && modal.open) modal.close();
+    else modal.removeAttribute('open');
   }
 
-  function pauseThenResume() {
-    stopAuto();
-    if (!reducedMotion) resumeId = setTimeout(() => startAuto(), 4200);
-  }
-
-  function go(delta) {
-    index = wrapIndex(index + delta);
-    update();
-    pauseThenResume();
-  }
-
-  if (dotsWrap) {
-    cards.forEach((card, cardIndex) => {
+  cards.forEach((card, position) => {
+    card.addEventListener('click', () => position === index ? openModal() : select(position));
+    if (dotsWrap) {
       const dot = document.createElement('button');
       dot.type = 'button';
       dot.className = 'gallery-dot';
-      dot.setAttribute('aria-label', `Show ${card.dataset.title || 'slide'} ${cardIndex + 1}`);
-      dot.addEventListener('click', () => {
-        index = cardIndex;
-        update();
-        pauseThenResume();
-      });
+      dot.setAttribute('aria-label', `Show screenshot ${position + 1}: ${card.dataset.title || ''}`);
+      dot.addEventListener('click', () => select(position));
       dotsWrap.appendChild(dot);
-    });
-  }
-
-  [prev, next, dotsWrap].forEach(control => {
-    control?.addEventListener('pointerdown', event => event.stopPropagation());
-    control?.addEventListener('pointerup', event => event.stopPropagation());
+    }
   });
-
-  prev?.addEventListener('click', event => {
-    event.stopPropagation();
-    go(-1);
-  });
-  next?.addEventListener('click', event => {
-    event.stopPropagation();
-    go(1);
-  });
-
-  cards.forEach((card, cardIndex) => {
-    card.addEventListener('click', () => {
-      if (cardIndex !== index) {
-        index = cardIndex;
-        update();
-        pauseThenResume();
-        return;
-      }
-
-      const image = $('img', card);
-      if (!image || !modal || !modalImage) return;
-
-      modalImage.src = image.currentSrc || image.src;
-      modalImage.alt = image.alt;
-      if (modalTitle) modalTitle.textContent = card.dataset.title || '';
-      if (modalDescription) modalDescription.textContent = card.dataset.description || '';
-
-      if (typeof modal.showModal === 'function') modal.showModal();
-      else modal.setAttribute('open', '');
-
-      stopAuto();
-    });
-  });
-
-  function closeModal() {
-    modal?.close?.();
-    modal?.removeAttribute('open');
-    startAuto();
-  }
-
+  prev?.addEventListener('click', () => select(index - 1));
+  next?.addEventListener('click', () => select(index + 1));
+  enlarge?.addEventListener('click', openModal);
   modalClose?.addEventListener('click', closeModal);
-  modal?.addEventListener('click', event => {
-    if (event.target === modal) closeModal();
-  });
-  modal?.addEventListener('close', () => startAuto());
-
+  modal?.addEventListener('click', event => {if (event.target === modal) closeModal();});
   stage?.addEventListener('pointerdown', event => {
-    pointerStart = event.clientX;
-    pointerDelta = 0;
-    stage.setPointerCapture?.(event.pointerId);
-    stopAuto();
+    if (event.pointerType === 'mouse' || event.target.closest('.gallery-rail, button')) return;
+    startPoint = {x:event.clientX,y:event.clientY};
   });
-
-  stage?.addEventListener('pointermove', event => {
-    if (pointerStart === null) return;
-    pointerDelta = event.clientX - pointerStart;
-  });
-
   stage?.addEventListener('pointerup', event => {
-    if (pointerStart === null) return;
-    if (Math.abs(pointerDelta) > 45) {
-      index = wrapIndex(index + (pointerDelta < 0 ? 1 : -1));
-    }
-    pointerStart = null;
-    pointerDelta = 0;
-    stage.releasePointerCapture?.(event.pointerId);
-    update();
-    pauseThenResume();
+    if (!startPoint) return;
+    const dx = event.clientX - startPoint.x;
+    const dy = event.clientY - startPoint.y;
+    startPoint = null;
+    if (Math.abs(dx)>45 && Math.abs(dx)>Math.abs(dy)*1.2) select(index + (dx<0?1:-1));
   });
-
-  stage?.addEventListener('pointercancel', () => {
-    pointerStart = null;
-    pointerDelta = 0;
-    pauseThenResume();
-  });
-
-  gallery.addEventListener('mouseenter', stopAuto);
-  gallery.addEventListener('mouseleave', () => startAuto());
-  gallery.addEventListener('focusin', stopAuto);
-  gallery.addEventListener('focusout', () => startAuto());
+  stage?.addEventListener('pointercancel', () => {startPoint=null;});
   gallery.addEventListener('keydown', event => {
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      go(-1);
-    } else if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      go(1);
-    }
+    if (modal?.open || event.target.closest('input, textarea')) return;
+    if (event.key === 'ArrowLeft') {event.preventDefault();select(index - 1);}
+    if (event.key === 'ArrowRight') {event.preventDefault();select(index + 1);}
   });
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stopAuto();
-    else startAuto();
-  });
-  addEventListener('pagehide', stopAuto, { once: true });
-
-  update();
-  startAuto();
+  select(0,false);
 })();
-
 
 (() => {
   const lazyVideos = [...document.querySelectorAll('video[data-lazy-video]')];
   if (!lazyVideos.length) return;
-
   const loadVideo = video => {
     if (video.dataset.loaded === 'true') return;
     video.querySelectorAll('source[data-src]').forEach(source => {
@@ -320,19 +151,14 @@
     video.dataset.loaded = 'true';
     video.load();
   };
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      const video = entry.target;
-      if (entry.isIntersecting) {
-        loadVideo(video);
-        video.play().catch(() => undefined);
-      } else if (!video.paused) {
-        video.pause();
-      }
-    });
-  }, { rootMargin: '240px 0px', threshold: 0.01 });
-
+  if (!('IntersectionObserver' in window)) {lazyVideos.forEach(loadVideo);return;}
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    const video = entry.target;
+    if (entry.isIntersecting) {
+      loadVideo(video);
+      video.play().catch(() => undefined);
+    } else if (!video.paused) video.pause();
+  }), {rootMargin:'240px 0px',threshold:.01});
   lazyVideos.forEach(video => observer.observe(video));
-  addEventListener('pagehide', () => observer.disconnect(), { once: true });
+  addEventListener('pagehide', () => observer.disconnect(), {once:true});
 })();

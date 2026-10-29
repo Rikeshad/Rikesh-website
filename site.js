@@ -11,7 +11,7 @@
       return Promise.resolve();
     }
 
-    const timeout = new Promise(resolve => setTimeout(resolve, 1200));
+    const timeout = new Promise(resolve => setTimeout(resolve, 650));
     const load = Promise.all([
       document.fonts.load('600 1em "Inter"'),
       document.fonts.load('500 1em "Playfair Display"')
@@ -97,17 +97,23 @@
       let progress = 0;
 
       fontReadyPromise.then(() => {
-        const introTimer = setInterval(() => {
-          progress = Math.min(100, progress + Math.ceil(Math.random() * 8) + 3);
-          if (bar) bar.style.width = `${progress}%`;
-          if (percentage) percentage.textContent = `${progress}%`;
-
-          if (progress >= 100) {
-            clearInterval(introTimer);
-            try { sessionStorage.setItem('rikeshIntroSeen', '1'); } catch {  }
-            setTimeout(finishIntro, 350);
+        const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 180 : 950;
+        const started = performance.now();
+        const tickIntro = now => {
+          if (!intro.isConnected) return;
+          const fraction = Math.min(1, (now - started) / duration);
+          const eased = 1 - Math.pow(1 - fraction, 3);
+          const value = Math.round(eased * 100);
+          if (bar) bar.style.transform = `scaleX(${eased})`;
+          if (percentage) percentage.textContent = `${value}%`;
+          if (fraction < 1) requestAnimationFrame(tickIntro);
+          else {
+            try { sessionStorage.setItem('rikeshIntroSeen', '1'); } catch { }
+            finishIntro();
           }
-        }, 95);
+        };
+        if (bar) { bar.style.width = '100%'; bar.style.transformOrigin = 'left center'; bar.style.transform = 'scaleX(0)'; }
+        requestAnimationFrame(tickIntro);
       });
     }
   }
@@ -127,8 +133,8 @@
     addEventListener('mousemove', event => {
       mouseX = event.clientX;
       mouseY = event.clientY;
-      cursorDot.style.left = `${mouseX}px`;
-      cursorDot.style.top = `${mouseY}px`;
+      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+      if (!cursorRaf && !document.hidden) cursorRaf = requestAnimationFrame(animateCursor);
     }, { passive: true });
 
     let cursorRaf = 0;
@@ -138,11 +144,14 @@
         cursorRaf = 0;
         return;
       }
-      ringX += (mouseX - ringX) * 0.16;
-      ringY += (mouseY - ringY) * 0.16;
-      cursorRing.style.left = `${ringX}px`;
-      cursorRing.style.top = `${ringY}px`;
-      cursorRaf = requestAnimationFrame(animateCursor);
+      ringX += (mouseX - ringX) * 0.20;
+      ringY += (mouseY - ringY) * 0.20;
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
+      if (Math.abs(mouseX - ringX) > .45 || Math.abs(mouseY - ringY) > .45) {
+        cursorRaf = requestAnimationFrame(animateCursor);
+      } else {
+        cursorRaf = 0;
+      }
     }
 
     function startCursor() {
@@ -160,8 +169,6 @@
       else startCursor();
     });
     addEventListener('pagehide', stopCursor, { once: true });
-    startCursor();
-
     $$('a, button, input, textarea, select').forEach(element => {
       element.addEventListener('mouseenter', () => {
         cursorRing.style.width = '54px';
@@ -180,7 +187,7 @@
 
   const galaxyCanvas = $('.bg-canvas');
 
-  if (galaxyCanvas) {
+  if (galaxyCanvas && !document.body.classList.contains('project-cinema-page')) {
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const finePointer = matchMedia('(pointer: fine)').matches;
     const hardwareThreads = navigator.hardwareConcurrency || 4;
@@ -202,14 +209,20 @@
       const medium = innerWidth < 1180;
       const lowPower = hardwareThreads <= 4 || deviceMemory <= 4;
 
-      const renderer = new THREE.WebGLRenderer({
-        canvas: galaxyCanvas,
-        alpha: true,
-        antialias: !compact,
-        powerPreference: 'high-performance'
-      });
+      let renderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          canvas: galaxyCanvas,
+          alpha: true,
+          antialias: !compact && !lowPower,
+          powerPreference: 'high-performance'
+        });
+      } catch {
+        galaxyCanvas.style.display = 'none';
+        return;
+      }
 
-      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, compact ? (lowPower ? 1 : 1.15) : (lowPower ? 1.35 : 1.6)));
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, compact ? 1.15 : (lowPower ? 1.2 : 1.5)));
       renderer.setSize(innerWidth, innerHeight, false);
       renderer.setClearColor(0x000000, 0);
       if ('outputEncoding' in renderer && THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
@@ -232,7 +245,7 @@
       const clock = new THREE.Clock();
 
       const parameters = {
-        count: compact ? (lowPower ? 42000 : 72000) : (medium || lowPower ? 108000 : 181000),
+        count: compact ? (lowPower ? 14000 : 26000) : (medium || lowPower ? 40000 : 72000),
         size: compact ? 0.040 : 0.031,
         radius: 14,
         branches: 7,
@@ -366,7 +379,7 @@
       const waveEnergy = new THREE.Group();
       galaxy.add(waveEnergy);
 
-      const waveShellGeometry = new THREE.IcosahedronGeometry(compact ? 2.85 : 3.75, compact ? 3 : 4);
+      const waveShellGeometry = new THREE.IcosahedronGeometry(compact ? 2.85 : 3.75, compact ? 2 : 3);
       const waveShellPositions = waveShellGeometry.attributes.position;
       const waveShellBase = new Float32Array(waveShellPositions.array.length);
       waveShellBase.set(waveShellPositions.array);
@@ -1224,9 +1237,13 @@
         renderer.render(scene, camera);
       }
 
+      const targetFrameInterval = 1000 / (lowPower ? (compact ? 32 : 42) : 65);
+      let lastRendered = 0;
       function animate(now) {
-        renderScene(now);
         rafId = requestAnimationFrame(animate);
+        if (now - lastRendered < targetFrameInterval) return;
+        lastRendered = now;
+        renderScene(now);
       }
 
       function startAnimation() {
@@ -1259,7 +1276,7 @@
         camera.aspect = innerWidth / innerHeight;
         camera.fov = innerWidth < 760 ? 72 : 70;
         camera.updateProjectionMatrix();
-        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 760 ? (lowPower ? 1 : 1.15) : (lowPower ? 1.35 : 1.6)));
+        renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1.15 : (lowPower ? 1.2 : 1.5)));
         renderer.setSize(innerWidth, innerHeight, false);
         if (reduceMotion) renderScene();
       });
@@ -1300,6 +1317,7 @@
       let deleting = true;
 
       function typeRole() {
+        if (document.hidden) { setTimeout(typeRole, 500); return; }
         const phrase = phrases[phraseIndex];
 
         if (deleting) {

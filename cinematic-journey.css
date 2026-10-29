@@ -3,9 +3,7 @@
 .wave-story .scenic-layers { position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:1; opacity:var(--journey-image-opacity); transform:translateZ(0); }
 .wave-story .scenic-shot { position:absolute; inset:-7% -3%; background-position:center; background-size:cover; background-repeat:no-repeat; will-change:transform,opacity; transition:opacity .24s linear; transform:translate3d(0,var(--journey-shift),0) scale(1.08); }
 .wave-story .scenic-nepal { background-image:url('./assets/images/scenery/nepal-himalayas.webp'); opacity:calc(1 - var(--journey-darwin)); }
-.wave-story .scenic-nepal::after {content:'';position:absolute;inset:0;background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Himalayas_Nepal.jpg?width=1800');background-position:center;background-size:cover;}
 .wave-story .scenic-darwin { background-color:#502c36; background-image:url('./assets/images/scenery/darwin-artwork-fallback.webp'); opacity:var(--journey-darwin); }
-.wave-story .scenic-darwin::after { content:''; position:absolute; inset:0; background-image:url('https://commons.wikimedia.org/wiki/Special:FilePath/Sunset_over_Darwin%27s_Mindil_beach.jpg?width=1800'); background-size:cover; background-position:center; }
 .wave-story .scenic-overlay { position:absolute; inset:0; z-index:2; pointer-events:none; background:linear-gradient(90deg,rgba(3,8,18,.25),rgba(4,9,15,.18) 50%,rgba(0,0,0,.25)),linear-gradient(0deg,rgba(3,8,16,.18),transparent 32%,rgba(3,7,15,.10)); }
 .wave-story .story-copy-wrap { z-index:30 !important; }
 .wave-story .story-copy h1,.wave-story .story-copy h2 { text-shadow:0 3px 28px rgba(0,0,0,.6) !important; }
@@ -47,12 +45,11 @@ html[data-theme='light'] .wave-story .scenic-depth,html[data-theme='dark'] .wave
 @media(prefers-reduced-motion:reduce){.wave-story .scenic-depth,.wave-story .scenic-shot {transform:none!important;will-change:auto!important;}}
 
 /* The same scenic imagery and full pixel detail are preserved across both themes. */
-.wave-story .scenic-layers { opacity:1!important; filter:none!important; -webkit-filter:none!important; }
-.wave-story .scenic-shot, .wave-story .scenic-shot::after, .wave-story .scenic-depth { filter:none!important; -webkit-filter:none!important; image-rendering:auto; }
-.wave-story .scenic-shot::after { pointer-events:none; }
+.wave-story .scenic-layers { opacity:var(--journey-image-opacity, 1)!important; filter:none!important; -webkit-filter:none!important; }
+.wave-story .scenic-shot, .wave-story .scenic-depth { filter:none!important; -webkit-filter:none!important; image-rendering:auto; }
 html[data-theme="light"] .wave-story .scenic-depth { opacity:calc((1 - var(--journey-darwin)) * .26); }
 html[data-theme="light"] .wave-story .scenic-darwin-depth { opacity:calc(var(--journey-darwin) * .26); }
-@media (max-width:760px) { .wave-story .scenic-layers { opacity:1!important; } }
+@media (max-width:760px) { .wave-story .scenic-layers { opacity:var(--journey-image-opacity, 1)!important; } }
 
 /* Keep the location caption legible without hiding the scenery. */
 .wave-story .journey-caption { padding:8px 12px; border-radius:12px; width:max-content; }
@@ -64,42 +61,6 @@ html[data-theme="light"] .wave-story .scroll-label, html[data-theme="light"] .wa
  .wave-story .journey-thread { flex:1 1 14px; }
 }
 
-.wave-story .story-spiral-waves {
-  position: absolute;
-  top: 13%;
-  right: -8%;
-  width: min(72vw, 1040px);
-  height: min(88svh, 980px);
-  z-index: 9;
-  overflow: visible;
-  color: #ffe0a0;
-  opacity: .87;
-  pointer-events: none;
-  transform-origin: 50% 50%;
-  transform: rotate(var(--story-spiral-turn, -14deg)) scale(var(--story-spiral-scale, 1));
-  filter: drop-shadow(0 0 5px rgba(255,200,107,.35));
-}
-html[data-theme="light"] .wave-story .story-spiral-waves {
-  color: #996908;
-  opacity: .88;
-  filter: drop-shadow(0 0 2px rgba(255,248,212,.75));
-}
-.wave-story .story-spiral-waves .spiral-line {
-  stroke: currentColor;
-}
-@media (max-width: 760px) {
-  .wave-story .story-spiral-waves {
-    width: 94vw;
-    height: 80svh;
-    top: 14%;
-    right: -34%;
-    opacity: .74;
-  }
-  html[data-theme="light"] .wave-story .story-spiral-waves { opacity: .70; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .wave-story .story-spiral-waves { transform: none; filter: none; }
-}
 .linkedin-connect {
   display: inline-flex;
   align-items: center;
@@ -139,3 +100,156 @@ html[data-theme="light"] .wave-story .story-spiral-waves {
   .linkedin-connect-arrow { margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .linkedin-connect { transition: none; } }
+
+/* Performance: avoid permanent GPU layer allocations outside the active story. */
+body:not(.wave-story-active) .wave-story .scenic-shot,
+body:not(.wave-story-active) .wave-story .scenic-depth { will-change: auto; }
+@media (max-width:760px) {
+  .wave-story .scenic-shot,
+  .wave-story .scenic-depth { transition: none; }
+}
+
+/* v61: a single bundled image per scene prevents mid-scroll remote-image swapping. */
+.wave-story .scenic-nepal,
+.wave-story .scenic-nepal-depth {background-image:url('./assets/images/scenery/nepal-himalayas.webp')}
+.wave-story .scenic-darwin,
+.wave-story .scenic-darwin-depth {background-image:url('./assets/images/scenery/darwin-artwork-fallback.webp')}
+
+/* Transition the last scenic frame into the following hero without a hard seam. */
+.wave-story .scenic-exit-shade {
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  opacity:var(--journey-exit,0);
+  background:linear-gradient(to bottom,
+    rgba(7,8,12,.10) 0%,
+    rgba(7,8,12,.16) 28%,
+    rgba(7,8,12,.65) 65%,
+    #0a0b0e 100%);
+}
+html[data-theme='light'] .wave-story .scenic-exit-shade {
+  background:linear-gradient(to bottom,
+    rgba(247,244,236,.08) 0%,
+    rgba(247,244,236,.14) 28%,
+    rgba(247,244,236,.73) 65%,
+    #f4f0e8 100%);
+}
+.wave-story .story-copy-wrap { opacity:calc(1 - var(--journey-copy-exit,0)); }
+
+/* The last word must remain legible against the pale theme. */
+html[data-theme='light'] #hero-main .wave-line:nth-child(3) {color:#17161b!important}
+html[data-theme='light'] #hero-main .wave-line:nth-child(3) .wave-letter {
+  background-image:linear-gradient(135deg,#17161b 5%,#805b12 100%)!important;
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.wave-story .journey-flag:not(.journey-flag-secondary) {
+  opacity:calc(1 - .55 * var(--journey-darwin));
+}
+
+/* Lightweight wireframe globe: fine cool-toned geometry, not concentric golden rings. */
+.wave-story .story-wire-orb {
+  position:absolute;
+  top:8%;
+  left:47%;
+  width:min(75vw,920px);
+  aspect-ratio:1;
+  z-index:9;
+  pointer-events:none;
+  overflow:visible;
+  color:#c7e1e8;
+  opacity:calc(.46 * var(--journey-image-opacity, 1));
+  transform:translate3d(var(--wire-scroll-x,0px),0,0);
+}
+.wave-story .wire-orb-drift {
+  width:100%;height:100%;
+  animation:wireOrbHorizontal 22s ease-in-out infinite alternate;
+}
+.wave-story .wire-orb-art {width:100%;height:100%;display:block;overflow:visible;}
+.wave-story .wire-orb-rotate {
+  transform-origin:50% 50%;
+  transform-box:view-box;
+  animation:wireOrbTurn 58s linear infinite;
+}
+.wave-story .wire-orb-art path {
+  stroke:currentColor;
+  stroke-linecap:round;
+  stroke-width:1.05;
+  fill:none;
+  vector-effect:non-scaling-stroke;
+}
+.wave-story .wire-orb-back {opacity:.36;}
+.wave-story .wire-orb-front {opacity:.78;}
+html[data-theme="light"] .wave-story .story-wire-orb {
+  color:#536f80;
+  opacity:calc(.37 * var(--journey-image-opacity, 1));
+}
+html[data-theme="dark"] .wave-story .story-wire-orb {
+  color:#d0e5e7;
+  opacity:calc(.51 * var(--journey-image-opacity, 1));
+}
+@keyframes wireOrbHorizontal {
+  from {transform:translate3d(-10vw,0,0);}
+  to {transform:translate3d(7vw,0,0);}
+}
+@keyframes wireOrbTurn {
+  from {transform:rotate(-7deg);}
+  to {transform:rotate(16deg);}
+}
+.wave-story:not(.spiral-in-view) .wire-orb-drift,
+.wave-story:not(.spiral-in-view) .wire-orb-rotate {animation-play-state:paused;}
+@media(max-width:760px) {
+  .wave-story .story-wire-orb {top:21%;left:35%;width:108vw;opacity:calc(.32 * var(--journey-image-opacity, 1));}
+  html[data-theme="light"] .wave-story .story-wire-orb {opacity:calc(.28 * var(--journey-image-opacity, 1));}
+  html[data-theme="dark"] .wave-story .story-wire-orb {opacity:calc(.35 * var(--journey-image-opacity, 1));}
+  .wave-story .wire-orb-art path {stroke-width:.8;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .wave-story .wire-orb-drift,.wave-story .wire-orb-rotate {animation:none!important;}
+  .wave-story .story-wire-orb {transform:none!important;}
+}
+
+/* Scene handoff: the photographs fully disappear before the next section enters. */
+.wave-story .journey-caption,
+.wave-story .chapter-number,
+.wave-story .chapter-total,
+.wave-story .scroll-label,
+.wave-story .story-progress,
+.wave-story .story-theme-dock {
+  opacity:calc(1 - var(--journey-ui-exit, 0));
+}
+@media (prefers-reduced-motion:reduce) {
+  .wave-story .scenic-layers,
+  .wave-story .story-wire-orb { transition:none!important; }
+}
+
+
+.wave-story .story-copy[data-chapter="3"] { z-index: 105 !important; }
+.wave-story .story-copy-wrap { position: relative; z-index: 104 !important; }
+
+html[data-theme] #hero-main .hero-title .wave-line:nth-child(3) .wave-letter {
+  background: none !important;
+  background-image: none !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  -webkit-text-fill-color: var(--text) !important;
+  color: var(--text) !important;
+  text-shadow: none !important;
+  animation: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+#hero-main .hero-title .wave-line:nth-child(3) {
+  background: none !important;
+  isolation: isolate;
+  animation: heroLastLineDrift 7s ease-in-out infinite alternate;
+}
+@keyframes heroLastLineDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -3px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #hero-main .hero-title .wave-line:nth-child(3) { animation: none !important; }
+}

@@ -28,8 +28,8 @@ html[data-theme="light"] {
 .nav-shell.glass {
   border: 1px solid color-mix(in srgb, var(--blue) 18%, var(--line)) !important;
   box-shadow: 0 18px 55px rgba(0,0,0,.19), 0 1px 0 var(--surface-highlight) inset !important;
-  backdrop-filter: blur(24px) saturate(1.18);
-  -webkit-backdrop-filter: blur(24px) saturate(1.18);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
 }
 .brand-mark {
   border-color: color-mix(in srgb, var(--blue) 35%, var(--line)) !important;

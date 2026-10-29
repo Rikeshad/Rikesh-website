@@ -33,7 +33,7 @@
     const incoming = slides[incomingIndex];
     const image = card.querySelector('img');
     if (!image) return;
-    const src = image.currentSrc || image.getAttribute('src');
+    const src = image.dataset.fullSrc || image.currentSrc || image.getAttribute('src');
     const bg = incoming.querySelector('[data-feature-bg]');
     const front = incoming.querySelector('[data-feature-image]');
     const token = ++pendingImage;
@@ -89,7 +89,7 @@
   function openModal() {
     const image = cards[index].querySelector('img');
     if (!image || !modal || !modalImage) return;
-    modalImage.src = image.getAttribute('src');
+    modalImage.src = image.dataset.fullSrc || image.getAttribute('src');
     modalImage.alt = image.alt || cards[index].dataset.title || 'Project screenshot';
     if (modalTitle) modalTitle.textContent = cards[index].dataset.title || '';
     if (modalDescription) modalDescription.textContent = cards[index].dataset.description || '';
@@ -160,5 +160,11 @@
     } else if (!video.paused) video.pause();
   }), {rootMargin:'240px 0px',threshold:.01});
   lazyVideos.forEach(video => observer.observe(video));
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) lazyVideos.forEach(video => { if (!video.paused) video.pause(); });
+    else lazyVideos.forEach(video => {
+      if (video.dataset.loaded === 'true' && video.getBoundingClientRect().top < innerHeight && video.getBoundingClientRect().bottom > 0) video.play().catch(() => undefined);
+    });
+  });
   addEventListener('pagehide', () => observer.disconnect(), {once:true});
 })();

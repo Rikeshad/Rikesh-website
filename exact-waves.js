@@ -43,14 +43,30 @@
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(43, innerWidth / innerHeight, 0.1, 100);
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    alpha: true,
-    antialias: true,
-    powerPreference: 'high-performance'
-  });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: !lowPower && innerWidth >= 760,
+      powerPreference: 'high-performance'
+    });
+  } catch {
+    const updateTextOnly = () => {
+      const rect = story.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - innerHeight)));
+      const index = chapterFor(p);
+      copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
+      if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
+      if (progressFill) progressFill.style.transform = `scaleX(${p})`;
+    };
+    addEventListener('scroll', updateTextOnly, {passive:true});
+    addEventListener('resize', updateTextOnly, {passive:true});
+    updateTextOnly();
+    return;
+  }
   renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? (lowPower ? 1 : 1.35) : (lowPower ? 1.45 : 1.75)));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? 1.1 : (lowPower ? 1.2 : 1.45)));
   if ('outputEncoding' in renderer && THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
 
   const root = new THREE.Group();
@@ -196,7 +212,11 @@
   });
   themeObserver.observe(document.documentElement, { attributes: true });
 
-  addEventListener('scroll', updateScrollProgress, { passive: true });
+  addEventListener('scroll', () => {
+    updateScrollProgress();
+    if (state.active) startAnimation();
+    else if (!document.hidden) updateChapter(state.progress);
+  }, { passive: true });
   addEventListener('pointermove', event => {
     if (matchMedia('(pointer: coarse)').matches) return;
     state.pointerX = (event.clientX / innerWidth - .5) * 2;
@@ -207,7 +227,7 @@
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
-    renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? (lowPower ? 1 : 1.35) : (lowPower ? 1.45 : 1.75)));
+    renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? 1.1 : (lowPower ? 1.2 : 1.45)));
     updateScrollProgress();
   }
   addEventListener('resize', resize, { passive: true });
@@ -215,13 +235,18 @@
 
   let rafId = 0;
 
-  function animate() {
-    if (document.hidden) {
+  let lastDraw = 0;
+  const frameSpacing = 1000 / (lowPower ? (innerWidth < 760 ? 32 : 42) : 65);
+  function animate(now) {
+    if (document.hidden || !state.active) {
       rafId = 0;
       return;
     }
 
-    state.smooth += (state.progress - state.smooth) * (reducedMotion ? 1 : .055);
+    rafId = requestAnimationFrame(animate);
+    if (now - lastDraw < frameSpacing) return;
+    lastDraw = now;
+    state.smooth += (state.progress - state.smooth) * (reducedMotion ? 1 : .075);
     state.pointerSmoothX += (state.pointerX - state.pointerSmoothX) * .035;
     state.pointerSmoothY += (state.pointerY - state.pointerSmoothY) * .035;
 
@@ -319,7 +344,6 @@
     }
 
     renderer.render(scene, camera);
-    rafId = requestAnimationFrame(animate);
   }
 
   function startAnimation() {
@@ -335,12 +359,12 @@
 
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stopAnimation();
-    else startAnimation();
+    else if (state.active) startAnimation();
   });
   addEventListener('pagehide', stopAnimation, { once: true });
 
   applyTheme();
   updateScrollProgress();
   resize();
-  startAnimation();
+  if (state.active) startAnimation();
 })();

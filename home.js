@@ -58,7 +58,7 @@
         const scale = 0.965 + opacity * 0.035;
         frame.style.opacity = opacity.toFixed(3);
         frame.style.transform = `translate3d(0, ${translate.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
-        frame.style.filter = `blur(${((1 - opacity) * 10).toFixed(2)}px)`;
+        // Opacity and transforms alone avoid expensive large-text filter repaints.
       });
 
       if (activeIndex !== currentStoryFrame) {

@@ -472,3 +472,19 @@ html[data-theme="light"] .project-hero .btn-glass { color: #fff !important; bord
 .contact-delivery-note { font-size: .8rem; line-height: 1.5; color: var(--muted); margin: 10px 0 0; }
 
 @media (max-width:1100px){.site-header .mobile-menu.open{background:var(--panel-solid,#11151e)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:0 26px 65px rgba(0,0,0,.48)!important;}}
+
+/* Low-cost mobile text reveal: animate opacity/transform, not a large blur layer. */
+@media (max-width: 760px) {
+  body.has-intro:not(.experience-ready) .wave-story .story-copy.is-active .cinematic-line > span {
+    filter: none !important;
+  }
+  body.experience-ready .wave-story .story-copy.is-active .cinematic-line > span {
+    animation-name: cinematicLineMobileSmooth !important;
+    animation-duration: 760ms !important;
+    filter: none !important;
+  }
+}
+@keyframes cinematicLineMobileSmooth {
+  from { opacity: 0; transform: translate3d(0, .40em, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}

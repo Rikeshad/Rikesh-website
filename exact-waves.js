@@ -6,7 +6,9 @@
   const progressFill = document.getElementById('progressFill');
 
 
-  const chapterStops = [0, .15, .42, .70, 1];
+  const chapterStops = matchMedia('(max-width: 760px)').matches
+    ? [0, .08, .38, .68, 1]
+    : [0, .15, .42, .70, 1];
   const chapterFor = progress => {
     for (let i = 0; i < 4; i += 1) {
       if (progress < chapterStops[i + 1]) return i;
@@ -231,6 +233,10 @@
     updateScrollProgress();
   }
   addEventListener('resize', resize, { passive: true });
+  window.visualViewport?.addEventListener('resize', () => {
+    updateScrollProgress();
+    if (state.active) startAnimation();
+  }, { passive: true });
   addEventListener('orientationchange', () => setTimeout(resize, 150), { passive: true });
 
   let rafId = 0;

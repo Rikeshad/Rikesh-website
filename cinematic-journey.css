@@ -290,3 +290,22 @@ html[data-theme] #hero-main .hero-title .wave-line:nth-child(3) .wave-letter {
 @media (prefers-reduced-motion: reduce) {
   .site-header, .wave-story .story-copy { transition: none !important; }
 }
+
+@media (max-width:760px) {
+  .wave-story.story {
+    height: 380dvh !important;
+    min-height: 0 !important;
+  }
+  .wave-story .wave-story-sticky {
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    top: 0 !important;
+  }
+}
+@supports not (height: 100dvh) {
+  @media (max-width:760px) {
+    .wave-story.story { height: 380vh !important; }
+    .wave-story .wave-story-sticky { height: 100vh !important; }
+  }
+}

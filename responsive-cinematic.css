@@ -493,3 +493,24 @@ html[data-theme="light"] .project-hero .btn-glass { color: #fff !important; bord
 .wave-story .story-copy .cinematic-line.story-invitation { margin-top:clamp(10px,2.5vh,28px); font-size:.67em; line-height:1.08; letter-spacing:-.03em; }
 .wave-story .story-copy .cinematic-line.story-invitation > span { font-style:italic; }
 @media (max-width:760px) { .wave-story .story-copy .cinematic-line.story-invitation { font-size:.58em; margin-top:18px; } }
+
+body.home-scene-pending .wave-story .wave-story-sticky {
+  opacity: 0 !important;
+  transition: none !important;
+}
+body.experience-ready .wave-story .wave-story-sticky {
+  transition: opacity .65s cubic-bezier(.22,1,.36,1);
+}
+body.experience-ready .wave-story .story-copy[data-chapter="0"].is-active .cinematic-line > span {
+  animation: none !important;
+  animation-delay: 0s !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+body.experience-ready .wave-story .story-copy[data-chapter="0"].is-active .eyebrow {
+  opacity: 1 !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.experience-ready .wave-story .wave-story-sticky { transition: none !important; }
+}

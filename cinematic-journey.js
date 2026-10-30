@@ -36,6 +36,7 @@
   }
   window.addEventListener('scroll', schedule, {passive:true});
   window.addEventListener('resize', schedule, {passive:true});
+  window.visualViewport?.addEventListener('resize', schedule, {passive:true});
   reduced.addEventListener?.('change', schedule);
   update();
 })();

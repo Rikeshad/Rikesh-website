@@ -71,30 +71,55 @@
 
   const intro = $('#site-intro');
   let introSeen = false;
-  try { introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1'; } catch {  }
+  try { introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1'; } catch {}
+
+  const openingPhotoReady = intro && $('#home') ? Promise.race([
+    new Promise(resolve => {
+      const image = new Image();
+      image.decoding = 'async';
+      image.fetchPriority = 'high';
+      image.src = 'assets/images/scenery/nepal-himalayas.webp';
+      if (typeof image.decode === 'function') {
+        image.decode().then(resolve, resolve);
+      } else if (image.complete) {
+        resolve();
+      } else {
+        image.addEventListener('load', resolve, { once: true });
+        image.addEventListener('error', resolve, { once: true });
+      }
+    }),
+    new Promise(resolve => setTimeout(resolve, 3500))
+  ]) : Promise.resolve();
+
+  function revealHomeScene() {
+    document.body.classList.add('experience-ready');
+    requestAnimationFrame(() => {
+      document.body.classList.remove('home-scene-pending');
+    });
+  }
 
   function finishIntro() {
-    if (!intro) return;
-
-
+    if (!intro || !intro.isConnected) return;
+    revealHomeScene();
     intro.classList.add('intro-hidden');
     setTimeout(() => {
       intro.remove();
       document.body.classList.remove('no-scroll', 'has-intro');
-      document.body.classList.add('experience-ready');
     }, 700);
   }
 
   if (intro) {
     if (introSeen) {
-      intro.remove();
-      document.body.classList.remove('no-scroll', 'has-intro');
-      document.body.classList.add('experience-ready');
+      document.body.classList.add('no-scroll');
+      Promise.all([fontReadyPromise, openingPhotoReady]).then(() => {
+        intro.remove();
+        document.body.classList.remove('no-scroll', 'has-intro');
+        revealHomeScene();
+      });
     } else {
       document.body.classList.add('no-scroll');
       const bar = $('[data-intro-bar]', intro);
       const percentage = $('[data-intro-pct]', intro);
-      let progress = 0;
 
       fontReadyPromise.then(() => {
         const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 180 : 950;
@@ -108,18 +133,21 @@
           if (percentage) percentage.textContent = `${value}%`;
           if (fraction < 1) requestAnimationFrame(tickIntro);
           else {
-            try { sessionStorage.setItem('rikeshIntroSeen', '1'); } catch { }
-            finishIntro();
+            try { sessionStorage.setItem('rikeshIntroSeen', '1'); } catch {}
+            openingPhotoReady.then(finishIntro);
           }
         };
-        if (bar) { bar.style.width = '100%'; bar.style.transformOrigin = 'left center'; bar.style.transform = 'scaleX(0)'; }
+        if (bar) {
+          bar.style.width = '100%';
+          bar.style.transformOrigin = 'left center';
+          bar.style.transform = 'scaleX(0)';
+        }
         requestAnimationFrame(tickIntro);
       });
     }
+  } else {
+    revealHomeScene();
   }
-
-
-  if (!intro) document.body.classList.add('experience-ready');
 
   const cursorDot = $('.cursor-dot');
   const cursorRing = $('.cursor-ring');

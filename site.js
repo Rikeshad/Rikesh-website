@@ -1625,3 +1625,55 @@
 
   $('#year')?.replaceChildren(document.createTextNode(new Date().getFullYear()));
 })();
+
+
+(() => {
+  const header = document.querySelector('.site-header');
+  if (!header) return;
+  const body = document.body;
+  let previousY = Math.max(0, window.scrollY);
+  let ticking = false;
+  let isHidden = false;
+  const reveal = () => {
+    if (!isHidden) return;
+    body.classList.remove('nav-scroll-hidden');
+    isHidden = false;
+  };
+  const hide = () => {
+    if (isHidden) return;
+    body.classList.add('nav-scroll-hidden');
+    isHidden = true;
+  };
+  const update = () => {
+    ticking = false;
+    const y = Math.max(0, window.scrollY);
+    const delta = y - previousY;
+    const menuOpen = body.classList.contains('menu-open') || !!header.querySelector('.mobile-menu.open');
+    const introActive = body.classList.contains('has-intro') && !body.classList.contains('experience-ready');
+    if (y < 88 || menuOpen || introActive) {
+      reveal();
+    } else if (delta > 5 && y > 145) {
+      hide();
+    } else if (delta < -5) {
+      reveal();
+    }
+    previousY = y;
+  };
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  }, { passive: true });
+  window.addEventListener('resize', () => { previousY = Math.max(0, scrollY); reveal(); }, { passive: true });
+  window.addEventListener('keydown', event => {
+    if (event.key === 'Tab') reveal();
+  });
+  header.addEventListener('focusin', reveal);
+  header.addEventListener('pointerenter', () => {
+    if (window.scrollY < 130) reveal();
+  });
+  document.addEventListener('click', event => {
+    if (event.target.closest('[data-menu-toggle]')) reveal();
+  });
+  update();
+})();

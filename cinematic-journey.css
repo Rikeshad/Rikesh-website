@@ -253,3 +253,40 @@ html[data-theme] #hero-main .hero-title .wave-line:nth-child(3) .wave-letter {
 @media (prefers-reduced-motion: reduce) {
   #hero-main .hero-title .wave-line:nth-child(3) { animation: none !important; }
 }
+
+
+@media (max-width:760px) {
+  /* Keep the scroll distance stable as mobile browser bars change size. */
+  .wave-story {
+    height: 420svh !important;
+    min-height: max(2450px, 420svh) !important;
+  }
+  /* Match the sticky painting box to the visible browser viewport. */
+  .wave-story .wave-story-sticky {
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    inset-block-start: 0 !important;
+    overflow: clip !important;
+  }
+  .wave-story .story-copy:not(.is-active) {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity .38s ease, visibility 0s linear .38s !important;
+  }
+  .wave-story .story-copy.is-active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: opacity .38s ease, visibility 0s linear 0s !important;
+  }
+  /* Cover the whole sticky viewport while URL bars expand/collapse. */
+  .wave-story .scenic-layers { inset: 0 !important; }
+}
+@supports not (height: 100dvh) {
+  @media (max-width:760px) {
+    .wave-story .wave-story-sticky { height: 100vh !important; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header, .wave-story .story-copy { transition: none !important; }
+}

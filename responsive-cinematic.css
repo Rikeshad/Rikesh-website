@@ -279,11 +279,12 @@ body { overflow-x: clip; }
 .wave-story .story-copy:not(.is-active) {
   opacity: 0 !important;
   visibility: hidden !important;
-  transition: none !important;
+  transition: opacity .4s ease, visibility 0s linear .4s !important;
 }
 .wave-story .story-copy.is-active {
   opacity: 1 !important;
   visibility: visible !important;
+  transition: opacity .4s ease, visibility 0s linear 0s !important;
 }
 
 
@@ -488,3 +489,7 @@ html[data-theme="light"] .project-hero .btn-glass { color: #fff !important; bord
   from { opacity: 0; transform: translate3d(0, .40em, 0); }
   to { opacity: 1; transform: translate3d(0, 0, 0); }
 }
+
+.wave-story .story-copy .cinematic-line.story-invitation { margin-top:clamp(10px,2.5vh,28px); font-size:.67em; line-height:1.08; letter-spacing:-.03em; }
+.wave-story .story-copy .cinematic-line.story-invitation > span { font-style:italic; }
+@media (max-width:760px) { .wave-story .story-copy .cinematic-line.story-invitation { font-size:.58em; margin-top:18px; } }

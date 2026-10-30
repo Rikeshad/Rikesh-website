@@ -23,7 +23,7 @@
   if (!canvas || !window.THREE) {
     const updateTextOnly = () => {
       const rect = story.getBoundingClientRect();
-      const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - innerHeight)));
+      const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight))));
       const index = chapterFor(progress);
       const chapterProgress = localChapterProgress(progress, index);
       story.style.setProperty('--story-swipe-lift', `${(-18 * chapterProgress).toFixed(1)}px`);
@@ -54,7 +54,7 @@
   } catch {
     const updateTextOnly = () => {
       const rect = story.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - innerHeight)));
+      const p = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight))));
       const index = chapterFor(p);
       copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
       if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
@@ -178,7 +178,7 @@
 
   function updateScrollProgress() {
     const rect = story.getBoundingClientRect();
-    const travel = Math.max(1, story.offsetHeight - innerHeight);
+    const travel = Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight));
     state.progress = clamp(-rect.top / travel);
     state.active = rect.bottom > 0 && rect.top < innerHeight;
     window.__rikeshWaveStoryProgress = state.progress;

@@ -95,3 +95,19 @@
  .project-cinema-page .timed-feature-copy {padding:16px 16px 14px;border-radius:16px;background:rgba(4,9,18,.64);border:1px solid rgba(255,255,255,.17);text-shadow:0 2px 12px rgba(0,0,0,.7);}
  .project-cinema-page .timed-feature-shade {background:linear-gradient(0deg,rgba(4,8,14,.57),rgba(4,8,14,.03) 52%),linear-gradient(90deg,rgba(4,8,14,.2),transparent);}
 }
+
+.project-cinema-page .gallery-expanding-card { position:fixed; z-index:500; overflow:hidden; pointer-events:none; background-size:cover; background-position:center; background-repeat:no-repeat; box-shadow:0 24px 75px rgba(0,0,0,.42); border:1px solid rgba(255,255,255,.35); will-change:transform,opacity; }
+.project-cinema-page .gallery-card3d.is-expanding { opacity:0!important; }
+.gallery-expanding-card { position:fixed; z-index:500; overflow:hidden; pointer-events:none; background-size:cover; background-position:center; background-repeat:no-repeat; border:1px solid rgba(255,255,255,.35); box-shadow:0 24px 75px rgba(0,0,0,.42); will-change:transform,opacity; }
+.project-cinema-page .timed-feature-copy :is(h3,p,.eyebrow) { text-shadow:0 3px 18px rgba(0,0,0,.62); }
+.project-cinema-page .timed-feature-shade { background:linear-gradient(90deg,rgba(5,10,17,.79) 0%,rgba(5,10,17,.50) 24%,rgba(5,10,17,.10) 57%,transparent 84%),linear-gradient(0deg,rgba(5,10,17,.48),transparent 32%)!important; }
+.project-cinema-page .gallery-rail { overflow-x:auto!important; overscroll-behavior-inline:contain; }
+.project-cinema-page .gallery-card3d { transition:flex-basis .95s cubic-bezier(.22,1,.36,1),height .95s cubic-bezier(.22,1,.36,1),border-color .35s,opacity .35s!important; }
+.project-cinema-page .timed-feature-slide { transition:opacity .22s ease-out,transform 1s cubic-bezier(.22,1,.36,1)!important; }
+.project-cinema-page .gallery-copy-out { opacity:0; transform:translateY(-18px); transition:opacity .2s,transform .2s; }
+@media (max-width:760px) {
+ .project-cinema-page .timed-feature-shade { background:linear-gradient(0deg,rgba(5,10,17,.83) 0%,rgba(5,10,17,.49) 42%,rgba(5,10,17,.1) 88%)!important; }
+ .project-cinema-page .gallery-expanding-card { box-shadow:none; }
+ .project-cinema-page .gallery-rail { touch-action:pan-x; }
+}
+@media(prefers-reduced-motion:reduce) { .gallery-expanding-card { display:none!important; } }

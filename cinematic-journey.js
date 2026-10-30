@@ -10,7 +10,7 @@
     waiting = false;
     const rect = story.getBoundingClientRect();
     story.classList.toggle('spiral-in-view', rect.bottom > 0 && rect.top < innerHeight);
-    const distance = Math.max(1, story.offsetHeight - innerHeight);
+    const distance = Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight));
     const progress = clamp(-rect.top / distance);
     const blend = clamp((progress - .30) / .44);
     const mix = blend * blend * (3 - 2 * blend);

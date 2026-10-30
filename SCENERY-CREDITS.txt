@@ -1,5 +1,0 @@
-Scenery information
-
-The bundled Nepal Himalayan scene and Darwin-inspired coastal scene are illustrated visuals supplied with this website. They are local optimized WebP files, not verified documentary photographs of specific locations.
-
-The website no longer switches from these local scene images to remote photographs after loading. This prevents a distracting change in scenery during entry or scrolling.

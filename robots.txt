@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://rikeshad.com/sitemap.xml

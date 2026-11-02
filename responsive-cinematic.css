@@ -408,7 +408,6 @@ body.has-intro.experience-ready .site-header {
 
 .wave-story.story { height: 390vh !important; }
 @media (max-width: 760px) {
-  .wave-story.story { height: 340vh !important; }
   .wave-story .story-progress { height: 3px !important; border-radius: 4px !important; }
   .wave-story .story-progress-fill { border-radius: inherit !important; }
 }

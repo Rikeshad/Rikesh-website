@@ -254,58 +254,94 @@ html[data-theme] #hero-main .hero-title .wave-line:nth-child(3) .wave-letter {
   #hero-main .hero-title .wave-line:nth-child(3) { animation: none !important; }
 }
 
-
-@media (max-width:760px) {
-  /* Keep the scroll distance stable as mobile browser bars change size. */
-  .wave-story {
-    height: 420svh !important;
-    min-height: max(2450px, 420svh) !important;
-  }
-  /* Match the sticky painting box to the visible browser viewport. */
-  .wave-story .wave-story-sticky {
-    height: 100dvh !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    inset-block-start: 0 !important;
-    overflow: clip !important;
-  }
-  .wave-story .story-copy:not(.is-active) {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    transition: opacity .38s ease, visibility 0s linear .38s !important;
-  }
-  .wave-story .story-copy.is-active {
-    opacity: 1 !important;
-    visibility: visible !important;
-    transition: opacity .38s ease, visibility 0s linear 0s !important;
-  }
-  /* Cover the whole sticky viewport while URL bars expand/collapse. */
-  .wave-story .scenic-layers { inset: 0 !important; }
-}
-@supports not (height: 100dvh) {
-  @media (max-width:760px) {
-    .wave-story .wave-story-sticky { height: 100vh !important; }
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .site-header, .wave-story .story-copy { transition: none !important; }
-}
-
-@media (max-width:760px) {
+/* Consistent mobile viewport: keep the scenic painting larger than Chrome's
+   collapsible browser chrome, without changing the story travel on every swipe. */
+@media (max-width: 760px) {
   .wave-story.story {
-    height: 380dvh !important;
+    height: 390lvh !important;
     min-height: 0 !important;
   }
-  .wave-story .wave-story-sticky {
-    height: 100dvh !important;
-    min-height: 0 !important;
-    max-height: none !important;
+  .wave-story .wave-story-sticky,
+  .wave-story .story-sticky {
     top: 0 !important;
+    height: 100lvh !important;
+    min-height: 100lvh !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    background-color: #141720 !important;
+  }
+  html[data-theme="light"] .wave-story .wave-story-sticky,
+  html[data-theme="light"] .wave-story .story-sticky {
+    background-color: #f4f0e8 !important;
+  }
+  .wave-story .scenic-layers { inset: -1px !important; }
+  .wave-story .journey-caption { bottom: calc(155px + var(--story-bottom-lift, 0px)); }
+  .wave-story .story-theme-dock { bottom: calc(72px + var(--story-bottom-lift, 0px)); }
+  .wave-story .scroll-label,
+  .wave-story .chapter-total { bottom: calc(28px + var(--story-bottom-lift, 0px)) !important; }
+  .wave-story .story-progress { bottom: calc(33px + var(--story-bottom-lift, 0px)) !important; }
+}
+@supports not (height: 100lvh) {
+  @media (max-width: 760px) {
+    .wave-story.story { height: 390vh !important; }
+    .wave-story .wave-story-sticky,
+    .wave-story .story-sticky { height: 100vh !important; min-height: 100vh !important; }
   }
 }
-@supports not (height: 100dvh) {
-  @media (max-width:760px) {
-    .wave-story.story { height: 380vh !important; }
-    .wave-story .wave-story-sticky { height: 100vh !important; }
+
+/* Keep the first chapter fully composed before the intro releases the shared
+   background-and-type reveal. Following chapters retain staggered motion. */
+body.home-scene-pending .wave-story .story-copy[data-chapter="0"].is-active .cinematic-line > span,
+body.home-scene-pending .wave-story .story-copy[data-chapter="0"].is-active .eyebrow {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* A small local contrast plate preserves the mountain's sharpness. */
+.wave-story .story-copy .eyebrow {
+  display: inline-block !important;
+  justify-self: center;
+  padding: 5px 9px !important;
+  border-radius: 6px;
+  letter-spacing: .13em !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] .wave-story .story-copy .eyebrow {
+  color: #583c00 !important;
+  background: rgba(255,249,233,.84);
+  box-shadow: 0 1px 8px rgba(255,249,233,.2);
+}
+html[data-theme="dark"] .wave-story .story-copy .eyebrow {
+  color: #ffe5a0 !important;
+  background: rgba(5,13,23,.62);
+  box-shadow: 0 1px 8px rgba(5,13,23,.2);
+}
+@media (max-width:760px) {
+  .wave-story .story-copy .eyebrow {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    max-width: calc(100vw - 40px);
   }
+  /* Light silver-blue wire geometry, not thick golden rings. */
+  .wave-story .story-wire-orb { top: 25%; left: 46%; width: 105vw; }
+  html[data-theme="light"] .wave-story .story-wire-orb {
+    color: #476073;
+    opacity: calc(.52 * var(--journey-image-opacity, 1));
+  }
+  html[data-theme="dark"] .wave-story .story-wire-orb {
+    color: #d4eaf0;
+    opacity: calc(.63 * var(--journey-image-opacity, 1));
+  }
+  .wave-story .wire-orb-art path { stroke-width: 1.02; }
+  .wave-story .wire-orb-back { opacity: .48; }
+  .wave-story .wire-orb-front { opacity: .88; }
+}
+
+/* A fast fling may skip chapters; prevent distant headings from overlapping. */
+.wave-story.chapter-jump .story-copy:not(.is-active) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: none !important;
 }

@@ -3,6 +3,7 @@
   const story = document.getElementById('home');
   const scenery = document.querySelector('[data-scenic-layers]');
   if (!story || !scenery) return;
+  const sticky = story.querySelector('.wave-story-sticky');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const clamp = value => Math.min(1, Math.max(0, value));
   let waiting = false;
@@ -10,6 +11,13 @@
     waiting = false;
     const rect = story.getBoundingClientRect();
     story.classList.toggle('spiral-in-view', rect.bottom > 0 && rect.top < innerHeight);
+    if (innerWidth <= 760 && sticky) {
+      const visible = Math.min(innerHeight, window.visualViewport?.height || innerHeight);
+      const lift = Math.max(0, Math.min(160, sticky.clientHeight - visible));
+      story.style.setProperty('--story-bottom-lift', `${Math.round(lift)}px`);
+    } else {
+      story.style.removeProperty('--story-bottom-lift');
+    }
     const distance = Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight));
     const progress = clamp(-rect.top / distance);
     const blend = clamp((progress - .30) / .44);
@@ -18,8 +26,8 @@
     const ease = t => t*t*(3 - 2*t);
     const exit = ease(clamp((progress - .82) / .18));
     const textExit = ease(clamp((progress - .985) / .015));
-    const imageExit = ease(clamp((progress - .79) / .17));
-    const uiExit = ease(clamp((progress - .92) / .06));
+    const imageExit = ease(clamp((progress - .82) / .18));
+    const uiExit = ease(clamp((progress - .92) / .08));
     story.style.setProperty('--journey-image-opacity', (1 - imageExit).toFixed(4));
     story.style.setProperty('--journey-ui-exit', uiExit.toFixed(4));
     story.style.setProperty('--journey-exit', exit.toFixed(4));

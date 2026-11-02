@@ -22,6 +22,23 @@
 
   if (!story || !copies.length) return;
 
+  let skippedChapterTimer = 0;
+  function setActiveChapter(index) {
+    const previous = copies.findIndex(copy => copy.classList.contains('is-active'));
+    if (previous === index) return;
+    const skip = previous >= 0 && Math.abs(index - previous) > 1;
+    if (skip) story.classList.add('chapter-jump');
+    else {
+      clearTimeout(skippedChapterTimer);
+      story.classList.remove('chapter-jump');
+    }
+    copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
+    if (skip) {
+      clearTimeout(skippedChapterTimer);
+      skippedChapterTimer = setTimeout(() => story.classList.remove('chapter-jump'), 440);
+    }
+  }
+
   if (!canvas || !window.THREE) {
     const updateTextOnly = () => {
       const rect = story.getBoundingClientRect();
@@ -30,7 +47,7 @@
       const chapterProgress = localChapterProgress(progress, index);
       story.style.setProperty('--story-swipe-lift', `${(-18 * chapterProgress).toFixed(1)}px`);
       story.style.setProperty('--story-swipe-scale', (1 - .025 * chapterProgress).toFixed(4));
-      copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
+      setActiveChapter(index);
       if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
       if (progressFill) progressFill.style.transform = `scaleX(${progress})`;
     };
@@ -58,7 +75,7 @@
       const rect = story.getBoundingClientRect();
       const p = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight))));
       const index = chapterFor(p);
-      copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
+      setActiveChapter(index);
       if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
       if (progressFill) progressFill.style.transform = `scaleX(${p})`;
     };
@@ -196,7 +213,7 @@
     story.style.setProperty('--story-swipe-scale', (1 - .025 * chapterProgress).toFixed(4));
     if (index !== state.chapter) {
       state.chapter = index;
-      copies.forEach((copy, i) => copy.classList.toggle('is-active', i === index));
+      setActiveChapter(index);
       if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
     }
     if (progressFill) progressFill.style.transform = `scaleX(${p})`;

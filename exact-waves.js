@@ -55,11 +55,11 @@
   });
   if (!canvas || !window.THREE) return;
 
-
-
-
+  const viewportHeight = () => mobileQuery.matches
+    ? (window.rikeshStory?.current?.viewportHeight || innerHeight)
+    : innerHeight;
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(43, innerWidth / innerHeight, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(43, innerWidth / viewportHeight(), 0.1, 100);
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({
@@ -71,7 +71,7 @@
   } catch {
     return;
   }
-  renderer.setSize(innerWidth, innerHeight);
+  renderer.setSize(innerWidth, viewportHeight());
   renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? 1.1 : (lowPower ? 1.2 : 1.45)));
   if ('outputEncoding' in renderer && THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
 
@@ -203,9 +203,9 @@
   }, { passive: true });
 
   function resize() {
-    camera.aspect = innerWidth / innerHeight;
+    camera.aspect = innerWidth / viewportHeight();
     camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setSize(innerWidth, viewportHeight());
     renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? 1.1 : (lowPower ? 1.2 : 1.45)));
     window.rikeshStory?.refresh();
     startAnimation();
@@ -342,9 +342,10 @@
   });
 
   applyTheme();
-  window.rikeshStory?.subscribe(({ progress, active }) => {
+  window.rikeshStory?.subscribe(({ progress, active, mobile, viewportHeight: height }) => {
     state.progress = progress;
     state.active = active;
+    if (mobile && canvas.clientHeight !== height) resize();
     if (active) startAnimation();
     else stopAnimation();
   });

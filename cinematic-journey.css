@@ -254,39 +254,31 @@ html[data-theme] #hero-main .hero-title .wave-line:nth-child(3) .wave-letter {
   #hero-main .hero-title .wave-line:nth-child(3) { animation: none !important; }
 }
 
-/* Consistent mobile viewport: keep the scenic painting larger than Chrome's
-   collapsible browser chrome, without changing the story travel on every swipe. */
+/* One measured visual viewport for the whole mobile scene. Scroll travel stays
+   independent of Android's collapsing browser chrome (see story-progress.js). */
 @media (max-width: 760px) {
   .wave-story.story {
-    height: 390lvh !important;
+    height: calc(var(--story-scroll-distance, 290vh) + var(--story-viewport-height, 100vh)) !important;
     min-height: 0 !important;
   }
   .wave-story .wave-story-sticky,
   .wave-story .story-sticky {
     top: 0 !important;
-    height: 100lvh !important;
-    min-height: 100lvh !important;
+    height: var(--story-viewport-height, 100vh) !important;
+    min-height: 0 !important;
     max-height: none !important;
     overflow: hidden !important;
-    background-color: #141720 !important;
-  }
-  html[data-theme="light"] .wave-story .wave-story-sticky,
-  html[data-theme="light"] .wave-story .story-sticky {
-    background-color: #f4f0e8 !important;
   }
   .wave-story .scenic-layers { inset: -1px !important; }
-  .wave-story .journey-caption { bottom: calc(155px + var(--story-bottom-lift, 0px)); }
-  .wave-story .story-theme-dock { bottom: calc(72px + var(--story-bottom-lift, 0px)); }
-  .wave-story .scroll-label,
-  .wave-story .chapter-total { bottom: calc(28px + var(--story-bottom-lift, 0px)) !important; }
-  .wave-story .story-progress { bottom: calc(33px + var(--story-bottom-lift, 0px)) !important; }
-}
-@supports not (height: 100lvh) {
-  @media (max-width: 760px) {
-    .wave-story.story { height: 390vh !important; }
-    .wave-story .wave-story-sticky,
-    .wave-story .story-sticky { height: 100vh !important; min-height: 100vh !important; }
+  .wave-story .story-copy-wrap {
+    padding-top: clamp(84px, calc(var(--story-viewport-height, 100vh) * .16), 106px) !important;
+    padding-bottom: clamp(102px, calc(var(--story-viewport-height, 100vh) * .21), 132px) !important;
   }
+  .wave-story .journey-caption { bottom: 155px; }
+  .wave-story .story-theme-dock { bottom: 72px; }
+  .wave-story .scroll-label,
+  .wave-story .chapter-total { bottom: 28px !important; }
+  .wave-story .story-progress { bottom: 33px !important; }
 }
 
 /* Keep the first chapter fully composed before the intro releases the shared

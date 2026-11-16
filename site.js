@@ -72,8 +72,9 @@
   const intro = $('#site-intro');
   let introSeen = false;
   try { introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1'; } catch {}
+  const mobileHomeScene = Boolean($('#home') && matchMedia('(max-width: 760px)').matches);
 
-  const openingPhotoReady = intro && $('#home') ? Promise.race([
+  const openingPhotoLoad = intro && $('#home') ?
     new Promise(resolve => {
       const image = new Image();
       image.decoding = 'async';
@@ -87,9 +88,12 @@
         image.addEventListener('load', resolve, { once: true });
         image.addEventListener('error', resolve, { once: true });
       }
-    }),
+    }) : Promise.resolve();
+  // A timed mobile reveal can uncover text over an empty scene on a slow link.
+  const openingPhotoReady = mobileHomeScene ? openingPhotoLoad : Promise.race([
+    openingPhotoLoad,
     new Promise(resolve => setTimeout(resolve, 3500))
-  ]) : Promise.resolve();
+  ]);
 
   function revealHomeScene() {
     document.body.classList.add('experience-ready');
@@ -237,6 +241,11 @@
       const compact = innerWidth < 760;
       const medium = innerWidth < 1180;
       const lowPower = hardwareThreads <= 4 || deviceMemory <= 4;
+      const mobileCanvas = () => innerWidth <= 760 && Boolean(window.rikeshStory);
+      const canvasViewportHeight = () => mobileCanvas()
+        ? window.rikeshStory.current.viewportHeight
+        : innerHeight;
+      let mobileCanvasSized = mobileCanvas();
 
       let renderer;
       try {
@@ -252,7 +261,7 @@
       }
 
       renderer.setPixelRatio(Math.min(devicePixelRatio || 1, compact ? 1.15 : (lowPower ? 1.2 : 1.5)));
-      renderer.setSize(innerWidth, innerHeight, false);
+      renderer.setSize(innerWidth, canvasViewportHeight(), mobileCanvasSized);
       renderer.setClearColor(0x000000, 0);
       if ('outputEncoding' in renderer && THREE.sRGBEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
 
@@ -261,7 +270,7 @@
 
       const camera = new THREE.PerspectiveCamera(
         compact ? 72 : 70,
-        innerWidth / innerHeight,
+        innerWidth / canvasViewportHeight(),
         0.1,
         120
       );
@@ -1312,14 +1321,22 @@
         }, { passive: true });
       }
 
-      addEventListener('resize', () => {
-        camera.aspect = innerWidth / innerHeight;
+      function resizeGalaxy() {
+        const height = canvasViewportHeight();
+        const mobile = mobileCanvas();
+        camera.aspect = innerWidth / height;
         camera.fov = innerWidth < 760 ? 72 : 70;
         camera.updateProjectionMatrix();
         renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1.15 : (lowPower ? 1.2 : 1.5)));
-        renderer.setSize(innerWidth, innerHeight, false);
+        renderer.setSize(innerWidth, height, mobile);
+        if (!mobile && mobileCanvasSized) {
+          galaxyCanvas.style.removeProperty('width');
+          galaxyCanvas.style.removeProperty('height');
+        }
+        mobileCanvasSized = mobile;
         startAnimation();
-      });
+      }
+      addEventListener('resize', resizeGalaxy);
 
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) stopAnimation();
@@ -1334,7 +1351,8 @@
       new MutationObserver(startAnimation).observe(document.documentElement, {
         attributes: true, attributeFilter: ['data-theme']
       });
-      window.rikeshStory?.subscribe(({ progress, active }) => {
+      window.rikeshStory?.subscribe(({ progress, active, mobile, viewportHeight: height }) => {
+        if (mobile && galaxyCanvas.clientHeight !== height) resizeGalaxy();
         // The scenic photographs completely cover the background until the exit.
         sceneryCoversGalaxy = active && progress <= .82;
         if (sceneryCoversGalaxy) stopAnimation();
@@ -1452,7 +1470,9 @@
     '.darwin-hero > *',
     '.darwin-card',
     '.story > *'
-  ].join(','));
+  ].join(',')).filter(element =>
+    !mobileHomeScene || !element.matches('#home > .wave-story-sticky')
+  );
 
   if (revealTargets.length) {
     const reduceRevealMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;

@@ -264,7 +264,6 @@ html[data-theme="dark"] body.exact-wave-story-active .ambient {
     bottom: max(34px, calc(env(safe-area-inset-bottom) + 5px)) !important;
   }
 
-  #waveCanvas,
   #fireworks-foreground {
     height: 100dvh !important;
     touch-action: pan-y;

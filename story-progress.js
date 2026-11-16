@@ -6,17 +6,38 @@
   const listeners = new Set();
   let frame = 0;
   let current;
+  let mobileWidth = 0;
+  let mobileHeight = 0;
 
   function update() {
     frame = 0;
+    const mobile = innerWidth <= 760;
+    const viewport = window.visualViewport;
+    const visibleHeight = Math.round(Math.min(innerHeight,
+      !viewport || viewport.scale !== 1 ? innerHeight : viewport.height));
+    if (mobile) {
+      // Keep scroll travel stable when Android's address bar opens or closes.
+      // Only the visible scene resizes; its text, scenery and canvas share it.
+      if (mobileWidth !== innerWidth) {
+        story.style.setProperty('--story-scroll-distance', `${Math.round(visibleHeight * 2.9)}px`);
+        mobileWidth = innerWidth;
+      }
+      if (mobileHeight !== visibleHeight) {
+        story.style.setProperty('--story-viewport-height', `${visibleHeight}px`);
+        mobileHeight = visibleHeight;
+      }
+    } else if (mobileWidth) {
+      story.style.removeProperty('--story-scroll-distance');
+      story.style.removeProperty('--story-viewport-height');
+      mobileWidth = mobileHeight = 0;
+    }
     const rect = story.getBoundingClientRect();
     const height = sticky.clientHeight;
-    const visibleHeight = Math.min(innerHeight, window.visualViewport?.height || innerHeight);
     current = {
       progress: Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - height))),
       active: rect.bottom > 0 && rect.top < innerHeight,
-      mobile: innerWidth <= 760,
-      bottomLift: Math.max(0, height - visibleHeight)
+      mobile,
+      viewportHeight: mobile ? visibleHeight : innerHeight
     };
     window.__rikeshWaveStoryProgress = current.progress;
     window.__rikeshWaveStoryActive = current.active;

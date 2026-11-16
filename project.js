@@ -1,312 +1,264 @@
-(() => {
+﻿(() => {
   'use strict';
-  const gallery = document.querySelector('[data-gallery]');
-  if (!gallery) return;
-  const $ = selector => gallery.querySelector(selector);
-  const cards = [...gallery.querySelectorAll('[data-gallery-card]')];
-  const slides = [...gallery.querySelectorAll('[data-feature-slide]')];
-  if (!cards.length || slides.length !== 2) return;
-  const stage = $('[data-gallery-stage]');
-  const rail = $('.gallery-rail');
-  const title = $('[data-gallery-title]');
-  const kicker = $('[data-gallery-kicker]');
-  const description = $('[data-gallery-description]');
-  const count = $('[data-gallery-count]');
-  const prev = $('[data-gallery-prev]');
-  const next = $('[data-gallery-next]');
-  const dotsWrap = $('[data-gallery-dots]');
-  const enlarge = $('[data-gallery-enlarge]');
-  const modal = document.querySelector('[data-gallery-modal]');
-  const modalImage = modal?.querySelector('[data-modal-image]');
-  const modalTitle = modal?.querySelector('[data-modal-title]');
-  const modalDescription = modal?.querySelector('[data-modal-description]');
-  const modalClose = modal?.querySelector('[data-modal-close]');
-  const copy = [kicker, title, description, enlarge].filter(Boolean);
-  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const reducedMotion = () => motionQuery.matches;
-  const wrap = value => (value + cards.length) % cards.length;
-  const gsapReady = () => typeof window.gsap !== 'undefined';
-  let index = 0;
-  let currentSlide = 0;
-  let busy = false;
-  let touchStart = null;
-  let lastModalFocus = null;
-  const cache = new Map();
+  const page = document.querySelector('.case-page');
+  if (!page) return;
+  const $ = (s, root = document) => root.querySelector(s);
+  const $$ = (s, root = document) => [...root.querySelectorAll(s)];
+  const motion = matchMedia('(prefers-reduced-motion: reduce)');
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+  const ease = (t) => t * t * (3 - 2 * t);
+  let pending = 0;
+  let measureNeeded = true;
+  let storyTop = 0;
+  let stepStarts = [];
+  const story = $('.pos-experience');
+  const laptop = $('.laptop');
+  const steps = $$('[data-pos-step]');
+  const screens = $$('[data-screen]');
+  const editorial = $$('[data-editorial]');
+  const composition = $('.brew-composition');
+  const floats = $$('[data-brew-select]');
+  const imageReady = new WeakMap();
 
-  function sourceFor(card) {
-    const img = card.querySelector('img');
-    return img?.dataset.fullSrc || img?.getAttribute('src') || '';
-  }
-  function preload(src) {
-    if (!src) return Promise.resolve(false);
-    if (cache.has(src)) return cache.get(src);
-    const promise = new Promise(resolve => {
-      const img = new Image();
-      const finish = ready => {
-        clearTimeout(timeout);
-        img.onload = img.onerror = null;
-        resolve(ready);
-      };
-      const timeout = setTimeout(() => finish(false), 8000);
-      img.onload = () => {
-        if (img.decode) img.decode().then(() => finish(true), () => finish(false));
-        else finish(true);
-      };
-      img.onerror = () => finish(false);
-      img.src = src;
-      if (img.complete && !img.naturalWidth) finish(false);
-    });
-    cache.set(src, promise);
-    promise.then(ready => { if (!ready) cache.delete(src); });
-    return promise;
-  }
-  function animateElement(el, target, duration, easing) {
-    if (!el || reducedMotion() || !duration) {
-      if (el) Object.assign(el.style, target);
-      return Promise.resolve();
+  function loadScreen(image) {
+    if (!image || imageReady.has(image)) return;
+    imageReady.set(image, false);
+    if (image.dataset.src) image.src = image.dataset.src;
+    const loaded = async () => {
+      try {
+        await image.decode();
+      } catch {}
+      if (!image.naturalWidth) return;
+      imageReady.set(image, true);
+      schedule();
+    };
+    if (image.complete && image.naturalWidth) loaded();
+    else {
+      image.addEventListener('load', loaded, { once: true });
+      image.addEventListener(
+        'error',
+        () => {
+          imageReady.delete(image);
+        },
+        { once: true },
+      );
     }
-    if (gsapReady()) {
-      return new Promise((resolve, reject) => {
-        let tween;
-        const finish = () => { clearTimeout(timeout); resolve(); };
-        const timeout = setTimeout(() => {
-          tween?.kill();
-          Object.assign(el.style, target);
-          finish();
-        }, duration + 500);
-        try {
-          tween = window.gsap.to(el, {
-            ...target, duration: duration / 1000,
-            ease: easing === 'out' ? 'power3.out' : 'power3.inOut',
-            onComplete: finish, onInterrupt: finish
-          });
-        } catch (error) {
-          clearTimeout(timeout);
-          reject(error);
-        }
+  }
+
+  function update() {
+    pending = 0;
+    const height = story ? $('.pos-device-stage').clientHeight : innerHeight;
+    if (story) {
+      if (measureNeeded) {
+        storyTop = story.getBoundingClientRect().top + scrollY;
+        stepStarts = steps.map((step) => step.offsetTop);
+      }
+      const position = scrollY - storyTop;
+      const opening = clamp(position / (height * 0.95));
+      const angle = motion.matches ? (opening < 0.55 ? 0 : 110) : ease(opening) * 110;
+      story.style.setProperty('--lid-angle', `${angle.toFixed(3)}deg`);
+      story.style.setProperty('--device-top', `${59 - 7 * ease(opening)}%`);
+      const last = stepStarts[stepStarts.length - 1];
+      const exit = clamp((position - last) / (height * 0.7));
+      story.style.setProperty(
+        '--device-scale',
+        motion.matches ? '1' : (1 - 0.12 * ease(exit)).toFixed(4),
+      );
+      story.style.setProperty(
+        '--device-turn',
+        `${motion.matches ? -6 : -6 + opening * 6 + exit * 4}deg`,
+      );
+      const cursor = position + height * 0.5;
+      let current = 0;
+      for (let i = 1; i < stepStarts.length; i++) if (cursor >= stepStarts[i]) current = i;
+      const next = Math.min(current + 1, screens.length - 1);
+      loadScreen(screens[current]);
+      if (opening > 0.35) [Math.max(0, current - 1), next].forEach((i) => loadScreen(screens[i]));
+      const mix = motion.matches
+        ? 0
+        : ease(clamp((cursor - (stepStarts[next] - height * 0.08)) / (height * 0.08)));
+      const power = motion.matches ? (angle ? 1 : 0) : ease(clamp((opening - 0.65) / 0.35));
+      // Never fade to a screenshot which has not arrived yet.
+      const incomingReady = imageReady.get(screens[next]);
+      const blend = next !== current && incomingReady ? mix : 0;
+      let visible = imageReady.get(screens[current])
+        ? current
+        : screens.findIndex((img) => imageReady.get(img));
+      screens.forEach((img, i) => {
+        img.style.opacity = String(power * (i === visible ? 1 - blend : i === next ? blend : 0));
+      });
+      laptop.dataset.angle = angle.toFixed(2);
+      laptop.setAttribute(
+        'aria-label',
+        angle < 1
+          ? 'Closed laptop. Scroll down to open.'
+          : `Laptop showing ${screens[Math.max(0, visible)].alt}`,
+      );
+      steps.forEach((step, i) => {
+        if (!i) return;
+        const center = stepStarts[i] + step.offsetHeight * 0.5;
+        const distance = Math.abs(position + height * 0.5 - center) / height;
+        step.style.setProperty(
+          '--copy-opacity',
+          motion.matches ? '1' : String(clamp(1.35 - distance)),
+        );
+        step.style.setProperty(
+          '--copy-y',
+          motion.matches
+            ? '0px'
+            : `${clamp((center - position - height * 0.5) * 0.045, -20, 20)}px`,
+        );
       });
     }
-    const before = {};
-    if (!el.animate) {
-      Object.assign(el.style, target);
-      return Promise.resolve();
+    if (!motion.matches && composition) {
+      const r = composition.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < height)
+        floats.forEach((card, i) =>
+          card.style.setProperty(
+            '--float-y',
+            `${clamp((height * 0.5 - r.top - r.height * 0.5) * (0.025 + i * 0.018), -22, 22)}px`,
+          ),
+        );
     }
-    for (const key of Object.keys(target)) before[key] = getComputedStyle(el)[key];
-    const animation = el.animate([before, target], {
-      duration, easing:easing === 'out' ? 'cubic-bezier(.16,1,.3,1)' : 'cubic-bezier(.65,0,.35,1)', fill:'forwards'
+    editorial.forEach((section) => {
+      const r = section.getBoundingClientRect();
+      if (r.bottom <= 0 || r.top >= height) return;
+      const p = clamp((height - r.top) / (height + r.height));
+      section.style.setProperty('--editorial-y', motion.matches ? '0px' : `${(1 - p * 2) * 22}px`);
+      section.style.setProperty(
+        '--editorial-scale',
+        motion.matches ? '1' : String(0.975 + 0.025 * ease(clamp(p * 2))),
+      );
     });
-    let timeout;
-    const deadline = new Promise(resolve => { timeout = setTimeout(resolve, duration + 500); });
-    return Promise.race([animation.finished.catch(() => undefined), deadline]).then(() => {
-      clearTimeout(timeout);
-      Object.assign(el.style, target);
-      animation.cancel();
-    });
+    measureNeeded = false;
   }
-  function setContent(card) {
-    kicker.textContent = card.dataset.kicker || '';
-    title.textContent = card.dataset.title || '';
-    description.textContent = card.dataset.description || '';
-    count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
+  function schedule() {
+    if (!pending && !document.hidden) pending = requestAnimationFrame(update);
   }
-  function positionCards() {
-    cards.forEach((card, i) => {
-      const active = i === index;
-      card.classList.toggle('is-active', active);
-      card.setAttribute('aria-pressed', String(active));
-      if (active) card.setAttribute('aria-current', 'true');
-      else card.removeAttribute('aria-current');
-      card.style.setProperty('--card-offset', String(wrap(i - index)));
-    });
-    dotsWrap?.querySelectorAll('.gallery-dot').forEach((dot, i) => {
-      dot.classList.toggle('active', i === index);
-      dot.setAttribute('aria-current', String(i === index));
-    });
-    centerActiveCard();
-  }
-  function centerActiveCard() {
-    const active = cards[index];
-    if (rail && active) {
-      const left = active.offsetLeft + active.offsetWidth / 2 - rail.clientWidth / 2;
-      rail.scrollTo({left:Math.max(0,left), behavior:reducedMotion()?'instant':'smooth'});
-    }
-  }
-  function changeSlide(src) {
-    const incomingIndex = 1 - currentSlide;
-    const incoming = slides[incomingIndex];
-    const bg = incoming.querySelector('[data-feature-bg]');
-    const front = incoming.querySelector('[data-feature-image]');
-    if (bg) bg.src = src;
-    if (front) front.src = src;
-    slides[currentSlide].classList.remove('is-current');
-    slides[currentSlide].setAttribute('aria-hidden','true');
-    incoming.classList.add('is-current');
-    incoming.setAttribute('aria-hidden','false');
-    currentSlide = incomingIndex;
-  }
-  async function select(nextIndex) {
-    const nextValue = wrap(nextIndex);
-    if (busy || nextValue === index) return;
-    busy = true;
-    gallery.setAttribute('aria-busy', 'true');
-    const selected = cards[nextValue];
-    const src = sourceFor(selected);
-    let expanding = null;
-    try {
-      if (!await preload(src)) {
-        window.showToast?.('This screenshot could not load. Please try again.');
-        return;
-      }
-      // Read coordinates after the download: the user may have scrolled meanwhile.
-      const rect = selected.getBoundingClientRect();
-      const viewWidth = document.documentElement.clientWidth;
-      const viewHeight = window.innerHeight;
-      const canMorph = !document.hidden && !reducedMotion() && rect.width > 0 && rect.height > 0 &&
-        rect.bottom > 0 && rect.top < viewHeight && rect.right > 0 && rect.left < viewWidth;
-      if (canMorph) {
-        expanding = document.createElement('div');
-        expanding.className = 'gallery-expanding-card';
-        Object.assign(expanding.style, {
-          left:'0px', top:'0px', width:`${viewWidth}px`, height:`${viewHeight}px`,
-          transformOrigin:'top left',
-          transform:`translate3d(${rect.left}px,${rect.top}px,0) scale(${rect.width/viewWidth},${rect.height/viewHeight})`,
-          borderRadius:'15px',
-          backgroundImage:`url("${src.replace(/"/g,'%22')}")`
-        });
-        document.body.appendChild(expanding);
-        selected.classList.add('is-expanding');
-        if (gsapReady()) window.gsap.to(copy,{y:-18,opacity:0,stagger:.035,duration:.22,ease:'power2.in'});
-        else copy.forEach(el=>el.classList.add('gallery-copy-out'));
-        await animateElement(expanding, {
-          transform:'translate3d(0px,0px,0px) scale(1)',borderRadius:'0px'
-        }, 1020);
-      }
-      index = nextValue;
-      changeSlide(src);
-      setContent(selected);
-      positionCards();
-      if (expanding) {
-        await animateElement(expanding, {opacity:'0'}, 240,'out');
-        expanding.remove();
-        selected.classList.remove('is-expanding');
-      }
-      copy.forEach(el=>el.classList.remove('gallery-copy-out'));
-      if (!reducedMotion()) {
-        const results = await Promise.allSettled(copy.map(async (el, i) => {
-          el.style.opacity = '0';
-          el.style.transform = 'translateY(26px)';
-          await new Promise(resolve => setTimeout(resolve, i * 75));
-          await animateElement(el, { opacity: '1', transform: 'translateY(0px)' }, 550, 'out');
-        }));
-        const failure = results.find(result => result.status === 'rejected');
-        if (failure) throw failure.reason;
-      }
-      const nextSrc = sourceFor(cards[wrap(index+1)]);
-      if (nextSrc) preload(nextSrc);
-    } catch {
-      window.showToast?.('The gallery transition was interrupted. Please try again.');
-    } finally {
-      expanding?.remove();
-      selected.classList.remove('is-expanding');
-      if (gsapReady()) window.gsap.killTweensOf(copy);
-      copy.forEach(el => {
-        el.classList.remove('gallery-copy-out');
-        el.style.removeProperty('opacity');
-        el.style.removeProperty('transform');
-      });
-      busy = false;
-      gallery.setAttribute('aria-busy', 'false');
-    }
-  }
-  function openModal() {
-    if (busy || !modal || !modalImage) return;
-    const card = cards[index];
-    lastModalFocus = document.activeElement;
-    modalImage.src = sourceFor(card);
-    modalImage.alt = card.dataset.title || 'Project screenshot';
-    if (modalTitle) modalTitle.textContent = card.dataset.title || '';
-    if (modalDescription) modalDescription.textContent = card.dataset.description || '';
-    if (modal.showModal) modal.showModal();
-    else modal.setAttribute('open','');
-    modalClose?.focus();
-  }
-  function closeModal() {
-    if (!modal) return;
-    if (modal.close && modal.open) modal.close();
-    else modal.removeAttribute('open');
-    lastModalFocus?.focus?.();
-  }
-  cards.forEach((card,i)=>{
-    card.addEventListener('click',()=>i === index?openModal():select(i));
-    if (dotsWrap) {
-      const dot = document.createElement('button');
-      dot.type = 'button';
-      dot.className = 'gallery-dot';
-      dot.setAttribute('aria-label',`Show screenshot ${i+1}: ${card.dataset.title||''}`);
-      dot.addEventListener('click',()=>select(i));
-      dotsWrap.appendChild(dot);
-    }
-  });
-  prev?.addEventListener('click',()=>select(index-1));
-  next?.addEventListener('click',()=>select(index+1));
-  enlarge?.addEventListener('click',openModal);
-  modalClose?.addEventListener('click',closeModal);
-  modal?.addEventListener('click',e=>{if(e.target===modal)closeModal();});
-  stage?.addEventListener('pointerdown', e=>{
-    if(e.pointerType==='mouse'||e.target.closest('.gallery-rail, button'))return;
-    touchStart={x:e.clientX,y:e.clientY};
-  });
-  stage?.addEventListener('pointerup',e=>{
-    if(!touchStart)return;
-    const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;
-    touchStart=null;
-    if(Math.abs(dx)>42&&Math.abs(dx)>Math.abs(dy)*1.2) select(index+(dx<0?1:-1));
-  });
-  stage?.addEventListener('pointercancel',()=>{touchStart=null;});
-  gallery.addEventListener('keydown',e=>{
-    if(modal?.open||e.target.closest('input,textarea'))return;
-    if(e.key==='ArrowRight'){e.preventDefault();select(index+1);}
-    if(e.key==='ArrowLeft'){e.preventDefault();select(index-1);}
-  });
-  rail?.addEventListener('transitionend', e => {
-    if (e.propertyName === 'flex-basis' && e.target === cards[index]) centerActiveCard();
-  });
-  addEventListener('resize', centerActiveCard, { passive: true });
-  setContent(cards[0]);
-  positionCards();
-  preload(sourceFor(cards[1]));
-})();
-
-(() => {
-  const lazyVideos = [...document.querySelectorAll('video[data-lazy-video]')];
-  if (!lazyVideos.length) return;
-  const loadVideo = video => {
-    if (video.dataset.loaded === 'true') return;
-    video.querySelectorAll('source[data-src]').forEach(source => {
-      source.src = source.dataset.src;
-      source.removeAttribute('data-src');
-    });
-    video.dataset.loaded = 'true';
-    video.load();
-  };
-  if (!('IntersectionObserver' in window)) {lazyVideos.forEach(loadVideo);return;}
-  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-    const video = entry.target;
-    if (entry.isIntersecting) {
-      loadVideo(video);
-      video.play().catch(() => undefined);
-    } else if (!video.paused) video.pause();
-  }), {rootMargin:'240px 0px',threshold:.01});
-  lazyVideos.forEach(video => observer.observe(video));
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) lazyVideos.forEach(video => { if (!video.paused) video.pause(); });
-    else lazyVideos.forEach(video => {
-      if (video.dataset.loaded === 'true' && video.getBoundingClientRect().top < innerHeight && video.getBoundingClientRect().bottom > 0) video.play().catch(() => undefined);
-    });
+  addEventListener('scroll', schedule, { passive: true });
+  addEventListener(
+    'resize',
+    () => {
+      measureNeeded = true;
+      schedule();
+    },
+    { passive: true },
+  );
+  addEventListener('pageshow', () => {
+    measureNeeded = true;
+    schedule();
   });
   addEventListener('pagehide', () => {
-    observer.disconnect();
-    lazyVideos.forEach(video => video.pause());
+    cancelAnimationFrame(pending);
+    pending = 0;
   });
-  addEventListener('pageshow', () => lazyVideos.forEach(video => observer.observe(video)));
+  document.addEventListener('visibilitychange', schedule);
+  motion.addEventListener('change', schedule);
+  document.fonts?.ready.then(() => {
+    measureNeeded = true;
+    schedule();
+  });
+
+  const inspect = $('.brew-inspect');
+  floats.forEach((card) =>
+    card.addEventListener('click', () => {
+      floats.forEach((other) => {
+        const selected = other === card;
+        other.classList.toggle('is-selected', selected);
+        other.setAttribute('aria-pressed', String(selected));
+      });
+      const libraryLink = $$('.case-library-card')[Number(card.dataset.brewSelect)];
+      const fullPreview = libraryLink.href.replace(/\.png$/, '.webp');
+      $('img', card).src = fullPreview;
+      $('[data-brew-caption]').textContent = libraryLink.dataset.description;
+      inspect.href = libraryLink.href;
+      inspect.dataset.title = libraryLink.dataset.title;
+      inspect.dataset.description = libraryLink.dataset.description;
+    }),
+  );
+
+  const dialog = $('.case-viewer');
+  const viewerImage = $('[data-viewer-image]');
+  const zoom = $('[data-zoom]');
+  let lastFocus;
+  function resetZoom() {
+    dialog.classList.remove('is-zoomed');
+    zoom.setAttribute('aria-pressed', 'false');
+    zoom.textContent = 'Zoom to original';
+  }
+  $$('[data-view-image]').forEach((link) =>
+    link.addEventListener('click', (event) => {
+      if (!dialog.showModal || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      event.preventDefault();
+      lastFocus = link;
+      resetZoom();
+      const media = $('.viewer-media');
+      const source = link.href;
+      media.setAttribute('aria-busy', 'true');
+      media.dataset.message = 'Loading original screenshot…';
+      viewerImage.style.visibility = 'hidden';
+      viewerImage.onload = async () => {
+        try {
+          await viewerImage.decode();
+        } catch {}
+        if (viewerImage.src !== source) return;
+        media.setAttribute('aria-busy', 'false');
+        viewerImage.style.visibility = 'visible';
+      };
+      viewerImage.onerror = () => {
+        media.dataset.message = 'Unable to load. Try the original image link below.';
+        media.setAttribute('aria-busy', 'false');
+      };
+      viewerImage.src = link.href;
+      viewerImage.alt = link.dataset.title + ' screenshot';
+      $('#viewer-title').textContent = link.dataset.title;
+      $('[data-viewer-description]').textContent = link.dataset.description;
+      $('[data-original]').href = link.href;
+      dialog.showModal();
+      $('[data-close]').focus();
+    }),
+  );
+  $('[data-close]').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', (e) => {
+    if (
+      e.target === dialog &&
+      (e.clientX < dialog.getBoundingClientRect().left ||
+        e.clientX > dialog.getBoundingClientRect().right ||
+        e.clientY < dialog.getBoundingClientRect().top ||
+        e.clientY > dialog.getBoundingClientRect().bottom)
+    )
+      dialog.close();
+  });
+  dialog.addEventListener('close', () => {
+    resetZoom();
+    lastFocus?.focus({ preventScroll: true });
+  });
+  zoom.addEventListener('click', () => {
+    const enabled = dialog.classList.toggle('is-zoomed');
+    zoom.setAttribute('aria-pressed', String(enabled));
+    zoom.textContent = enabled ? 'Fit to screen' : 'Zoom to original';
+  });
+  function syncTheme() {
+    const light = document.documentElement.dataset.theme !== 'dark';
+    $$('[data-theme-label]').forEach((el) => {
+      el.textContent = light ? 'Night' : 'Day';
+    });
+    $$('[data-theme-toggle]').forEach((el) => {
+      el.setAttribute('aria-label', `Switch to ${light ? 'night' : 'day'} mode`);
+      el.setAttribute('aria-pressed', String(!light));
+    });
+  }
+  $$('[data-theme-toggle]').forEach((button) =>
+    button.addEventListener('click', () => {
+      const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = theme;
+      try {
+        localStorage.setItem('rikeshTheme', theme);
+      } catch {}
+      syncTheme();
+    }),
+  );
+  syncTheme();
+  screens.slice(0, 1).forEach(loadScreen);
+  update();
 })();

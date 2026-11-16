@@ -793,7 +793,13 @@ img,video {
   gap:13px
 }
 
+/* Grid items must be allowed to shrink below a long calculation's intrinsic width. */
+.tools-grid > .tool-card { min-width:0; max-width:100%; box-sizing:border-box; }
+
 .neo-calc {
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
   padding:22px;
   border-radius:24px;
   background:#14141d;
@@ -801,6 +807,9 @@ img,video {
 }
 
 .calc-screen {
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
   border-radius:18px;
   background:#101017;
   box-shadow:inset 6px 6px 13px #09090d,inset -6px -6px 13px #171720;
@@ -810,13 +819,18 @@ img,video {
 }
 
 .calc-history {
+  max-width:100%;
+  white-space:nowrap;
   min-height:20px;
   color:#646b77;
   font:11px 'Space Mono';
-  overflow:hidden
+  overflow-x:auto
 }
 
 .calc-display {
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
   font:700 clamp(28px,3vw,42px) 'Space Mono';
   white-space:nowrap;
   overflow-x:auto
@@ -824,11 +838,14 @@ img,video {
 
 .calc-grid {
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:12px
 }
 
 .calc-key {
+  min-width:0;
+  max-width:100%;
+  box-sizing:border-box;
   min-height:58px;
   border:0;
   border-radius:15px;

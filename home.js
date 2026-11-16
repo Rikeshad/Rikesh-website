@@ -25,8 +25,50 @@
   const calculator = display?.closest('.neo-calc');
 
   function renderCalculator() {
-    if (display) display.textContent = expression || '0';
+    if (!display) return;
+    display.textContent = expression || '0';
+    fitCalculatorDisplay();
   }
+
+  function fitCalculatorDisplay() {
+    if (!display) return;
+    display.style.removeProperty('font-size');
+    display.style.removeProperty('height');
+    const maximum = parseFloat(getComputedStyle(display).fontSize);
+    const height = display.clientHeight;
+    if (display.scrollWidth > display.clientWidth) {
+      let low = 18;
+      let high = maximum;
+      display.style.height = `${height}px`;
+      // Measure the rendered font, including its real spacing, rather than
+      // guessing a size from the number of characters.
+      display.style.fontSize = `${low}px`;
+      if (display.scrollWidth <= display.clientWidth) {
+        while (high - low > .25) {
+          const size = (low + high) / 2;
+          display.style.fontSize = `${size}px`;
+          if (display.scrollWidth <= display.clientWidth) low = size;
+          else high = size;
+        }
+      }
+      display.style.fontSize = `${low}px`;
+    }
+    display.scrollLeft = display.scrollWidth;
+    if (history) history.scrollLeft = history.scrollWidth;
+  }
+  if (display && 'ResizeObserver' in window) {
+    let previousWidth = 0;
+    new ResizeObserver(entries => {
+      const width = entries[0].contentRect.width;
+      if (width !== previousWidth) {
+        previousWidth = width;
+        fitCalculatorDisplay();
+      }
+    }).observe(display);
+  } else if (display) {
+    addEventListener('resize', fitCalculatorDisplay, { passive: true });
+  }
+  document.fonts?.ready.then(fitCalculatorDisplay);
 
   function evaluateExpression(source) {
     const text = source.replace(/×/g, '*').replace(/÷/g, '/');
@@ -127,7 +169,6 @@
   }
 
   window.calcInput = value => {
-    if (expression.length >= 42) return;
     expression += value;
     renderCalculator();
   };
@@ -154,6 +195,7 @@
     } catch {
       if (display) display.textContent = 'Error';
       expression = '';
+      fitCalculatorDisplay();
     }
   };
 

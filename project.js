@@ -22,7 +22,8 @@
   const modalDescription = modal?.querySelector('[data-modal-description]');
   const modalClose = modal?.querySelector('[data-modal-close]');
   const copy = [kicker, title, description, enlarge].filter(Boolean);
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const reducedMotion = () => motionQuery.matches;
   const wrap = value => (value + cards.length) % cards.length;
   const gsapReady = () => typeof window.gsap !== 'undefined';
   let index = 0;
@@ -41,32 +42,63 @@
     if (cache.has(src)) return cache.get(src);
     const promise = new Promise(resolve => {
       const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
+      const finish = ready => {
+        clearTimeout(timeout);
+        img.onload = img.onerror = null;
+        resolve(ready);
+      };
+      const timeout = setTimeout(() => finish(false), 8000);
+      img.onload = () => {
+        if (img.decode) img.decode().then(() => finish(true), () => finish(false));
+        else finish(true);
+      };
+      img.onerror = () => finish(false);
       img.src = src;
-      if (img.complete) resolve(img.naturalWidth > 0);
+      if (img.complete && !img.naturalWidth) finish(false);
     });
     cache.set(src, promise);
+    promise.then(ready => { if (!ready) cache.delete(src); });
     return promise;
   }
   function animateElement(el, target, duration, easing) {
-    if (!el || reducedMotion || !duration) {
+    if (!el || reducedMotion() || !duration) {
       if (el) Object.assign(el.style, target);
       return Promise.resolve();
     }
     if (gsapReady()) {
-      return new Promise(resolve => window.gsap.to(el, {
-        ...target, duration: duration / 1000,
-        ease: easing === 'out' ? 'power3.out' : 'power3.inOut',
-        onComplete: resolve
-      }));
+      return new Promise((resolve, reject) => {
+        let tween;
+        const finish = () => { clearTimeout(timeout); resolve(); };
+        const timeout = setTimeout(() => {
+          tween?.kill();
+          Object.assign(el.style, target);
+          finish();
+        }, duration + 500);
+        try {
+          tween = window.gsap.to(el, {
+            ...target, duration: duration / 1000,
+            ease: easing === 'out' ? 'power3.out' : 'power3.inOut',
+            onComplete: finish, onInterrupt: finish
+          });
+        } catch (error) {
+          clearTimeout(timeout);
+          reject(error);
+        }
+      });
     }
     const before = {};
+    if (!el.animate) {
+      Object.assign(el.style, target);
+      return Promise.resolve();
+    }
     for (const key of Object.keys(target)) before[key] = getComputedStyle(el)[key];
     const animation = el.animate([before, target], {
       duration, easing:easing === 'out' ? 'cubic-bezier(.16,1,.3,1)' : 'cubic-bezier(.65,0,.35,1)', fill:'forwards'
     });
-    return animation.finished.catch(() => undefined).then(() => {
+    let timeout;
+    const deadline = new Promise(resolve => { timeout = setTimeout(resolve, duration + 500); });
+    return Promise.race([animation.finished.catch(() => undefined), deadline]).then(() => {
+      clearTimeout(timeout);
       Object.assign(el.style, target);
       animation.cancel();
     });
@@ -90,10 +122,13 @@
       dot.classList.toggle('active', i === index);
       dot.setAttribute('aria-current', String(i === index));
     });
+    centerActiveCard();
+  }
+  function centerActiveCard() {
     const active = cards[index];
     if (rail && active) {
       const left = active.offsetLeft + active.offsetWidth / 2 - rail.clientWidth / 2;
-      rail.scrollTo({left:Math.max(0,left), behavior:reducedMotion?'instant':'smooth'});
+      rail.scrollTo({left:Math.max(0,left), behavior:reducedMotion()?'instant':'smooth'});
     }
   }
   function changeSlide(src) {
@@ -113,53 +148,75 @@
     const nextValue = wrap(nextIndex);
     if (busy || nextValue === index) return;
     busy = true;
+    gallery.setAttribute('aria-busy', 'true');
     const selected = cards[nextValue];
     const src = sourceFor(selected);
-    const rect = selected.getBoundingClientRect();
-    const viewWidth = document.documentElement.clientWidth;
-    const viewHeight = window.innerHeight;
-    const ready = await preload(src);
-    const canMorph = ready && !reducedMotion && rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < viewHeight;
     let expanding = null;
-    if (canMorph) {
-      expanding = document.createElement('div');
-      expanding.className = 'gallery-expanding-card';
-      Object.assign(expanding.style, {
-        left:'0px', top:'0px', width:`${viewWidth}px`, height:`${viewHeight}px`,
-        transformOrigin:'top left',
-        transform:`translate3d(${rect.left}px,${rect.top}px,0) scale(${rect.width/viewWidth},${rect.height/viewHeight})`,
-        borderRadius:'15px',
-        backgroundImage:`url("${src.replace(/"/g,'%22')}")`
-      });
-      document.body.appendChild(expanding);
-      selected.classList.add('is-expanding');
-      if (gsapReady()) window.gsap.to(copy,{y:-18,opacity:0,stagger:.035,duration:.22,ease:'power2.in'});
-      else copy.forEach(el=>el.classList.add('gallery-copy-out'));
-      await animateElement(expanding, {
-        transform:'translate3d(0px,0px,0px) scale(1)',borderRadius:'0px'
-      }, 1020);
-    }
-    index = nextValue;
-    changeSlide(src);
-    setContent(selected);
-    positionCards();
-    if (expanding) {
-      await animateElement(expanding, {opacity:'0'}, 240,'out');
-      expanding.remove();
-      selected.classList.remove('is-expanding');
-    }
-    copy.forEach(el=>el.classList.remove('gallery-copy-out'));
-    if (!reducedMotion) {
-      if (gsapReady()) window.gsap.fromTo(copy,{y:26,opacity:0},{y:0,opacity:1,stagger:.075,duration:.55,ease:'power3.out',clearProps:'transform,opacity'});
-      else copy.forEach((el,i)=>{
-        el.animate([{opacity:0,transform:'translateY(26px)'},{opacity:1,transform:'translateY(0)'}],{
-          duration:550,delay:i*75,easing:'cubic-bezier(.16,1,.3,1)'
+    try {
+      if (!await preload(src)) {
+        window.showToast?.('This screenshot could not load. Please try again.');
+        return;
+      }
+      // Read coordinates after the download: the user may have scrolled meanwhile.
+      const rect = selected.getBoundingClientRect();
+      const viewWidth = document.documentElement.clientWidth;
+      const viewHeight = window.innerHeight;
+      const canMorph = !document.hidden && !reducedMotion() && rect.width > 0 && rect.height > 0 &&
+        rect.bottom > 0 && rect.top < viewHeight && rect.right > 0 && rect.left < viewWidth;
+      if (canMorph) {
+        expanding = document.createElement('div');
+        expanding.className = 'gallery-expanding-card';
+        Object.assign(expanding.style, {
+          left:'0px', top:'0px', width:`${viewWidth}px`, height:`${viewHeight}px`,
+          transformOrigin:'top left',
+          transform:`translate3d(${rect.left}px,${rect.top}px,0) scale(${rect.width/viewWidth},${rect.height/viewHeight})`,
+          borderRadius:'15px',
+          backgroundImage:`url("${src.replace(/"/g,'%22')}")`
         });
+        document.body.appendChild(expanding);
+        selected.classList.add('is-expanding');
+        if (gsapReady()) window.gsap.to(copy,{y:-18,opacity:0,stagger:.035,duration:.22,ease:'power2.in'});
+        else copy.forEach(el=>el.classList.add('gallery-copy-out'));
+        await animateElement(expanding, {
+          transform:'translate3d(0px,0px,0px) scale(1)',borderRadius:'0px'
+        }, 1020);
+      }
+      index = nextValue;
+      changeSlide(src);
+      setContent(selected);
+      positionCards();
+      if (expanding) {
+        await animateElement(expanding, {opacity:'0'}, 240,'out');
+        expanding.remove();
+        selected.classList.remove('is-expanding');
+      }
+      copy.forEach(el=>el.classList.remove('gallery-copy-out'));
+      if (!reducedMotion()) {
+        const results = await Promise.allSettled(copy.map(async (el, i) => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(26px)';
+          await new Promise(resolve => setTimeout(resolve, i * 75));
+          await animateElement(el, { opacity: '1', transform: 'translateY(0px)' }, 550, 'out');
+        }));
+        const failure = results.find(result => result.status === 'rejected');
+        if (failure) throw failure.reason;
+      }
+      const nextSrc = sourceFor(cards[wrap(index+1)]);
+      if (nextSrc) preload(nextSrc);
+    } catch {
+      window.showToast?.('The gallery transition was interrupted. Please try again.');
+    } finally {
+      expanding?.remove();
+      selected.classList.remove('is-expanding');
+      if (gsapReady()) window.gsap.killTweensOf(copy);
+      copy.forEach(el => {
+        el.classList.remove('gallery-copy-out');
+        el.style.removeProperty('opacity');
+        el.style.removeProperty('transform');
       });
+      busy = false;
+      gallery.setAttribute('aria-busy', 'false');
     }
-    busy = false;
-    const nextSrc = sourceFor(cards[wrap(index+1)]);
-    if (nextSrc) preload(nextSrc);
   }
   function openModal() {
     if (busy || !modal || !modalImage) return;
@@ -211,6 +268,10 @@
     if(e.key==='ArrowRight'){e.preventDefault();select(index+1);}
     if(e.key==='ArrowLeft'){e.preventDefault();select(index-1);}
   });
+  rail?.addEventListener('transitionend', e => {
+    if (e.propertyName === 'flex-basis' && e.target === cards[index]) centerActiveCard();
+  });
+  addEventListener('resize', centerActiveCard, { passive: true });
   setContent(cards[0]);
   positionCards();
   preload(sourceFor(cards[1]));
@@ -243,5 +304,9 @@
       if (video.dataset.loaded === 'true' && video.getBoundingClientRect().top < innerHeight && video.getBoundingClientRect().bottom > 0) video.play().catch(() => undefined);
     });
   });
-  addEventListener('pagehide', () => observer.disconnect(), {once:true});
+  addEventListener('pagehide', () => {
+    observer.disconnect();
+    lazyVideos.forEach(video => video.pause());
+  });
+  addEventListener('pageshow', () => lazyVideos.forEach(video => observer.observe(video)));
 })();

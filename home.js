@@ -5,79 +5,6 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 
-  const waveStory = $('[data-wave-story]');
-
-  if (waveStory) {
-    const storyFrames = $$('[data-story-frame]', waveStory);
-    const storyCounter = $('[data-story-counter]', waveStory);
-    const storyProgressBar = $('[data-story-progress]', waveStory);
-    let currentStoryFrame = -1;
-    let storyRaf = null;
-
-    $$('[data-story-words]', waveStory).forEach(heading => {
-      const words = heading.textContent.trim().split(/\s+/);
-      heading.textContent = '';
-
-      words.forEach((word, index) => {
-        const clip = document.createElement('span');
-        clip.className = 'story-word-clip';
-        const inner = document.createElement('span');
-        inner.className = 'story-word';
-        inner.textContent = word;
-        inner.style.setProperty('--word-delay', `${index * 46}ms`);
-        clip.appendChild(inner);
-        heading.appendChild(clip);
-        if (index < words.length - 1) heading.append(' ');
-      });
-    });
-
-    const clamp01 = value => Math.max(0, Math.min(1, value));
-
-    function updateWaveStory() {
-      storyRaf = null;
-      const rect = waveStory.getBoundingClientRect();
-      const travel = Math.max(1, waveStory.offsetHeight - innerHeight);
-      const progress = clamp01(-rect.top / travel);
-      const stage = progress * Math.max(1, storyFrames.length - 1);
-      const activeIndex = Math.min(storyFrames.length - 1, Math.max(0, Math.round(stage)));
-      const active = rect.top <= 2 && rect.bottom >= innerHeight * 0.72;
-
-      window.__rikeshWaveStoryProgress = progress;
-      window.__rikeshWaveStoryActive = active;
-      document.documentElement.style.setProperty('--wave-story-progress', progress.toFixed(4));
-      document.body.classList.toggle('wave-story-active', active);
-
-      if (storyProgressBar) storyProgressBar.style.transform = `scaleY(${Math.max(0.02, progress)})`;
-      waveStory.dataset.stage = String(activeIndex + 1);
-      if (storyCounter) storyCounter.textContent = String(activeIndex + 1).padStart(3, '0');
-
-      storyFrames.forEach((frame, index) => {
-        const distance = index - stage;
-        const opacity = clamp01(1 - Math.abs(distance) * 1.55);
-        const translate = distance * 58;
-        const scale = 0.965 + opacity * 0.035;
-        frame.style.opacity = opacity.toFixed(3);
-        frame.style.transform = `translate3d(0, ${translate.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
-        // Opacity and transforms alone avoid expensive large-text filter repaints.
-      });
-
-      if (activeIndex !== currentStoryFrame) {
-        currentStoryFrame = activeIndex;
-        storyFrames.forEach((frame, index) => frame.classList.toggle('is-current', index === activeIndex));
-      }
-    }
-
-    function requestWaveStoryUpdate() {
-      if (storyRaf !== null) return;
-      storyRaf = requestAnimationFrame(updateWaveStory);
-    }
-
-    addEventListener('scroll', requestWaveStoryUpdate, { passive: true });
-    addEventListener('resize', requestWaveStoryUpdate, { passive: true });
-    updateWaveStory();
-  }
-
-
   $$('[data-wave]').forEach((line, lineIndex) => {
     const text = line.textContent;
     line.textContent = '';
@@ -95,6 +22,7 @@
   let expression = '';
   const display = $('#calc-display');
   const history = $('#calc-history');
+  const calculator = display?.closest('.neo-calc');
 
   function renderCalculator() {
     if (display) display.textContent = expression || '0';
@@ -241,12 +169,12 @@
 
   addEventListener('keydown', event => {
     const target = event.target;
-    if (
-      target instanceof HTMLElement &&
-      (target.matches('input, textarea, select') || target.isContentEditable)
-    ) {
-      return;
-    }
+    if (!calculator?.contains(target) || event.defaultPrevented ||
+        event.ctrlKey || event.metaKey || event.altKey) return;
+    if (target instanceof HTMLElement &&
+        (target.matches('input, textarea, select') || target.isContentEditable)) return;
+    // Enter on a calculator button must activate that button exactly once.
+    if (event.key === 'Enter' && target.closest('button')) return;
 
     if (/^[0-9.+\-*/()%]$/.test(event.key)) {
       calcInput(event.key);
@@ -302,6 +230,7 @@
       gain.gain.setValueAtTime(0.07, audio.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + duration);
       oscillator.start();
+      oscillator.onended = () => { audio.close().catch(() => undefined); };
       oscillator.stop(audio.currentTime + duration);
     } catch {
 

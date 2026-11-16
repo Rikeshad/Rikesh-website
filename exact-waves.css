@@ -150,27 +150,16 @@ body.exact-wave-story-active .ambient { opacity: 1; }
 }
 
 .wave-story .story-copy-wrap {
-  position: absolute !important;
   z-index: 3;
-  inset: 0 !important;
-  pointer-events: none !important;
 }
 
 .wave-story .story-copy {
-  position: absolute !important;
   left: 50% !important;
   top: 50% !important;
   width: min(90vw, 980px) !important;
-  max-width: none !important;
   transform: translate(-50%, -50%) !important;
-  opacity: 0 !important;
   visibility: visible !important;
   transition: opacity .45s ease !important;
-  text-align: center !important;
-}
-
-.wave-story .story-copy.is-active {
-  opacity: 1 !important;
 }
 
 .wave-story .eyebrow {
@@ -183,30 +172,23 @@ body.exact-wave-story-active .ambient { opacity: 1; }
 
 .wave-story .story-copy h1,
 .wave-story .story-copy h2 {
-  margin: 0 auto !important;
   max-width: 14ch !important;
   color: var(--text) !important;
   font-family: "Playfair Display", "Times New Roman", serif !important;
   font-weight: 400 !important;
   font-size: clamp(46px, 5.6vw, 92px) !important;
-  line-height: 1.02 !important;
   letter-spacing: -.045em !important;
   text-wrap: balance;
-  text-align: center !important;
   text-shadow: none !important;
 }
 
 .wave-story .word {
-  display: inline-block !important;
-  overflow: visible !important;
   vertical-align: top !important;
   margin-right: .16em !important;
   padding: .04em .035em .10em !important;
 }
 
 .wave-story .word > span {
-  display: inline-block !important;
-  opacity: 0 !important;
   transform: translateY(82%) rotate(1.5deg) !important;
   clip-path: inset(0 0 92% 0);
   transition:
@@ -218,7 +200,6 @@ body.exact-wave-story-active .ambient { opacity: 1; }
 }
 
 .wave-story .story-copy.is-active .word > span {
-  opacity: 1 !important;
   transform: translateY(0) rotate(0deg) !important;
   clip-path: inset(0 0 0 0) !important;
 }
@@ -248,7 +229,6 @@ html[data-theme="dark"] body.exact-wave-story-active .ambient {
   .wave-story .story-copy {
     left: 50% !important;
     top: 48% !important;
-    width: calc(100vw - 36px) !important;
     transform: translate(-50%, -50%) !important;
     text-align: center !important;
   }
@@ -258,7 +238,6 @@ html[data-theme="dark"] body.exact-wave-story-active .ambient {
     max-width: 11.5ch !important;
     margin-inline: auto !important;
     font-size: clamp(32px, 8.7vw, 46px) !important;
-    line-height: 1.04 !important;
     text-align: center !important;
   }
 
@@ -454,34 +433,17 @@ html[data-theme="light"] body.exact-wave-story-active .cosmic-veil {
   }
 }
 .wave-story .story-copy-wrap {
-  display: grid !important;
-  place-items: center !important;
   padding: clamp(108px, 14vh, 150px) clamp(24px, 6vw, 90px) clamp(112px, 15vh, 160px) !important;
-}
-.wave-story .story-copy {
-  position: absolute !important;
-  inset: 0 !important;
-  width: 100% !important;
-  max-width: none !important;
-  padding: inherit !important;
-  display: grid !important;
-  place-content: center !important;
-  transform: none !important;
-  text-align: center !important;
 }
 .wave-story .story-copy h1,
 .wave-story .story-copy h2 {
   width: min(100%, 15ch) !important;
   max-width: min(100%, 15ch) !important;
   margin-inline: auto !important;
-  overflow: visible !important;
 }
 @media (max-width: 760px) {
   .wave-story .story-copy-wrap {
     padding: 104px 22px 128px !important;
-  }
-  .wave-story .story-copy {
-    padding: inherit !important;
   }
   .wave-story .story-copy h1,
   .wave-story .story-copy h2 {
@@ -499,9 +461,7 @@ html[data-theme="light"] body.exact-wave-story-active .cosmic-veil {
 
 .wave-story .story-copy-wrap {
   z-index: 30 !important;
-  width: 100% !important;
   max-width: 100vw !important;
-  overflow: visible !important;
 }
 
 .wave-story .story-copy {
@@ -509,21 +469,14 @@ html[data-theme="light"] body.exact-wave-story-active .cosmic-veil {
   width: min(88vw, 1080px) !important;
   max-width: min(88vw, 1080px) !important;
   margin-inline: auto !important;
-  overflow: visible !important;
 }
 
 .wave-story .story-copy h1,
 .wave-story .story-copy h2 {
   width: min(100%, 14.5ch) !important;
   max-width: min(100%, 14.5ch) !important;
-  overflow: visible !important;
   position: relative !important;
   z-index: 2 !important;
-}
-
-.wave-story .word,
-.wave-story .word > span {
-  overflow: visible !important;
 }
 
 .wave-story .chapter-number,
@@ -572,9 +525,6 @@ html[data-theme="light"] body.exact-wave-story-active .cosmic-veil {
 }
 
 @media (max-width: 390px) {
-  .wave-story .story-copy-wrap {
-    padding-inline: 16px !important;
-  }
 
   .wave-story .story-copy {
     width: calc(100vw - 32px) !important;
@@ -588,24 +538,11 @@ html[data-theme="light"] body.exact-wave-story-active .cosmic-veil {
   }
 }
 
-
-.wave-story .story-copy-wrap {
-  display: grid !important;
-  place-items: center !important;
-  overflow: visible !important;
-}
-
 .wave-story .story-copy {
-  position: absolute !important;
-  inset: 0 !important;
   width: min(88vw, 1120px) !important;
   max-width: min(88vw, 1120px) !important;
   margin: auto !important;
   padding: clamp(104px, 13vh, 144px) 0 clamp(116px, 15vh, 160px) !important;
-  display: grid !important;
-  place-content: center !important;
-  text-align: center !important;
-  overflow: visible !important;
   transform: none !important;
 }
 
@@ -613,12 +550,6 @@ html[data-theme="light"] body.exact-wave-story-active .cosmic-veil {
 .wave-story .story-copy h2 {
   width: auto !important;
   max-width: 15ch !important;
-  margin: 0 auto !important;
-  overflow: visible !important;
-  text-align: center !important;
-  text-wrap: balance !important;
-  overflow-wrap: normal !important;
-  word-break: normal !important;
 }
 
 .wave-story .word {

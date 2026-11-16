@@ -3,23 +3,14 @@
   const story = document.getElementById('home');
   const scenery = document.querySelector('[data-scenic-layers]');
   if (!story || !scenery) return;
-  const sticky = story.querySelector('.wave-story-sticky');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const clamp = value => Math.min(1, Math.max(0, value));
-  let waiting = false;
-  function update() {
-    waiting = false;
-    const rect = story.getBoundingClientRect();
-    story.classList.toggle('spiral-in-view', rect.bottom > 0 && rect.top < innerHeight);
-    if (innerWidth <= 760 && sticky) {
-      const visible = Math.min(innerHeight, window.visualViewport?.height || innerHeight);
-      const lift = Math.max(0, Math.min(160, sticky.clientHeight - visible));
-      story.style.setProperty('--story-bottom-lift', `${Math.round(lift)}px`);
+  function update({ progress, mobile, bottomLift }) {
+    if (mobile) {
+      story.style.setProperty('--story-bottom-lift', `${Math.round(bottomLift)}px`);
     } else {
       story.style.removeProperty('--story-bottom-lift');
     }
-    const distance = Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight));
-    const progress = clamp(-rect.top / distance);
     const blend = clamp((progress - .30) / .44);
     const mix = blend * blend * (3 - 2 * blend);
     const factor = reduced.matches ? 0 : 1;
@@ -37,14 +28,6 @@
     story.style.setProperty('--journey-foreground', `${((.5 - progress) * 114 * factor).toFixed(1)}px`);
     story.style.setProperty('--wire-scroll-x', `${((progress - .5) * 120 * factor).toFixed(1)}px`);
   }
-  function schedule() {
-    if (waiting) return;
-    waiting = true;
-    requestAnimationFrame(update);
-  }
-  window.addEventListener('scroll', schedule, {passive:true});
-  window.addEventListener('resize', schedule, {passive:true});
-  window.visualViewport?.addEventListener('resize', schedule, {passive:true});
-  reduced.addEventListener?.('change', schedule);
-  update();
+  window.rikeshStory?.subscribe(update);
+  reduced.addEventListener?.('change', () => window.rikeshStory?.refresh());
 })();

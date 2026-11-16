@@ -216,7 +216,8 @@
   const galaxyCanvas = $('.bg-canvas');
 
   if (galaxyCanvas && !document.body.classList.contains('project-cinema-page')) {
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const galaxyMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let reduceMotion = galaxyMotion.matches;
     const finePointer = matchMedia('(pointer: fine)').matches;
     const hardwareThreads = navigator.hardwareConcurrency || 4;
     const deviceMemory = navigator.deviceMemory || 8;
@@ -1109,15 +1110,17 @@
         const delta = Math.min(0.05, Math.max(0.001, (now - lastFrame) / 1000));
         lastFrame = now;
 
-        smoothedScroll += (targetScroll - smoothedScroll) * (reduceMotion ? 1 : 0.065);
+        const frames = delta * 60;
+        smoothedScroll += (targetScroll - smoothedScroll) * (reduceMotion ? 1 : 1 - Math.pow(.935, frames));
         const scroll = scrollFraction();
         const storyProgressTarget = Math.max(0, Math.min(1, Number(window.__rikeshWaveStoryProgress || 0)));
-        smoothedStoryProgress += (storyProgressTarget - smoothedStoryProgress) * (reduceMotion ? 1 : (compact ? 0.11 : 0.085));
+        smoothedStoryProgress += (storyProgressTarget - smoothedStoryProgress) *
+          (reduceMotion ? 1 : 1 - Math.pow(compact ? .89 : .915, frames));
         const storyProgress = smoothedStoryProgress;
         const exactStoryLayerActive = Boolean(window.__rikeshWaveStoryActive);
         const storySphereReveal = exactStoryLayerActive ? smoothStep(0.72, 1, storyProgress) : 1;
         const storyTarget = exactStoryLayerActive ? 1 : 0;
-        storyVisual += (storyTarget - storyVisual) * (reduceMotion ? 1 : 0.07);
+        storyVisual += (storyTarget - storyVisual) * (reduceMotion ? 1 : 1 - Math.pow(.93, frames));
         const lightTheme = document.documentElement.dataset.theme === 'light';
 
 
@@ -1208,12 +1211,16 @@
         const rippleBaseOpacity = exactStoryLayerActive
           ? 0
           : storyVisual * (lightTheme ? 0.82 : 0.76) + (1 - storyVisual) * (lightTheme ? 0.12 : 0.16);
-        deformRippleSystem(rippleMain, elapsed, storyProgress, 1);
+        rippleMain.group.visible = rippleBaseOpacity > .001;
+        if (rippleMain.group.visible && !reduceMotion) deformRippleSystem(rippleMain, elapsed, storyProgress, 1);
         applyRipplePose(rippleMain, pose, rippleBaseOpacity, rippleColour);
 
         const echoIn = exactStoryLayerActive ? 0 : smoothStep(0.56, 0.80, storyProgress) * storyVisual;
-        deformRippleSystem(rippleEchoA, elapsed + 0.8, storyProgress, 0.65);
-        deformRippleSystem(rippleEchoB, elapsed + 1.6, storyProgress, 0.52);
+        rippleEchoA.group.visible = rippleEchoB.group.visible = echoIn > .001;
+        if (echoIn > .001 && !reduceMotion) {
+          deformRippleSystem(rippleEchoA, elapsed + 0.8, storyProgress, 0.65);
+          deformRippleSystem(rippleEchoB, elapsed + 1.6, storyProgress, 0.52);
+        }
         applyRipplePose(rippleEchoA, pose, echoIn * (lightTheme ? 0.54 : 0.46), rippleColour, {
           x: compact ? -2.85 : -4.0,
           y: compact ? 0.85 : 0.55,
@@ -1267,16 +1274,21 @@
 
       const targetFrameInterval = 1000 / (lowPower ? (compact ? 32 : 42) : 65);
       let lastRendered = 0;
+      let sceneryCoversGalaxy = false;
       function animate(now) {
-        rafId = requestAnimationFrame(animate);
-        if (now - lastRendered < targetFrameInterval) return;
+        rafId = null;
+        if (document.hidden || sceneryCoversGalaxy) return;
+        if (!reduceMotion && now - lastRendered < targetFrameInterval) {
+          startAnimation();
+          return;
+        }
         lastRendered = now;
         renderScene(now);
+        if (!reduceMotion) startAnimation();
       }
 
       function startAnimation() {
-        if (reduceMotion || rafId !== null || document.hidden) return;
-        lastFrame = performance.now();
+        if (rafId !== null || document.hidden || sceneryCoversGalaxy) return;
         rafId = requestAnimationFrame(animate);
       }
 
@@ -1288,7 +1300,7 @@
 
       addEventListener('scroll', () => {
         targetScroll = scrollY;
-        if (reduceMotion) renderScene();
+        startAnimation();
       }, { passive: true });
 
       if (finePointer && !reduceMotion) {
@@ -1306,14 +1318,28 @@
         camera.updateProjectionMatrix();
         renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 760 ? 1.15 : (lowPower ? 1.2 : 1.5)));
         renderer.setSize(innerWidth, innerHeight, false);
-        if (reduceMotion) renderScene();
+        startAnimation();
       });
 
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) stopAnimation();
-        else if (!reduceMotion) startAnimation();
+        else startAnimation();
       });
-      addEventListener('pagehide', stopAnimation, { once: true });
+      addEventListener('pagehide', stopAnimation);
+      addEventListener('pageshow', startAnimation);
+      galaxyMotion.addEventListener('change', () => {
+        reduceMotion = galaxyMotion.matches;
+        startAnimation();
+      });
+      new MutationObserver(startAnimation).observe(document.documentElement, {
+        attributes: true, attributeFilter: ['data-theme']
+      });
+      window.rikeshStory?.subscribe(({ progress, active }) => {
+        // The scenic photographs completely cover the background until the exit.
+        sceneryCoversGalaxy = active && progress <= .82;
+        if (sceneryCoversGalaxy) stopAnimation();
+        else startAnimation();
+      });
 
       renderScene();
       if (!reduceMotion) startAnimation();
@@ -1493,7 +1519,7 @@
       const menuWasOpen = mobileMenu?.classList.contains('open');
       if (menuWasOpen) closeMobileMenu();
       requestAnimationFrame(() => {
-        target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
       });
     });
   });
@@ -1553,7 +1579,7 @@
   });
 
   $$('[data-back-top]').forEach(button => {
-    button.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+    button.addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
   });
 
   const sections = $$('main section[id]');

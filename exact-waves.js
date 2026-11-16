@@ -6,21 +6,25 @@
   const progressFill = document.getElementById('progressFill');
 
 
-  const chapterStops = matchMedia('(max-width: 760px)').matches
-    ? [0, .08, .38, .68, 1]
-    : [0, .15, .42, .70, 1];
+  const mobileQuery = matchMedia('(max-width: 760px)');
+  const stops = () => mobileQuery.matches ? [0, .08, .38, .68, 1] : [0, .15, .42, .70, 1];
   const chapterFor = progress => {
     for (let i = 0; i < 4; i += 1) {
-      if (progress < chapterStops[i + 1]) return i;
+      if (progress < stops()[i + 1]) return i;
     }
     return 3;
   };
   const localChapterProgress = (progress, index) => Math.min(1, Math.max(0,
-    (progress - chapterStops[index]) / (chapterStops[index + 1] - chapterStops[index])));
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    (progress - stops()[index]) / (stops()[index + 1] - stops()[index])));
+  const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
+  let reducedMotion = motionQuery.matches;
   const lowPower = (navigator.hardwareConcurrency || 4) <= 4 || (navigator.deviceMemory || 8) <= 4;
 
   if (!story || !copies.length) return;
+  motionQuery.addEventListener('change', () => {
+    reducedMotion = motionQuery.matches;
+    window.rikeshStory?.refresh();
+  });
 
   let skippedChapterTimer = 0;
   function setActiveChapter(index) {
@@ -39,23 +43,17 @@
     }
   }
 
-  if (!canvas || !window.THREE) {
-    const updateTextOnly = () => {
-      const rect = story.getBoundingClientRect();
-      const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight))));
+  // Text and scenery share the measured position, including the WebGL fallback.
+  window.rikeshStory?.subscribe(({ progress }) => {
       const index = chapterFor(progress);
       const chapterProgress = localChapterProgress(progress, index);
-      story.style.setProperty('--story-swipe-lift', `${(-18 * chapterProgress).toFixed(1)}px`);
-      story.style.setProperty('--story-swipe-scale', (1 - .025 * chapterProgress).toFixed(4));
+      story.style.setProperty('--story-swipe-lift', `${(reducedMotion ? 0 : -18 * chapterProgress).toFixed(1)}px`);
+      story.style.setProperty('--story-swipe-scale', (reducedMotion ? 1 : 1 - .025 * chapterProgress).toFixed(4));
       setActiveChapter(index);
       if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
       if (progressFill) progressFill.style.transform = `scaleX(${progress})`;
-    };
-    addEventListener('scroll', updateTextOnly, { passive: true });
-    addEventListener('resize', updateTextOnly, { passive: true });
-    updateTextOnly();
-    return;
-  }
+  });
+  if (!canvas || !window.THREE) return;
 
 
 
@@ -71,17 +69,6 @@
       powerPreference: 'high-performance'
     });
   } catch {
-    const updateTextOnly = () => {
-      const rect = story.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, -rect.top / Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight))));
-      const index = chapterFor(p);
-      setActiveChapter(index);
-      if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
-      if (progressFill) progressFill.style.transform = `scaleX(${p})`;
-    };
-    addEventListener('scroll', updateTextOnly, {passive:true});
-    addEventListener('resize', updateTextOnly, {passive:true});
-    updateTextOnly();
     return;
   }
   renderer.setSize(innerWidth, innerHeight);
@@ -171,8 +158,7 @@
     pointerY: 0,
     pointerSmoothX: 0,
     pointerSmoothY: 0,
-    active: false,
-    chapter: -1
+    active: false
   };
 
   function setGroupOpacity(group, opacity) {
@@ -195,30 +181,6 @@
   function smoothstep(t) { return t * t * (3 - 2 * t); }
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
-  function updateScrollProgress() {
-    const rect = story.getBoundingClientRect();
-    const travel = Math.max(1, story.offsetHeight - (story.querySelector('.wave-story-sticky')?.clientHeight || innerHeight));
-    state.progress = clamp(-rect.top / travel);
-    state.active = rect.bottom > 0 && rect.top < innerHeight;
-    window.__rikeshWaveStoryProgress = state.progress;
-    window.__rikeshWaveStoryActive = state.active;
-    document.body.classList.toggle('exact-wave-story-active', state.active);
-  }
-
-  function updateChapter(p) {
-    const index = chapterFor(p);
-    const chapterProgress = localChapterProgress(p, index);
-
-    story.style.setProperty('--story-swipe-lift', `${(-18 * chapterProgress).toFixed(1)}px`);
-    story.style.setProperty('--story-swipe-scale', (1 - .025 * chapterProgress).toFixed(4));
-    if (index !== state.chapter) {
-      state.chapter = index;
-      setActiveChapter(index);
-      if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
-    }
-    if (progressFill) progressFill.style.transform = `scaleX(${p})`;
-  }
-
   function applyTheme() {
     dark = document.documentElement.dataset.theme === 'dark';
     const colors = dark ? palette.dark : palette.light;
@@ -227,19 +189,17 @@
   }
 
   const themeObserver = new MutationObserver(mutations => {
-    if (mutations.some(m => m.attributeName === 'data-theme')) applyTheme();
+    if (mutations.some(m => m.attributeName === 'data-theme')) {
+      applyTheme();
+      startAnimation();
+    }
   });
-  themeObserver.observe(document.documentElement, { attributes: true });
-
-  addEventListener('scroll', () => {
-    updateScrollProgress();
-    if (state.active) startAnimation();
-    else if (!document.hidden) updateChapter(state.progress);
-  }, { passive: true });
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   addEventListener('pointermove', event => {
     if (matchMedia('(pointer: coarse)').matches) return;
     state.pointerX = (event.clientX / innerWidth - .5) * 2;
     state.pointerY = (event.clientY / innerHeight - .5) * 2;
+    if (!reducedMotion) startAnimation();
   }, { passive: true });
 
   function resize() {
@@ -247,35 +207,33 @@
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
     renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 760 ? 1.1 : (lowPower ? 1.2 : 1.45)));
-    updateScrollProgress();
+    window.rikeshStory?.refresh();
+    startAnimation();
   }
   addEventListener('resize', resize, { passive: true });
-  window.visualViewport?.addEventListener('resize', () => {
-    updateScrollProgress();
-    if (state.active) startAnimation();
-  }, { passive: true });
   addEventListener('orientationchange', () => setTimeout(resize, 150), { passive: true });
 
   let rafId = 0;
 
   let lastDraw = 0;
-  const frameSpacing = 1000 / (lowPower ? (innerWidth < 760 ? 32 : 42) : 65);
   function animate(now) {
+    rafId = 0;
     if (document.hidden || !state.active) {
-      rafId = 0;
       return;
     }
-
-    rafId = requestAnimationFrame(animate);
-    if (now - lastDraw < frameSpacing) return;
+    const frameSpacing = 1000 / (lowPower ? (mobileQuery.matches ? 32 : 42) : 65);
+    if (!reducedMotion && now - lastDraw < frameSpacing) {
+      startAnimation();
+      return;
+    }
+    const frames = Math.min(3, Math.max(0, (now - lastDraw) / (1000 / 60)));
     lastDraw = now;
-    state.smooth += (state.progress - state.smooth) * (reducedMotion ? 1 : .075);
-    state.pointerSmoothX += (state.pointerX - state.pointerSmoothX) * .035;
-    state.pointerSmoothY += (state.pointerY - state.pointerSmoothY) * .035;
+    state.smooth += (state.progress - state.smooth) * (reducedMotion ? 1 : 1 - Math.pow(.925, frames));
+    state.pointerSmoothX += ((reducedMotion ? 0 : state.pointerX) - state.pointerSmoothX) * (1 - Math.pow(.965, frames));
+    state.pointerSmoothY += ((reducedMotion ? 0 : state.pointerY) - state.pointerSmoothY) * (1 - Math.pow(.965, frames));
 
     const p = state.smooth;
-    const mobile = innerWidth < 760;
-    updateChapter(p);
+    const mobile = mobileQuery.matches;
 
 
     const handoff = smoothstep(seg(p, .82, 1));
@@ -298,34 +256,21 @@
 
 
     const t01 = smoothstep(seg(p, 0, .25));
+    const t12 = smoothstep(seg(p, .25, .62));
+    const t23 = smoothstep(seg(p, .62, .86));
+    // Compose each stage from the preceding pose instead of overwriting it.
     groupA.position.set(
-      mobile ? 0 : 2.18,
-      mix(mobile ? -2.05 : -1.15, mobile ? -2.48 : -1.62, t01),
-      mix(.25, -.45, t01)
+      mix(mobile ? 0 : 2.18, mobile ? .48 : 2.42, t12),
+      mix(mix(mobile ? -2.05 : -1.15, mobile ? -2.48 : -1.62, t01), mobile ? -2.22 : -1.62, t12),
+      mix(mix(.25, -.45, t01), .05, t12)
     );
     const aScale = mix(mobile ? .90 : 1.08, mobile ? .60 : .72, t01);
-    groupA.scale.set(aScale, aScale, aScale);
-    groupA.rotation.x = mix(.08, .23, t01) + state.pointerSmoothY * .02;
-    groupA.rotation.y = mix(.04, .10, t01) + state.pointerSmoothX * .018;
-    groupA.rotation.z = p * .16;
-    setGroupOpacity(groupA, mix(1, .96, t01) * exactSceneOpacity);
-
-
-    const t12 = smoothstep(seg(p, .25, .62));
-    groupA.rotation.x = mix(.23, 1.04, t12) + state.pointerSmoothY * .02;
-    groupA.rotation.y = mix(.10, .22, t12) + state.pointerSmoothX * .02;
-    groupA.rotation.z = mix(.04, -.04, t12);
-    groupA.scale.x = mix(mobile ? .60 : .72, mobile ? .92 : 1.08, t12);
-    groupA.scale.y = mix(mobile ? .60 : .72, mobile ? .78 : .88, t12);
-    groupA.scale.z = mix(mobile ? .60 : .72, mobile ? .82 : .90, t12);
-    groupA.position.y = mix(mobile ? -2.48 : -1.62, mobile ? -2.22 : -1.62, t12);
-    groupA.position.x = mix(mobile ? 0 : 2.18, mobile ? .48 : 2.42, t12);
-    groupA.position.z = mix(-.45, .05, t12);
-    setGroupOpacity(groupA, mix(.96, .58, t12) * exactSceneOpacity);
-
-
-    const t23 = smoothstep(seg(p, .62, .86));
-    setGroupOpacity(groupA, mix(.96, .08, t23) * exactSceneOpacity);
+    groupA.scale.set(mix(aScale, mobile ? .92 : 1.08, t12),
+      mix(aScale, mobile ? .78 : .88, t12), mix(aScale, mobile ? .82 : .90, t12));
+    groupA.rotation.x = mix(mix(.08, .23, t01), 1.04, t12) + state.pointerSmoothY * .02;
+    groupA.rotation.y = mix(mix(.04, .10, t01), .22, t12) + state.pointerSmoothX * .02;
+    groupA.rotation.z = mix(p * .16, -.04, t12);
+    setGroupOpacity(groupA, mix(mix(mix(1, .96, t01), .58, t12), .08, t23) * exactSceneOpacity);
 
     groupB.position.set(
       mix(mobile ? 3.9 : 5.4, mobile ? 1.25 : 2.35, t23),
@@ -367,10 +312,14 @@
     }
 
     renderer.render(scene, camera);
+    const unsettled = Math.abs(state.progress - state.smooth) > .0001 ||
+      Math.abs(state.pointerX - state.pointerSmoothX) > .001 ||
+      Math.abs(state.pointerY - state.pointerSmoothY) > .001;
+    if (!reducedMotion && unsettled) startAnimation();
   }
 
   function startAnimation() {
-    if (rafId || document.hidden) return;
+    if (rafId || document.hidden || !state.active) return;
     rafId = requestAnimationFrame(animate);
   }
 
@@ -384,10 +333,21 @@
     if (document.hidden) stopAnimation();
     else if (state.active) startAnimation();
   });
-  addEventListener('pagehide', stopAnimation, { once: true });
+  addEventListener('pagehide', stopAnimation);
+  addEventListener('pageshow', () => window.rikeshStory?.refresh());
+  motionQuery.addEventListener('change', () => {
+    reducedMotion = motionQuery.matches;
+    window.rikeshStory?.refresh();
+    startAnimation();
+  });
 
   applyTheme();
-  updateScrollProgress();
+  window.rikeshStory?.subscribe(({ progress, active }) => {
+    state.progress = progress;
+    state.active = active;
+    if (active) startAnimation();
+    else stopAnimation();
+  });
   resize();
   if (state.active) startAnimation();
 })();

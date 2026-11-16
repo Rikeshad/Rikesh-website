@@ -33,7 +33,6 @@
   }
   .site-header .brand {
     display: flex !important;
-    flex: 1 1 0 !important;
     min-width: 0 !important;
     max-width: none !important;
     overflow: hidden !important;

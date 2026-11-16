@@ -41,7 +41,7 @@ html[data-theme='light'] .wave-story .journey-caption {color:#182231;}
 .wave-story .scenic-nepal,.wave-story .scenic-darwin {transform:translate3d(0,var(--journey-distance,0px),0) scale(1.12);}
 .wave-story .journey-caption {left:auto;right:clamp(28px,5vw,76px);bottom:88px;max-width:min(85vw,500px);justify-content:flex-end;}
 html[data-theme='light'] .wave-story .scenic-depth,html[data-theme='dark'] .wave-story .scenic-depth {background-blend-mode:normal;}
-@media(max-width:760px){.wave-story .scenic-depth {transform:translate3d(0,calc(var(--journey-foreground,0px) * .4),0) scale(1.10);background-position:50% center;}.wave-story .journey-caption {right:18px;left:18px;bottom:96px;justify-content:flex-end;}}
+@media(max-width:760px){.wave-story .scenic-depth {transform:translate3d(0,calc(var(--journey-foreground,0px) * .4),0) scale(1.10);background-position:50% center;}.wave-story .journey-caption {right:18px;bottom:96px;justify-content:flex-end;}}
 @media(prefers-reduced-motion:reduce){.wave-story .scenic-depth,.wave-story .scenic-shot {transform:none!important;will-change:auto!important;}}
 
 /* The same scenic imagery and full pixel detail are preserved across both themes. */
@@ -102,8 +102,8 @@ html[data-theme="light"] .wave-story .scroll-label, html[data-theme="light"] .wa
 @media (prefers-reduced-motion: reduce) { .linkedin-connect { transition: none; } }
 
 /* Performance: avoid permanent GPU layer allocations outside the active story. */
-body:not(.wave-story-active) .wave-story .scenic-shot,
-body:not(.wave-story-active) .wave-story .scenic-depth { will-change: auto; }
+body:not(.exact-wave-story-active) .wave-story .scenic-shot,
+body:not(.exact-wave-story-active) .wave-story .scenic-depth { will-change: auto; }
 @media (max-width:760px) {
   .wave-story .scenic-shot,
   .wave-story .scenic-depth { transition: none; }

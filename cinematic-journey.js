@@ -5,7 +5,12 @@
   if (!story || !scenery) return;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const clamp = value => Math.min(1, Math.max(0, value));
+  let previousProgress;
+  let previousReduced;
   function update({ progress }) {
+    if (progress === previousProgress && reduced.matches === previousReduced) return;
+    previousProgress = progress;
+    previousReduced = reduced.matches;
     const blend = clamp((progress - .30) / .44);
     const mix = blend * blend * (3 - 2 * blend);
     const factor = reduced.matches ? 0 : 1;

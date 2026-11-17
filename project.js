@@ -11,6 +11,9 @@
   let measureNeeded = true;
   let storyTop = 0;
   let stepStarts = [];
+  let stepHeights = [];
+  let sceneHeight = innerHeight;
+  let lastVisible = 0;
   const story = $('.pos-experience');
   const laptop = $('.laptop');
   const steps = $$('[data-pos-step]');
@@ -19,6 +22,9 @@
   const composition = $('.brew-composition');
   const floats = $$('[data-brew-select]');
   const imageReady = new WeakMap();
+  function setVariable(element, name, value) {
+    if (element.style.getPropertyValue(name) !== value) element.style.setProperty(name, value);
+  }
 
   function loadScreen(image) {
     if (!image || imageReady.has(image)) return;
@@ -47,24 +53,31 @@
 
   function update() {
     pending = 0;
-    const height = story ? $('.pos-device-stage').clientHeight : innerHeight;
+    if (measureNeeded) sceneHeight = story ? $('.pos-device-stage').clientHeight : innerHeight;
+    const height = sceneHeight;
+    // Complete layout reads before changing any scene styles.
+    const compositionRect = composition?.getBoundingClientRect();
+    const editorialRects = editorial.map((section) => section.getBoundingClientRect());
     if (story) {
       if (measureNeeded) {
         storyTop = story.getBoundingClientRect().top + scrollY;
         stepStarts = steps.map((step) => step.offsetTop);
+        stepHeights = steps.map((step) => step.offsetHeight);
       }
       const position = scrollY - storyTop;
       const opening = clamp(position / (height * 0.95));
       const angle = motion.matches ? (opening < 0.55 ? 0 : 110) : ease(opening) * 110;
-      story.style.setProperty('--lid-angle', `${angle.toFixed(3)}deg`);
-      story.style.setProperty('--device-top', `${59 - 7 * ease(opening)}%`);
+      setVariable(story, '--lid-angle', `${angle.toFixed(3)}deg`);
+      setVariable(story, '--device-lift', `${-height * 0.07 * ease(opening)}px`);
       const last = stepStarts[stepStarts.length - 1];
       const exit = clamp((position - last) / (height * 0.7));
-      story.style.setProperty(
+      setVariable(
+        story,
         '--device-scale',
         motion.matches ? '1' : (1 - 0.12 * ease(exit)).toFixed(4),
       );
-      story.style.setProperty(
+      setVariable(
+        story,
         '--device-turn',
         `${motion.matches ? -6 : -6 + opening * 6 + exit * 4}deg`,
       );
@@ -81,11 +94,12 @@
       // Never fade to a screenshot which has not arrived yet.
       const incomingReady = imageReady.get(screens[next]);
       const blend = next !== current && incomingReady ? mix : 0;
-      let visible = imageReady.get(screens[current])
-        ? current
-        : screens.findIndex((img) => imageReady.get(img));
+      let visible = imageReady.get(screens[current]) ? current : lastVisible;
+      lastVisible = visible;
       screens.forEach((img, i) => {
-        img.style.opacity = String(power * (i === visible ? 1 - blend : i === next ? blend : 0));
+        // Keep the underlying screen opaque to avoid a dark dip during a dissolve.
+        const opacity = String(power * (i === visible ? 1 : i === next ? blend : 0));
+        if (img.style.opacity !== opacity) img.style.opacity = opacity;
       });
       laptop.dataset.angle = angle.toFixed(2);
       laptop.setAttribute(
@@ -96,13 +110,11 @@
       );
       steps.forEach((step, i) => {
         if (!i) return;
-        const center = stepStarts[i] + step.offsetHeight * 0.5;
+        const center = stepStarts[i] + stepHeights[i] * 0.5;
         const distance = Math.abs(position + height * 0.5 - center) / height;
-        step.style.setProperty(
-          '--copy-opacity',
-          motion.matches ? '1' : String(clamp(1.35 - distance)),
-        );
-        step.style.setProperty(
+        setVariable(step, '--copy-opacity', motion.matches ? '1' : String(clamp(1.35 - distance)));
+        setVariable(
+          step,
           '--copy-y',
           motion.matches
             ? '0px'
@@ -111,21 +123,23 @@
       });
     }
     if (!motion.matches && composition) {
-      const r = composition.getBoundingClientRect();
+      const r = compositionRect;
       if (r.bottom > 0 && r.top < height)
         floats.forEach((card, i) =>
-          card.style.setProperty(
+          setVariable(
+            card,
             '--float-y',
             `${clamp((height * 0.5 - r.top - r.height * 0.5) * (0.025 + i * 0.018), -22, 22)}px`,
           ),
         );
     }
-    editorial.forEach((section) => {
-      const r = section.getBoundingClientRect();
+    editorial.forEach((section, i) => {
+      const r = editorialRects[i];
       if (r.bottom <= 0 || r.top >= height) return;
       const p = clamp((height - r.top) / (height + r.height));
-      section.style.setProperty('--editorial-y', motion.matches ? '0px' : `${(1 - p * 2) * 22}px`);
-      section.style.setProperty(
+      setVariable(section, '--editorial-y', motion.matches ? '0px' : `${(1 - p * 2) * 22}px`);
+      setVariable(
+        section,
         '--editorial-scale',
         motion.matches ? '1' : String(0.975 + 0.025 * ease(clamp(p * 2))),
       );

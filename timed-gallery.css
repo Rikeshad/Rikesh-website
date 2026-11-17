@@ -477,25 +477,26 @@ html[data-theme='dark'] .case-brew {
   transform-style: preserve-3d;
   left: 26%;
   top: 14%;
-  transform: translate3d(var(--float-x, 0px), var(--float-y, 0px), 0) rotateY(-5deg) rotateZ(-3deg);
+  translate: 0 var(--float-y, 0px);
+  transform: rotateY(-5deg) rotateZ(-3deg);
   z-index: 2;
 }
 .brew-float:nth-child(2) {
   left: 1%;
   top: 33%;
   width: 36%;
-  transform: translate3d(0, var(--float-y, 0px), -90px) rotateY(10deg) rotateZ(-7deg);
+  transform: translate3d(0, 0, -90px) rotateY(10deg) rotateZ(-7deg);
   z-index: 1;
 }
 .brew-float:nth-child(3) {
   left: 66%;
   top: 25%;
   width: 33%;
-  transform: translate3d(0, var(--float-y, 0px), -60px) rotateY(-12deg) rotateZ(8deg);
+  transform: translate3d(0, 0, -60px) rotateY(-12deg) rotateZ(8deg);
   z-index: 1;
 }
 .brew-float.is-selected {
-  transform: translate3d(0, var(--float-y, 0px), 90px) rotateY(0deg) rotateZ(0deg);
+  transform: translate3d(0, 0, 90px) rotateY(0deg) rotateZ(0deg);
   z-index: 4;
   box-shadow: 0 30px 70px #17373433;
   border-color: var(--case-accent);
@@ -882,7 +883,9 @@ html[data-theme='dark'] .case-brew {
   .pos-rig {
     width: 88vw;
     left: 50%;
-    top: var(--device-top, 59%);
+    top: 59%;
+    transform: translate(-50%, -50%) translateY(var(--device-lift, 0px))
+      scale(var(--device-scale, 1));
     perspective: 1100px;
   }
   .pos-ground {
@@ -981,16 +984,16 @@ html[data-theme='dark'] .case-brew {
     width: 58%;
     left: 2%;
     top: 50%;
-    transform: translateY(var(--float-y, 0px)) rotateZ(-4deg);
+    transform: rotateZ(-4deg);
   }
   .brew-float:nth-child(3) {
     width: 48%;
     left: 50%;
     top: 58%;
-    transform: translateY(var(--float-y, 0px)) rotateZ(4deg);
+    transform: rotateZ(4deg);
   }
   .brew-float.is-selected {
-    transform: translateY(var(--float-y, 0px)) rotateZ(0);
+    transform: rotateZ(0);
     z-index: 4;
   }
   .brew-float span {
@@ -1127,6 +1130,7 @@ html[data-theme='dark'] .case-brew {
     transition: none !important;
   }
   .brew-float {
+    translate: none !important;
     transform: none !important;
   }
   .brew-feature-image img {

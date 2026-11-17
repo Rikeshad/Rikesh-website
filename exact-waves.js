@@ -44,13 +44,18 @@
   }
 
   // Text and scenery share the measured position, including the WebGL fallback.
+  let previousTextState;
   window.rikeshStory?.subscribe(({ progress }) => {
+      const textState = `${progress}:${reducedMotion}:${mobileQuery.matches}`;
+      if (textState === previousTextState) return;
+      previousTextState = textState;
       const index = chapterFor(progress);
       const chapterProgress = localChapterProgress(progress, index);
       story.style.setProperty('--story-swipe-lift', `${(reducedMotion ? 0 : -18 * chapterProgress).toFixed(1)}px`);
       story.style.setProperty('--story-swipe-scale', (reducedMotion ? 1 : 1 - .025 * chapterProgress).toFixed(4));
       setActiveChapter(index);
-      if (chapterNumber) chapterNumber.textContent = String(index + 1).padStart(3, '0');
+      const chapterLabel = String(index + 1).padStart(3, '0');
+      if (chapterNumber && chapterNumber.textContent !== chapterLabel) chapterNumber.textContent = chapterLabel;
       if (progressFill) progressFill.style.transform = `scaleX(${progress})`;
   });
   if (!canvas || !window.THREE) return;

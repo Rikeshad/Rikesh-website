@@ -7,12 +7,12 @@
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>Explore Darwin | Rikesh Adhikari</title>
 
-<script src="../theme-bootstrap.js"></script>
+<script src="../theme-bootstrap.js?v=20261121-welcome-mask"></script>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
 <link href="../assets/favicon.svg" rel="icon">
-<link href="../styles.css?v=20261116" rel="stylesheet">
+<link href="../styles.css?v=20261120-shared-pointer" rel="stylesheet">
 <link rel="stylesheet" href="../responsive-cinematic.css?v=20261116"/>
 <meta name="description" content="Explore Darwin, Northern Territory, through Rikesh Adhikari’s personal guide to places, local attractions, travel ideas and Top End experiences.">
 <link rel="canonical" href="https://rikeshad.com/darwin/">
@@ -29,48 +29,50 @@
 <meta name="twitter:title" content="Explore Darwin | Rikesh Adhikari">
 <meta name="twitter:description" content="Explore Darwin, Northern Territory, through Rikesh Adhikari’s personal guide to places, local attractions, travel ideas and Top End experiences.">
 
-<noscript><style>.site-intro{display:none!important}.site-header{visibility:visible!important;opacity:1!important;pointer-events:auto!important}.story-copy.is-active .cinematic-line > span{opacity:1!important;transform:none!important;filter:none!important}</style></noscript>
-<link rel="stylesheet" href="../visual-polish.css?v=20261116"/>
+<link rel="stylesheet" href="../visual-polish.css?v=20261120-seamless-header"/>
+<link rel="stylesheet" href="../cinematic-journey.css?v=20261121-welcome-mask">
 </head>
-<body class="has-intro">
-<div class="site-intro" id="site-intro">
-<div class="intro-main">
-<div class="intro-copy">
-<span>
-      WELCOME
-     </span>
-<span class="indent">
-      TO MY
-     </span>
-<span class="outline">
-      WEBSITE
-     </span>
-</div>
-<div aria-hidden="true" class="intro-star">
-</div>
-</div>
-<div class="intro-bottom">
-<span>
-     ENTERING EXPERIENCE
-    </span>
-<span class="intro-pct" data-intro-pct="">
-     0%
-    </span>
-<div class="intro-progress">
-<i data-intro-bar="">
-</i>
-</div>
-</div>
-</div>
-<div class="ambient">
+<body class="darwin-page">
+<div class="site-intro motion-welcome" id="site-intro" role="dialog" aria-modal="true" aria-labelledby="intro-heading" aria-describedby="intro-description">
+      <div class="welcome-composition">
+        <div class="welcome-primary-mask"><h2 class="welcome-primary-text" id="intro-heading">Hi nice to meet you.</h2></div>
+        <span class="welcome-divider" aria-hidden="true"></span>
+        <div class="welcome-secondary-mask"><p class="welcome-secondary-text" id="intro-description">Welcome to my website.</p></div>
+      </div>
+      <div class="welcome-dark-wipe" aria-hidden="true"></div>
+      <button class="welcome-skip" type="button" data-skip-intro>Skip intro</button>
+    </div>
+    <div class="ambient">
 </div>
 <canvas aria-hidden="true" class="bg-canvas">
 </canvas>
 <div aria-hidden="true" class="cosmic-veil"></div>
-<div class="cursor-dot">
-</div>
-<div class="cursor-ring">
-</div>
+    <div class="journey-waves page-waves" aria-hidden="true">
+      <svg class="wave-mask-defs" width="0" height="0" focusable="false">
+        <defs>
+          <linearGradient id="page-wave-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop stop-color="white" stop-opacity="0" />
+            <stop offset=".12" stop-color="white" />
+            <stop offset=".9" stop-color="white" />
+            <stop offset="1" stop-color="white" stop-opacity="0" />
+          </linearGradient>
+          <mask
+            id="page-wave-mask"
+            x="0"
+            y="0"
+            width="1"
+            height="1"
+            maskUnits="userSpaceOnUse"
+            mask-type="luminance"
+          >
+            <rect data-wave-mask-base width="1" height="1" fill="url(#page-wave-fade)" />
+            <g data-wave-mask-holes fill="black"></g>
+          </mask>
+        </defs>
+      </svg>
+      <canvas class="page-wave-surface" width="1" height="1"></canvas>
+      <span class="journey-still-wave"></span>
+    </div>
 <div class="toast" id="toast">
 </div><header class="site-header">
 <div class="nav-shell glass">
@@ -623,6 +625,10 @@
     </button>
 </div>
 </footer>
-<script defer="" src="../site.js?v=20261116"></script>
+<script defer="" src="../site.js?v=20261121-cinematic"></script>
+<script defer src="../assets/vendor/gsap.min.js?v=3.15.1"></script>
+    <script defer src="../assets/vendor/ScrollTrigger.min.js?v=3.15.1"></script>
+    <script defer src="../assets/vendor/SplitText.min.js?v=3.15.1"></script>
+    <script defer src="../cinematic-journey.js?v=20261121-welcome-mask"></script>
 </body>
 </html>

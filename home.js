@@ -239,6 +239,13 @@
   const timerProgress = $('#timer-progress');
   const timerStart = $('#timer-start');
   const notificationToggle = $('#notify-toggle');
+  const alarmPanel = $('#timer-alarm');
+  const alarmMessage = $('#timer-alarm-message');
+  const enableSound = $('#timer-enable-sound');
+  const audioSupported = Boolean(window.AudioContext || window.webkitAudioContext);
+  let timerAudio = null;
+  let alarmSource = null;
+  const tones = new Set();
   const timerRing = $('.timer-ring');
   const circumference = 2 * Math.PI * 42;
 
@@ -248,11 +255,14 @@
     remainingMs: 10 * 60000,
     endTime: null,
     running: false,
-    warningFired: false
+    warningFired: false,
+    alarming: false,
   };
 
   function saveTimer() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {  }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {}
   }
 
   function formatTime(milliseconds) {
@@ -260,23 +270,91 @@
     return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
   }
 
-  function beep(frequency = 740, duration = 0.14) {
+  function unlockAudio() {
     try {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      const audio = new AudioContextClass();
-      const oscillator = audio.createOscillator();
-      const gain = audio.createGain();
-      oscillator.frequency.value = frequency;
-      oscillator.connect(gain);
-      gain.connect(audio.destination);
-      gain.gain.setValueAtTime(0.07, audio.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + duration);
-      oscillator.start();
-      oscillator.onended = () => { audio.close().catch(() => undefined); };
-      oscillator.stop(audio.currentTime + duration);
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) return;
+      if (!timerAudio || timerAudio.state === 'closed') {
+        timerAudio = new Audio();
+        timerAudio.addEventListener('statechange', () => {
+          if (state.alarming) startAlarm();
+          renderTimer();
+        });
+      }
+      if (timerAudio.state === 'suspended')
+        timerAudio
+          .resume()
+          .then(() => {
+            if (state.alarming) startAlarm();
+            renderTimer();
+          })
+          .catch(() => renderTimer());
     } catch {
-
+      /* The visual alarm remains available if audio is unavailable. */
     }
+  }
+  function stopSound() {
+    if (alarmSource) {
+      try {
+        alarmSource.stop();
+      } catch {}
+      alarmSource.disconnect();
+      alarmSource = null;
+    }
+    tones.forEach((tone) => {
+      try {
+        tone.stop();
+      } catch {}
+    });
+    tones.clear();
+  }
+  function silenceAlarm() {
+    stopSound();
+    state.alarming = false;
+  }
+  function startAlarm() {
+    if (!state.alarming || alarmSource || !timerAudio || timerAudio.state !== 'running') return;
+    try {
+      const rate = timerAudio.sampleRate;
+      const buffer = timerAudio.createBuffer(1, Math.ceil(rate * 1.5), rate);
+      const samples = buffer.getChannelData(0);
+      for (let pulse = 0; pulse < 3; pulse++) {
+        const start = Math.floor(pulse * 0.28 * rate);
+        const length = Math.floor(0.18 * rate);
+        for (let i = 0; i < length; i++) {
+          const envelope = Math.min(1, i / (rate * 0.01), (length - i) / (rate * 0.025));
+          samples[start + i] =
+            0.12 * envelope * Math.sin((2 * Math.PI * (pulse % 2 ? 880 : 660) * i) / rate);
+        }
+      }
+      alarmSource = timerAudio.createBufferSource();
+      alarmSource.buffer = buffer;
+      alarmSource.loop = true;
+      alarmSource.connect(timerAudio.destination);
+      alarmSource.start();
+    } catch {
+      stopSound();
+    }
+  }
+  function beep(frequency = 740, duration = 0.14) {
+    if (!timerAudio || timerAudio.state !== 'running') return;
+    try {
+      const tone = timerAudio.createOscillator(),
+        gain = timerAudio.createGain();
+      tone.frequency.value = frequency;
+      tone.connect(gain);
+      gain.connect(timerAudio.destination);
+      gain.gain.setValueAtTime(0.07, timerAudio.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, timerAudio.currentTime + duration);
+      tones.add(tone);
+      tone.onended = () => {
+        tones.delete(tone);
+        tone.disconnect();
+        gain.disconnect();
+      };
+      tone.start();
+      tone.stop(timerAudio.currentTime + duration);
+    } catch {}
   }
 
   function renderTimer() {
@@ -296,6 +374,21 @@
     }
 
     if (timerStart) timerStart.textContent = state.running ? 'Pause' : 'Start';
+    const audible = Boolean(alarmSource && timerAudio?.state === 'running');
+    if (alarmPanel) alarmPanel.hidden = !state.alarming;
+    const moveAlarmFocus = audible && document.activeElement === enableSound;
+    if (enableSound) enableSound.hidden = !state.alarming || audible || !audioSupported;
+    if (alarmMessage) {
+      const message = !state.alarming
+        ? ''
+        : audible
+          ? "Time's up. Alarm ringing until stopped."
+          : !audioSupported
+            ? "Time's up. Sound is unavailable in this browser."
+            : "Time's up. Enable alarm sound or stop the alarm.";
+      if (alarmMessage.textContent !== message) alarmMessage.textContent = message;
+    }
+    if (moveAlarmFocus) $('#timer-stop-alarm')?.focus({ preventScroll: true });
     if (state.remainingMs > 60000) timerRing?.classList.remove('one-minute');
   }
 
@@ -313,12 +406,10 @@
         if (Notification.permission === 'default') await Notification.requestPermission();
         if (Notification.permission === 'granted') {
           new Notification('1 minute remaining', {
-            body: 'Your timer on rikeshad.com is almost finished.'
+            body: 'Your timer on rikeshad.com is almost finished.',
           });
         }
-      } catch {
-
-      }
+      } catch {}
     }
   }
 
@@ -332,8 +423,8 @@
       state.running = false;
       state.endTime = null;
       state.warningFired = false;
-      beep(560, 0.22);
-      setTimeout(() => beep(760, 0.26), 260);
+      state.alarming = true;
+      startAlarm();
       showToast('Time’s up!');
       clearInterval(tickId);
       tickId = null;
@@ -349,20 +440,22 @@
     tick();
   }
 
-  window.timerPreset = minutes => {
+  window.timerPreset = (minutes) => {
+    silenceAlarm();
     state = {
       durationMs: minutes * 60000,
       remainingMs: minutes * 60000,
       endTime: null,
       running: false,
-      warningFired: false
+      warningFired: false,
+      alarming: false,
     };
 
     if (tickId) clearInterval(tickId);
     tickId = null;
     saveTimer();
     renderTimer();
-    $$('.preset').forEach(button => {
+    $$('.preset').forEach((button) => {
       button.classList.toggle('active', Number(button.dataset.min) === minutes);
     });
   };
@@ -386,18 +479,20 @@
   }
 
   customSet?.addEventListener('click', setCustomTimer);
-  customInput?.addEventListener('keydown', event => {
+  customInput?.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       setCustomTimer();
     }
   });
 
-  $$('.preset').forEach(button => {
+  $$('.preset').forEach((button) => {
     button.addEventListener('click', () => timerPreset(Number(button.dataset.min)));
   });
 
   timerStart?.addEventListener('click', () => {
+    unlockAudio();
+    silenceAlarm();
     if (state.remainingMs <= 0) state.remainingMs = state.durationMs;
 
     if (state.running) {
@@ -418,6 +513,7 @@
   });
 
   $('#timer-reset')?.addEventListener('click', () => {
+    silenceAlarm();
     state.remainingMs = state.durationMs;
     state.endTime = null;
     state.running = false;
@@ -429,17 +525,41 @@
     timerRing?.classList.remove('one-minute');
   });
 
+  $('#timer-stop-alarm')?.addEventListener('click', () => {
+    silenceAlarm();
+    saveTimer();
+    renderTimer();
+    timerStart?.focus({ preventScroll: true });
+  });
+  enableSound?.addEventListener('click', () => {
+    unlockAudio();
+    startAlarm();
+    renderTimer();
+    if (enableSound.hidden) $('#timer-stop-alarm')?.focus({ preventScroll: true });
+  });
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && state.running) tick();
+    if (!document.hidden) {
+      if (state.running) tick();
+      if (state.alarming) {
+        startAlarm();
+        renderTimer();
+      }
+    }
+  });
+  addEventListener('pagehide', stopSound);
+  addEventListener('pageshow', () => {
+    if (state.running) tick();
+    if (state.alarming) {
+      startAlarm();
+      renderTimer();
+    }
   });
 
   function loadTimer() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
       if (saved && typeof saved === 'object') state = { ...state, ...saved };
-    } catch {
-
-    }
+    } catch {}
 
     if (state.running && state.endTime) {
       state.remainingMs = Math.max(0, state.endTime - Date.now());
@@ -447,12 +567,17 @@
         state.running = false;
         state.endTime = null;
         state.remainingMs = 0;
+        state.alarming = true;
       }
     }
 
     saveTimer();
     renderTimer();
     if (state.running) startTicking();
+    if (state.alarming) {
+      startAlarm();
+      renderTimer();
+    }
   }
 
   loadTimer();

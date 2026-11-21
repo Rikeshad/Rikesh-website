@@ -5,23 +5,7 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 
-  const fontReadyPromise = (() => {
-    if (!document.fonts?.load) {
-      document.documentElement.classList.add('fonts-ready');
-      return Promise.resolve();
-    }
-
-    const timeout = new Promise(resolve => setTimeout(resolve, 650));
-    const load = Promise.all([
-      document.fonts.load('600 1em "Inter"'),
-      document.fonts.load('500 1em "Playfair Display"')
-    ]).catch(() => undefined);
-
-    return Promise.race([load, timeout]).then(() => {
-      document.documentElement.classList.add('fonts-ready');
-    });
-  })();
-
+  document.documentElement.classList.add('fonts-ready');
 
   const THEME_KEY = 'rikeshTheme';
 
@@ -69,153 +53,9 @@
   syncThemeControls();
 
 
-  const intro = $('#site-intro');
-  let introSeen = false;
-  try { introSeen = sessionStorage.getItem('rikeshIntroSeen') === '1'; } catch {}
-  const mobileHomeScene = Boolean($('#home') && matchMedia('(max-width: 760px)').matches);
-
-  const openingPhotoLoad = intro && $('#home') ?
-    new Promise(resolve => {
-      const image = new Image();
-      image.decoding = 'async';
-      image.fetchPriority = 'high';
-      image.src = 'assets/images/scenery/nepal-himalayas.webp';
-      if (typeof image.decode === 'function') {
-        image.decode().then(resolve, resolve);
-      } else if (image.complete) {
-        resolve();
-      } else {
-        image.addEventListener('load', resolve, { once: true });
-        image.addEventListener('error', resolve, { once: true });
-      }
-    }) : Promise.resolve();
-  // A timed mobile reveal can uncover text over an empty scene on a slow link.
-  const openingPhotoReady = mobileHomeScene ? openingPhotoLoad : Promise.race([
-    openingPhotoLoad,
-    new Promise(resolve => setTimeout(resolve, 3500))
-  ]);
-
-  function revealHomeScene() {
-    document.body.classList.add('experience-ready');
-    requestAnimationFrame(() => {
-      document.body.classList.remove('home-scene-pending');
-    });
-  }
-
-  function finishIntro() {
-    if (!intro || !intro.isConnected) return;
-    revealHomeScene();
-    intro.classList.add('intro-hidden');
-    setTimeout(() => {
-      intro.remove();
-      document.body.classList.remove('no-scroll', 'has-intro');
-    }, 700);
-  }
-
-  if (intro) {
-    if (introSeen) {
-      document.body.classList.add('no-scroll');
-      Promise.all([fontReadyPromise, openingPhotoReady]).then(() => {
-        intro.remove();
-        document.body.classList.remove('no-scroll', 'has-intro');
-        revealHomeScene();
-      });
-    } else {
-      document.body.classList.add('no-scroll');
-      const bar = $('[data-intro-bar]', intro);
-      const percentage = $('[data-intro-pct]', intro);
-
-      fontReadyPromise.then(() => {
-        const duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 180 : 950;
-        const started = performance.now();
-        const tickIntro = now => {
-          if (!intro.isConnected) return;
-          const fraction = Math.min(1, (now - started) / duration);
-          const eased = 1 - Math.pow(1 - fraction, 3);
-          const value = Math.round(eased * 100);
-          if (bar) bar.style.transform = `scaleX(${eased})`;
-          if (percentage) percentage.textContent = `${value}%`;
-          if (fraction < 1) requestAnimationFrame(tickIntro);
-          else {
-            try { sessionStorage.setItem('rikeshIntroSeen', '1'); } catch {}
-            openingPhotoReady.then(finishIntro);
-          }
-        };
-        if (bar) {
-          bar.style.width = '100%';
-          bar.style.transformOrigin = 'left center';
-          bar.style.transform = 'scaleX(0)';
-        }
-        requestAnimationFrame(tickIntro);
-      });
-    }
-  } else {
-    revealHomeScene();
-  }
-
-  const cursorDot = $('.cursor-dot');
-  const cursorRing = $('.cursor-ring');
-
-  if (cursorDot && cursorRing && matchMedia('(pointer: fine)').matches) {
-    let mouseX = 0;
-    let mouseY = 0;
-    let ringX = 0;
-    let ringY = 0;
-
-    addEventListener('mousemove', event => {
-      mouseX = event.clientX;
-      mouseY = event.clientY;
-      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-      if (!cursorRaf && !document.hidden) cursorRaf = requestAnimationFrame(animateCursor);
-    }, { passive: true });
-
-    let cursorRaf = 0;
-
-    function animateCursor() {
-      if (document.hidden) {
-        cursorRaf = 0;
-        return;
-      }
-      ringX += (mouseX - ringX) * 0.20;
-      ringY += (mouseY - ringY) * 0.20;
-      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%)`;
-      if (Math.abs(mouseX - ringX) > .45 || Math.abs(mouseY - ringY) > .45) {
-        cursorRaf = requestAnimationFrame(animateCursor);
-      } else {
-        cursorRaf = 0;
-      }
-    }
-
-    function startCursor() {
-      if (!cursorRaf && !document.hidden) cursorRaf = requestAnimationFrame(animateCursor);
-    }
-
-    function stopCursor() {
-      if (!cursorRaf) return;
-      cancelAnimationFrame(cursorRaf);
-      cursorRaf = 0;
-    }
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stopCursor();
-      else startCursor();
-    });
-    addEventListener('pagehide', stopCursor, { once: true });
-    $$('a, button, input, textarea, select').forEach(element => {
-      element.addEventListener('mouseenter', () => {
-        cursorRing.style.width = '54px';
-        cursorRing.style.height = '54px';
-        cursorRing.style.borderColor = '#f6d365';
-      });
-
-      element.addEventListener('mouseleave', () => {
-        cursorRing.style.width = '36px';
-        cursorRing.style.height = '36px';
-        cursorRing.style.borderColor = 'rgba(212,175,55,.48)';
-      });
-    });
-  }
-
+  // The shared cinematic controller owns welcome timing on every page.
+  document.body.classList.add('experience-ready');
+  document.body.classList.remove('home-scene-pending', 'no-scroll', 'has-intro');
 
   const galaxyCanvas = $('.bg-canvas');
 
@@ -280,10 +120,10 @@
       scene.add(galaxy);
 
       const lookTarget = new THREE.Vector3(0, 0, 0);
-      const clock = new THREE.Clock();
+      let sceneTime = 0;
 
       const parameters = {
-        count: compact ? (lowPower ? 14000 : 26000) : (medium || lowPower ? 40000 : 72000),
+        count: compact ? (lowPower ? 8000 : 14000) : (medium || lowPower ? 24000 : 36000),
         size: compact ? 0.040 : 0.031,
         radius: 14,
         branches: 7,
@@ -421,6 +261,13 @@
       const waveShellPositions = waveShellGeometry.attributes.position;
       const waveShellBase = new Float32Array(waveShellPositions.array.length);
       waveShellBase.set(waveShellPositions.array);
+      const shellLengths = new Float32Array(waveShellBase.length / 3);
+      const shellNormals = new Float32Array(waveShellBase.length);
+      for (let i = 0; i < waveShellBase.length; i += 3) {
+        const length = Math.max(0.0001, Math.hypot(...waveShellBase.subarray(i, i + 3)));
+        shellLengths[i / 3] = length;
+        for (let axis = 0; axis < 3; axis++) shellNormals[i + axis] = waveShellBase[i + axis] / length;
+      }
 
       const waveShellMaterial = new THREE.MeshBasicMaterial({
         color: 0xf6d365,
@@ -1115,9 +962,10 @@
       let lastFrame = performance.now();
 
       function renderScene(now = performance.now()) {
-        const elapsed = clock.getElapsedTime();
         const delta = Math.min(0.05, Math.max(0.001, (now - lastFrame) / 1000));
         lastFrame = now;
+        if (!reduceMotion) sceneTime += delta;
+        const elapsed = sceneTime;
 
         const frames = delta * 60;
         smoothedScroll += (targetScroll - smoothedScroll) * (reduceMotion ? 1 : 1 - Math.pow(.935, frames));
@@ -1159,9 +1007,13 @@
         galaxyPoints.material.opacity = lightTheme
           ? 0.20 - storyVisual * 0.045
           : 0.20 - storyVisual * 0.07;
+        const breath = reduceMotion ? 1 : 1 + Math.sin(elapsed * 0.24) * 0.08;
+        galaxyPoints.material.opacity *= breath;
+        galaxyPoints.rotation.y = reduceMotion ? 0 : Math.sin(elapsed * 0.09) * 0.045;
         coreGlow.material.opacity = lightTheme
           ? 0.055 - storyVisual * 0.015
           : 0.045 - storyVisual * 0.010;
+        coreGlow.material.opacity *= breath;
         backgroundStars.material.opacity = lightTheme ? 0.10 : 0.12;
 
 
@@ -1171,13 +1023,10 @@
 
         if (!reduceMotion) {
           for (let i = 0; i < waveArray.length; i += 3) {
-            const bx = waveShellBase[i];
-            const by = waveShellBase[i + 1];
-            const bz = waveShellBase[i + 2];
-            const length = Math.max(0.0001, Math.hypot(bx, by, bz));
-            const nx = bx / length;
-            const ny = by / length;
-            const nz = bz / length;
+            const length = shellLengths[i / 3];
+            const nx = shellNormals[i];
+            const ny = shellNormals[i + 1];
+            const nz = shellNormals[i + 2];
             const fluid = Math.sin(nx * 5.1 + elapsed * 1.55 + storyPhase)
               * Math.cos(ny * 4.7 - elapsed * 1.12 + storyPhase * 0.42);
             const crossWave = Math.sin((nx + nz) * 8.6 - elapsed * 0.82 + storyPhase * 0.78);
@@ -1198,11 +1047,8 @@
         waveShell.rotation.x = reduceMotion ? 0.18 : 0.18 + Math.sin(elapsed * 0.24 + storyProgress * Math.PI) * 0.16;
         waveShell.rotation.z = reduceMotion ? -0.12 : -0.12 + Math.sin(elapsed * 0.34) * 0.075;
         wavePoints.rotation.copy(waveShell.rotation);
-        waveShellMaterial.opacity = ((lightTheme ? 0.075 : 0.10) + storyVisual * (lightTheme ? 0.10 : 0.17)) * storySphereReveal;
-        wavePointMaterial.opacity = ((lightTheme ? 0.08 : 0.13) + storyVisual * (lightTheme ? 0.11 : 0.18)) * storySphereReveal;
 
         waveHalo.scale.setScalar((reduceMotion ? 1 : 1 + Math.sin(elapsed * 0.92 + storyPhase * 0.08) * 0.08) * (0.94 + storyVisual * 0.18));
-        waveHalo.material.opacity = ((lightTheme ? 0.035 : 0.055) + storyVisual * (lightTheme ? 0.05 : 0.08)) * storySphereReveal;
         spiralTraces.forEach((trace, traceIndex) => {
           const spiralScale = 0.92 + storyVisual * 0.12;
           trace.scale.setScalar(spiralScale);
@@ -1276,6 +1122,7 @@
         camera.lookAt(lookTarget);
 
         backgroundStars.rotation.y = reduceMotion ? 0 : -elapsed * 0.003;
+        backgroundStars.rotation.x = reduceMotion ? 0 : Math.sin(elapsed * 0.07) * 0.035;
         if (!reduceMotion) updateFireworks(delta);
 
         renderer.render(scene, camera);
@@ -1298,6 +1145,7 @@
 
       function startAnimation() {
         if (rafId !== null || document.hidden || sceneryCoversGalaxy) return;
+        if (!lastRendered || performance.now() - lastFrame > 250) lastFrame = performance.now();
         rafId = requestAnimationFrame(animate);
       }
 
@@ -1453,46 +1301,7 @@
   setInterval(updateDarwinTime, 30000);
 
 
-  const revealTargets = $$([
-    '.section-head',
-    '.work-card',
-    '.tool-card',
-    '.more-tools',
-    '.about-copy',
-    '.identity-card',
-    '.skill-card',
-    '.contact-copy',
-    '.contact-form',
-    '.cosmic-fact',
-    '.project-hero-copy',
-    '.showcase-shell',
-    '.project-copy',
-    '.darwin-hero > *',
-    '.darwin-card',
-    '.story > *'
-  ].join(',')).filter(element =>
-    !mobileHomeScene || !element.matches('#home > .wave-story-sticky')
-  );
-
-  if (revealTargets.length) {
-    const reduceRevealMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    revealTargets.forEach(element => element.classList.add('scroll-reveal'));
-
-    if (reduceRevealMotion || !('IntersectionObserver' in window)) {
-      revealTargets.forEach(element => element.classList.add('in-view'));
-    } else {
-      const revealObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add('in-view');
-          revealObserver.unobserve(entry.target);
-        });
-      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.10 });
-
-      revealTargets.forEach(element => revealObserver.observe(element));
-    }
-  }
-
+  // One shared IntersectionObserver in cinematic-journey.js owns content entrances.
 
   $$('img[data-hide-on-error]').forEach(image => {
     const hide = () => { image.hidden = true; };
@@ -1504,6 +1313,7 @@
   const menuToggle = $('[data-menu-toggle]');
   const mobileMenu = $('.mobile-menu');
   const mobileMenuBackdrop = $('[data-menu-backdrop]');
+  if (mobileMenu) mobileMenu.inert = true;
   let menuScrollY = 0;
   let menuTouchStartY = null;
   let priorRootOverflow = '';
@@ -1525,7 +1335,10 @@
   }
 
   function closeMobileMenu() {
+    const restoreFocus = mobileMenu?.contains(document.activeElement);
     mobileMenu?.classList.remove('open');
+    if (restoreFocus) menuToggle?.focus();
+    if (mobileMenu) mobileMenu.inert = true;
     menuToggle?.classList.remove('is-open');
     if (menuToggle) menuToggle.textContent = '☰';
     menuToggle?.setAttribute('aria-expanded', 'false');
@@ -1533,20 +1346,13 @@
     unlockPageForMenu();
   }
 
-  $$('[data-scroll-target]').forEach(button => {
-    button.addEventListener('click', () => {
-      const target = document.getElementById(button.dataset.scrollTarget);
-      const menuWasOpen = mobileMenu?.classList.contains('open');
-      if (menuWasOpen) closeMobileMenu();
-      requestAnimationFrame(() => {
-        target?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
-      });
-    });
-  });
+  // The shared in-page action handler also closes this menu without duplicating its logic.
+  document.addEventListener('rikesh:navigation-close', closeMobileMenu);
 
   menuToggle?.addEventListener('click', event => {
     event.stopPropagation();
     const isOpen = mobileMenu?.classList.toggle('open') ?? false;
+    if (mobileMenu) mobileMenu.inert = !isOpen;
     menuToggle.classList.toggle('is-open', isOpen);
     menuToggle.textContent = isOpen ? '×' : '☰';
     menuToggle.setAttribute('aria-expanded', String(isOpen));
@@ -1592,6 +1398,18 @@
 
   addEventListener('keydown', event => {
     if (event.key === 'Escape' && mobileMenu?.classList.contains('open')) closeMobileMenu();
+    if (event.key === 'Tab' && mobileMenu?.classList.contains('open')) {
+      const items = [menuToggle, ...$$('a[href], button:not([disabled])', mobileMenu)];
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   });
 
   addEventListener('resize', () => {
@@ -1603,13 +1421,12 @@
   });
 
   const sections = $$('main section[id]');
-  const navigationButtons = $$('[data-scroll-target]');
 
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(entries => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        navigationButtons.forEach(button => {
+        $$('[data-scroll-target]').forEach(button => {
           button.classList.toggle('active', button.dataset.scrollTarget === entry.target.id);
         });
       }

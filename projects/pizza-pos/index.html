@@ -2,11 +2,11 @@
 
 <html lang="en">
   <head>
-    <meta content="v56-2026-10-29-fullscreen-gallery-parallax" name="portfolio-build" />
+    <meta content="v57-2026-11-19-premium-pos" name="portfolio-build" />
     <meta charset="utf-8" />
     <meta content="width=device-width,initial-scale=1" name="viewport" />
     <title>Pizza Shop POS Project | Rikesh Adhikari</title>
-    <script src="../../theme-bootstrap.js"></script>
+    <script src="../../theme-bootstrap.js?v=20261121-welcome-mask"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
@@ -14,7 +14,7 @@
       rel="stylesheet"
     />
     <link href="../../assets/favicon.svg" rel="icon" />
-    <link href="../../styles.css?v=20261116" rel="stylesheet" />
+    <link href="../../styles.css?v=20261120-shared-pointer" rel="stylesheet" />
 
     <meta
       content="Explore Rikesh Adhikari’s Pizza Shop POS desktop software project, featuring ordering, inventory, staff workflows and reporting built with Electron, JavaScript and MySQL."
@@ -40,8 +40,9 @@
       name="twitter:description"
     />
 
-    <link href="../../timed-gallery.css?v=20261118-smooth" rel="stylesheet" />
-    <link rel="preload" as="image" href="../../assets/images/pos/login.webp" />
+    <link href="../../timed-gallery.css?v=20261121-url-audit" rel="stylesheet" />
+    <link rel="preload" as="image" href="../../assets/images/pos/login.webp" fetchpriority="high" />
+    <link rel="stylesheet" href="../../cinematic-journey.css?v=20261121-welcome-mask" />
   </head>
   <body class="case-page case-pos">
     <header class="case-nav">
@@ -52,80 +53,90 @@
       </button>
     </header>
     <main>
-      <section class="pos-experience" aria-label="Scroll-controlled laptop walkthrough">
+      <section
+        class="pos-experience"
+        aria-label="Scroll-controlled restaurant POS terminal walkthrough"
+      >
         <div class="pos-device-column">
           <div class="pos-device-stage">
-            <div class="pos-ground"></div>
-            <div class="pos-rig">
-              <div class="laptop" aria-label="Laptop, initially closed" role="img">
-                <div class="laptop-base">
-                  <div class="keyboard" aria-hidden="true">
-                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
-                    ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
-                    ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
-                    ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
-                    ><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i
-                    ><i class="space-key"></i>
-                  </div>
-                  <div class="trackpad"></div>
-                  <div class="base-edge"></div>
-                </div>
-                <div class="laptop-hinge"></div>
-                <div class="laptop-lid">
-                  <div class="lid-back"><span>RA</span></div>
-                  <div class="lid-front">
-                    <div class="camera-dot"></div>
-                    <div class="laptop-display">
-                      <img
-                        src="../../assets/images/pos/login.webp"
-                        width="2559"
-                        height="1599"
-                        alt="Secure Login interface"
-                        data-screen="0"
-                      /><img
-                        data-src="../../assets/images/pos/taking-order.webp"
-                        width="2403"
-                        height="1504"
-                        alt="Taking an Order interface"
-                        data-screen="1"
-                      /><img
-                        data-src="../../assets/images/pos/customising-pizza.webp"
-                        width="2403"
-                        height="1504"
-                        alt="Customising a Pizza interface"
-                        data-screen="2"
-                      /><img
-                        data-src="../../assets/images/pos/finalising-order.webp"
-                        width="2560"
-                        height="1600"
-                        alt="Finalising an Order interface"
-                        data-screen="3"
-                      /><img
-                        data-src="../../assets/images/pos/adding-menu.webp"
-                        width="2403"
-                        height="1504"
-                        alt="Adding Menu Items interface"
-                        data-screen="4"
-                      /><img
-                        data-src="../../assets/images/pos/inventory.webp"
-                        width="1920"
-                        height="1080"
-                        alt="Inventory Management interface"
-                        data-screen="5"
-                      /><img
-                        data-src="../../assets/images/pos/sales-report-period.webp"
-                        width="1878"
-                        height="893"
-                        alt="Sales Period Reporting interface"
-                        data-screen="6"
-                      />
-                    </div>
-                    <span class="bezel-mark">RIKESH / POS</span>
+            <div class="terminal-rig">
+              <div
+                class="pos-terminal"
+                aria-label="Restaurant POS terminal showing Staff Login. Use the left and right arrow keys to browse screens."
+                aria-keyshortcuts="ArrowLeft ArrowRight"
+                role="img"
+                tabindex="0"
+                title="Use the left and right arrow keys to browse screens"
+              >
+                <img
+                  class="terminal-scene"
+                  src="../../assets/images/pos/restaurant-terminal.webp"
+                  width="1448"
+                  height="1086"
+                  alt=""
+                  aria-hidden="true"
+                  decoding="async"
+                  fetchpriority="high"
+                />
+                <div class="terminal-head">
+                  <div class="terminal-display">
+                    <img
+                      src="../../assets/images/pos/login.webp"
+                      width="2559"
+                      height="1599"
+                      alt="Staff Login interface"
+                      decoding="async"
+                      data-screen="0"
+                    /><img
+                      data-src="../../assets/images/pos/taking-order.webp"
+                      width="2403"
+                      height="1504"
+                      alt="Taking an Order interface"
+                      data-screen="1"
+                    /><img
+                      data-src="../../assets/images/pos/customising-pizza.webp"
+                      width="2403"
+                      height="1504"
+                      alt="Customising a Pizza interface"
+                      data-screen="2"
+                    /><img
+                      data-src="../../assets/images/pos/finalising-order.webp"
+                      width="2560"
+                      height="1600"
+                      alt="Finalising an Order interface"
+                      data-screen="3"
+                    /><img
+                      data-src="../../assets/images/pos/adding-menu.webp"
+                      width="2403"
+                      height="1504"
+                      alt="Adding Menu Items interface"
+                      data-screen="4"
+                    /><img
+                      data-src="../../assets/images/pos/inventory.webp"
+                      width="1920"
+                      height="1080"
+                      alt="Inventory Management interface"
+                      data-screen="5"
+                    /><img
+                      data-src="../../assets/images/pos/sales-report-period.webp"
+                      width="1878"
+                      height="893"
+                      alt="Sales Period Reporting interface"
+                      data-screen="6"
+                    />
                   </div>
                 </div>
               </div>
             </div>
-            <span class="device-note">PRECISION IN EVERY TRANSACTION</span>
+            <span class="device-note">
+              <span class="device-note-desktop"
+                ><span data-pos-current>01 / Staff Login</span><br />Scroll to explore · Use the
+                left and right arrow keys</span
+              >
+              <span class="device-note-mobile"
+                >SWIPE THE SCREEN TO BROWSE <span aria-hidden="true">← →</span></span
+              >
+            </span>
           </div>
         </div>
         <div class="pos-chapters">
@@ -135,7 +146,7 @@
               <h1>PIZZA<br />SHOP POS<span class="title-dot">.</span></h1>
               <p>A desktop point-of-sale system for the everyday rhythm of a pizza shop.</p>
               <a class="scroll-cue" href="#pos-feature-1"
-                >Scroll to open the laptop <span aria-hidden="true">↓</span></a
+                >Scroll to explore the system <span aria-hidden="true">↓</span></a
               >
             </div>
           </section>
@@ -282,35 +293,54 @@
           </div>
         </section>
 
-        <section class="story">
+        <section class="story" aria-labelledby="case-study-title">
           <div>
-            <div class="eyebrow">PROJECT STORY</div>
-            <h2>
-              WHY IT
-              <br />
-              MATTERS.
-            </h2>
+            <div class="case-label">CASE STUDY</div>
+            <h2 id="case-study-title">From problem<br />to interface.</h2>
           </div>
           <div class="story-list">
             <div class="story-item">
-              <h3>Ordering first</h3>
+              <h3>The problem</h3>
               <p>
-                Order entry is kept simple so staff can move quickly while still seeing the customer
-                and product information they need.
+                A pizza shop needs to keep order entry, product customisation, stock and reporting
+                connected. The project brings those operational tasks into one desktop interface.
               </p>
             </div>
             <div class="story-item">
-              <h3>Operational visibility</h3>
+              <h3>My role</h3>
               <p>
-                Inventory, preparation, order history and reporting give staff a wider view of
-                day-to-day store activity.
+                I built the desktop application and the ordering and administration interfaces shown
+                in this case study.
               </p>
             </div>
             <div class="story-item">
-              <h3>Built to scale</h3>
+              <h3>Key decisions</h3>
               <p>
-                The system can be extended for different staff roles and more than one store
-                location without changing the main workflow.
+                Order entry keeps the product list beside the current order. Pizza customisation and
+                finalisation have dedicated screens, while inventory and reporting remain separate
+                operational views.
+              </p>
+            </div>
+            <div class="story-item">
+              <h3>Tools used</h3>
+              <p>
+                Electron, JavaScript and MySQL support the desktop interface and its data workflows.
+              </p>
+            </div>
+            <div class="story-item">
+              <h3>Academic perspective</h3>
+              <p>
+                My Bachelor of Business coursework included Foundations of Accounting and management
+                subjects. The POS interface provides a practical context for that learning through
+                order totals, inventory views and sales reports.
+              </p>
+            </div>
+            <div class="story-item">
+              <h3>Result</h3>
+              <p>
+                The implemented screens cover sign-in, order entry, customisation, finalisation,
+                menu administration, inventory and sales reporting. The screenshot library below
+                documents the delivered interfaces.
               </p>
             </div>
           </div>
@@ -647,6 +677,10 @@
       <p data-viewer-description></p>
       <a data-original target="_blank" rel="noopener">Open original image ↗</a>
     </dialog>
-    <script defer src="../../project.js?v=20261118-smooth"></script>
+    <script defer src="../../project.js?v=20261121-cinematic"></script>
+    <script defer src="../../assets/vendor/gsap.min.js?v=3.15.1"></script>
+    <script defer src="../../assets/vendor/ScrollTrigger.min.js?v=3.15.1"></script>
+    <script defer src="../../assets/vendor/SplitText.min.js?v=3.15.1"></script>
+    <script defer src="../../cinematic-journey.js?v=20261121-welcome-mask"></script>
   </body>
 </html>

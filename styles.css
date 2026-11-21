@@ -225,30 +225,6 @@ img,video {
 }
 
 
-.cursor-dot,.cursor-ring {
-  position:fixed;
-  left:0;
-  top:0;
-  pointer-events:none;
-  z-index:9998;
-  border-radius:50%;
-  transform:translate(-50%,-50%)
-}
-
-.cursor-dot {
-  width:7px;
-  height:7px;
-  background:var(--gold)
-}
-
-.cursor-ring {
-  width:36px;
-  height:36px;
-  border:1px solid rgba(212,175,55,.48);
-  transition:width .2s,height .2s,border-color .2s
-}
-
-
 .site-header {
   position:fixed;
   left:0;
@@ -1985,9 +1961,6 @@ img,video {
     margin-left:6vw
   }
   .intro-star {
-    display:none
-  }
-  .cursor-dot,.cursor-ring {
     display:none
   }
 }

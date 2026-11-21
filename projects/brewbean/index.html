@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width,initial-scale=1" name="viewport" />
     <title>BrewBean Website Project | Rikesh Adhikari</title>
-    <script src="../../theme-bootstrap.js"></script>
+    <script src="../../theme-bootstrap.js?v=20261121-welcome-mask"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link
@@ -14,7 +14,7 @@
       rel="stylesheet"
     />
     <link href="../../assets/favicon.svg" rel="icon" />
-    <link href="../../styles.css?v=20261116" rel="stylesheet" />
+    <link href="../../styles.css?v=20261120-shared-pointer" rel="stylesheet" />
 
     <meta
       content="Explore Rikesh Adhikari’s BrewBean website project, featuring responsive web design, product browsing, recommendations, loyalty features and subscriptions."
@@ -40,8 +40,9 @@
       name="twitter:description"
     />
 
-    <link href="../../timed-gallery.css?v=20261118-smooth" rel="stylesheet" />
+    <link href="../../timed-gallery.css?v=20261121-url-audit" rel="stylesheet" />
     <link rel="preload" as="image" href="../../assets/images/brewbean/homepage.webp" />
+    <link rel="stylesheet" href="../../cinematic-journey.css?v=20261121-welcome-mask" />
   </head>
   <body class="case-page case-brew">
     <header class="case-nav">
@@ -448,35 +449,48 @@
           </div>
         </section>
 
-        <section class="story">
+        <section class="story" aria-labelledby="case-study-title">
           <div>
-            <div class="eyebrow">PROJECT STORY</div>
-            <h2>
-              WHY IT
-              <br />
-              MATTERS.
-            </h2>
+            <div class="case-label">CASE STUDY</div>
+            <h2 id="case-study-title">From problem<br />to interface.</h2>
           </div>
           <div class="story-list">
             <div class="story-item">
-              <h3>Clear discovery</h3>
+              <h3>The problem</h3>
               <p>
-                The layout keeps navigation and product discovery clear so visitors can find what
-                they need without too much information competing for attention.
+                Coffee shoppers need a clear route from discovering a product to understanding
+                recommendations, loyalty options and subscriptions. This project organises those
+                choices into a responsive website.
               </p>
             </div>
             <div class="story-item">
-              <h3>Repeat engagement</h3>
+              <h3>My role</h3>
               <p>
-                Recommendations, loyalty features and subscriptions give returning customers useful
-                reasons to come back.
+                I designed and built the coffee website and the responsive interfaces presented
+                here.
               </p>
             </div>
             <div class="story-item">
-              <h3>Live website</h3>
+              <h3>Key decisions</h3>
               <p>
-                This page shows the main screens and design choices, while the live BrewBean website
-                can be opened separately.
+                The homepage introduces the range, category views organise products, and dedicated
+                sections explain recommendations, loyalty and subscriptions without crowding the
+                initial browsing experience.
+              </p>
+            </div>
+            <div class="story-item">
+              <h3>Tools used</h3>
+              <p>
+                Responsive web design and Cloudflare hosting. The live site and original screenshots
+                are available from this page.
+              </p>
+            </div>
+            <div class="story-item">
+              <h3>Result</h3>
+              <p>
+                The project includes a homepage, product categories, recommendations, loyalty
+                features and subscription views. These interfaces are documented in the screenshots,
+                with a live website available to explore.
               </p>
             </div>
           </div>
@@ -503,6 +517,10 @@
       <p data-viewer-description></p>
       <a data-original target="_blank" rel="noopener">Open original image ↗</a>
     </dialog>
-    <script defer src="../../project.js?v=20261118-smooth"></script>
+    <script defer src="../../project.js?v=20261121-cinematic"></script>
+    <script defer src="../../assets/vendor/gsap.min.js?v=3.15.1"></script>
+    <script defer src="../../assets/vendor/ScrollTrigger.min.js?v=3.15.1"></script>
+    <script defer src="../../assets/vendor/SplitText.min.js?v=3.15.1"></script>
+    <script defer src="../../cinematic-journey.js?v=20261121-welcome-mask"></script>
   </body>
 </html>
